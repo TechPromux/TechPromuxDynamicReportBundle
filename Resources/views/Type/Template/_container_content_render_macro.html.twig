@@ -1,0 +1,5 @@
+<div class="{{container_class}}{%if (components[container]|length )==0%} hide{%endif%}" style="{{container_style}}{%if (debug_template_zone is defined and debug_template_zone==true )%}border:1px solid #ff0000;{%endif%}">
+    {% for cmpt in components[container]%}
+        {{cmpt['component_type'].render(request,cmpt['component']) | raw}}
+    {% endfor  %}
+</div>

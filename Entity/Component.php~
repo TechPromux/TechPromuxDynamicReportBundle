@@ -1,0 +1,72 @@
+<?php
+
+namespace TechPromux\Bundle\DynamicReportBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use TechPromux\Bundle\BaseBundle\Entity\Resource\BaseResource;
+
+/**
+ * Component
+ *
+ * @ORM\Table(name="techpromux_dynamic_report_component")
+ * @ORM\Entity()
+ */
+class Component extends BaseResource
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="component_type", type="string", length=255)
+     */
+    private $componentType;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="data_options", type="json_array", nullable=true)
+     */
+    protected $data_options;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="component_options", type="json_array", nullable=true)
+     */
+    protected $component_options;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="position", type="integer")
+     */
+    private $position;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="template_container", type="string", length=255)
+     */
+    private $templateContainer;
+
+    /**
+     * @var Report
+     *
+     * @ORM\ManyToOne(targetEntity="Report", inversedBy="components")
+     * @ORM\JoinColumn(name="report_id", referencedColumnName="id", nullable=false)
+     */
+    private $report;
+
+    /**
+     * @var DataModel
+     *
+     * @ORM\ManyToOne(targetEntity="TechPromux\Bundle\DynamicQueryBundle\Entity\DataModel")
+     * @ORM\JoinColumn(name="datamodel_id", referencedColumnName="id", nullable=false)
+     */
+    private $datamodel;
+
+
+    public function __toString()
+    {
+        return $this->id ? $this->getName() : '';
+    }
+}

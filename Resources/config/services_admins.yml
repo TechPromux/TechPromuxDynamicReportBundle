@@ -1,0 +1,24 @@
+services:
+
+    # Admin services
+
+    techpromux_dynamic_report.admin.report:
+        class: TechPromux\Bundle\DynamicReportBundle\Admin\ReportAdmin
+        arguments: [~, TechPromux\Bundle\DynamicReportBundle\Entity\Report, TechPromuxDynamicReportBundle:ReportAdmin]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: techpromux_dynamic_reports_admin, label: Report }
+        calls:
+            - [ setTranslationDomain,['TechPromuxDynamicReportBundle']]
+            - [ setResourceManager,['@techpromux_dynamic_report.manager.report']]
+            - [ addChild, ['@techpromux_dynamic_report.admin.component'] ]
+
+
+    techpromux_dynamic_report.admin.component:
+        class: TechPromux\Bundle\DynamicReportBundle\Admin\ComponentAdmin
+        arguments: [~, TechPromux\Bundle\DynamicReportBundle\Entity\Component, TechPromuxDynamicReportBundle:ComponentAdmin]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: techpromux_dynamic_reports_admin, label: Component }
+        calls:
+            - [ setTranslationDomain,['TechPromuxDynamicReportBundle']]
+            - [ setResourceManager,['@techpromux_dynamic_report.manager.component']]
+

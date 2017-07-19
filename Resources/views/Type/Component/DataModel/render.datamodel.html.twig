@@ -1,0 +1,18 @@
+{% extends 'TechPromuxDynamicReportBundle:Type:Component/render.base.layout.html.twig' %}
+
+{% block component_header_toolbox %}
+    {{ include ('TechPromuxDynamicReportBundle:Type:Component/DataModel/render.datamodel.tool-box.export.html.twig') }}
+    {{ include ('TechPromuxDynamicReportBundle:Type:Component/DataModel/render.datamodel.tool-box.filters.html.twig') }}
+{% endblock component_header_toolbox %}
+
+{% block component_content %}
+
+    {% if (component_type.getDataModelDatasetResultPaginated()) %}
+        {{ include ('TechPromuxDynamicReportBundle:Type:Component/DataModel/render.datamodel.paginator.html.twig') }}
+    {% endif %}
+
+{% endblock component_content %}
+
+{% block component_javascripts %}
+
+{% endblock component_javascripts %}

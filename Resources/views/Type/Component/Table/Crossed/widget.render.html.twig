@@ -1,0 +1,184 @@
+{% extends app.request.isXmlHttpRequest?'TechPromuxDynamicReportBundle:Component:component.render.ajax.layout.html.twig':'TechPromuxDynamicReportBundle:Component:component.render.base.layout.html.twig' %}
+
+{% block component_content %}
+    {{parent()}}
+
+    <!-- -->{% if (not app.request.isXmlHttpRequest)%}
+    <div id="component-crosstable-toolbox-orderby-{{component.id}}" class="btn-group tpx-component-crosstable-orderby pull-right" style="margin-right: 5px;">
+        <button aria-expanded="false" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="{{ 'Order' | trans({},'TechPromuxDynamicReportBundle')}}">
+            <i class="glyphicon glyphicon-sort-by-attributes"></i>
+        </button>
+        <ul id="component-crosstable-orderby-options-{{component.id}}" class="dropdown-menu dropdown-menu-right" role="menu">
+            <!-- -->{% for order_by in order_by_options %}
+            <li>
+                <a class="tpx-component-crosstable-orderby-arrow-{{component.id}}" data-sort-by="{{order_by.id}}" data-sort-order="ASC" href="#sort-asc-by-{{ order_by.abbreviation }}" >
+                    <i class="fa fa-sort-{{order_by.sort_icon}}-asc"></i>{{order_by.title}}: {{'ASC Order' | trans({},'TechPromuxDynamicReportBundle')}}
+                </a>
+            </li>
+            <li>
+                <a class="tpx-component-crosstable-orderby-arrow-{{component.id}}" data-sort-by="{{order_by.id}}" data-sort-order="DESC" href="#sort-desc-by-{{ order_by.abbreviation }}" >
+                    <i class="fa fa-sort-{{order_by.sort_icon}}-desc"></i>{{order_by.title}}: {{'DESC Order' | trans({},'TechPromuxDynamicReportBundle')}}
+                </a>
+            </li>
+            <!-- -->{% if (loop.revindex0!=0)%}<li class="divider"></li>{% endif%}
+            <!-- -->{% endfor %}
+        </ul>
+    </div>
+    <!-- -->{% endif %}    
+
+
+    <table id="component-table-paginated-{{component.id}}" class="table table-bordered table-hover table-striped table-condensed" style="margin-bottom: 0px;">
+        <thead>
+            <tr>
+                <th style="text-align:left;padding-left: 20px;" colspan="{% if (settings['basic_options']['show_row_number_in_first_column'] == true)%}2{% else %}1{% endif %}">
+                    <b>#</b>
+                </th>
+                <!-- -->{% for label in result['labels']%}
+                <th title="{{ label.label }}" style="text-align:{{settings['detail_for_label']['text_align']}};"> {{ label.label }} </th>
+                <!-- -->{% endfor %}
+                {% if (settings['detail_for_crossed_datasets_datas']['summary_function']!=null and settings['detail_for_crossed_datasets_datas']['summary_function']!='') %}        
+                <th style="text-align:{{settings['detail_for_label']['text_align']}};border-left: 2px solid #c9cad7;">
+                    ({{(settings['detail_for_crossed_datasets_datas']['summary_function'] | trans ({},'TechPromuxDynamicReportBundle') )}})
+                </th>
+                {% endif %}                 
+                </tr>
+            </thead>
+            <tbody>
+                {% set format = extras.datamodel_details_descriptions[settings['detail_for_crossed_datasets_datas']['detail_id']]['format'] %}
+                {% set prefix = settings['detail_for_crossed_datasets_datas']['show_prefix']?extras.datamodel_details_descriptions[settings['detail_for_crossed_datasets_datas']['detail_id']]['prefix']:'' %}
+                {% set suffix = settings['detail_for_crossed_datasets_datas']['show_suffix']?extras.datamodel_details_descriptions[settings['detail_for_crossed_datasets_datas']['detail_id']]['suffix']:'' %}
+                {% for serie, row in result['data'] %}
+                    <tr>
+                        {% if (settings['basic_options']['show_row_number_in_first_column'] == true)%}
+                        <td style="text-align:center;">{{ loop.index }}</td>
+                        {% endif %}
+                            <td style="text-align:{{settings['detail_for_crossed_datasets_series']['text_align']}};"><b>{{ serie }}</b></td>
+                                    {% set summary_horizontal = (settings['detail_for_crossed_datasets_datas']['summary_function']=='SUM' or settings['detail_for_crossed_datasets_datas']['summary_function']=='AVG' )?0:null %}        
+                                    {% for col in row %}
+
+                                {% if (settings['detail_for_crossed_datasets_datas']['summary_function']=='SUM') %}        
+                                {% set summary_horizontal = summary_horizontal + col%}
+                                {% elseif (settings['detail_for_crossed_datasets_datas']['summary_function']=='AVG') %}        
+                                {% set summary_horizontal = summary_horizontal + (col/(row| length))%}
+                                {% elseif (settings['detail_for_crossed_datasets_datas']['summary_function']=='MIN') %}        
+                                {% set summary_horizontal = (summary_horizontal==null or summary_horizontal>col)?col:summary_horizontal %}
+                                {% elseif (settings['detail_for_crossed_datasets_datas']['summary_function']=='MAX') %}        
+                                {% set summary_horizontal = (summary_horizontal==null or summary_horizontal<col)?col:summary_horizontal %}
+                                {% endif %}        
+
+
+                                    {% set text_color = ''  %}  
+                                    {% set text_title = ''  %}  
+                                    {% if ( settings['basic_options']['limit_indicator_for_data_max'] <= settings['basic_options']['limit_indicator_for_data_min'] )%}
+                                    {% if ( settings['basic_options']['limit_indicator_for_data_min'] >= col and settings['basic_options']['limit_indicator_for_data_max'] <= col)%}
+                                    {% set text_color = 'color:green;'  %}  
+                                    {% set text_title = ('this value is between' | trans ({},'TechPromuxDynamicReportBundle') )~' '~(settings['basic_options']['limit_indicator_for_data_max'] )~' '~('and' | trans ({},'TechPromuxDynamicReportBundle') )~' '~(settings['basic_options']['limit_indicator_for_data_min'] )  %}
+                                    {% endif %}
+                                        {% elseif (settings['basic_options']['limit_indicator_for_data_min'] >= col )%}
+                                        {% set text_color = 'color:blue;'  %}  
+                                        {% set text_title = ('this value is less than' | trans ({},'TechPromuxDynamicReportBundle') )~' '~(settings['basic_options']['limit_indicator_for_data_min'] )  %}
+                                        {% elseif (  settings['basic_options']['limit_indicator_for_data_max'] <= col )%}
+                                        {% set text_color = 'color:red;'  %}  
+                                        {% set text_title = ('this value is greater than' | trans ({},'TechPromuxDynamicReportBundle') )~' '~(settings['basic_options']['limit_indicator_for_data_max'] )  %}
+                                        {% endif %}                            
+
+                                            <td style="text-align:{{settings['detail_for_crossed_datasets_datas']['text_align']}};">
+                                                {% if (text_color!='')%}<b style="cursor: help;{{text_color}}" title="{{text_title}}" data-placement="top" data-toggle="tooltip">{%endif%}
+                                                    {{ extras.formatter_helper.formatValue(col,format,prefix,suffix) }}
+                                                    {% if (text_color!='')%}</b>{%endif%}
+                                            </td>
+                                            {% endfor %}
+                                                {% if (settings['detail_for_crossed_datasets_datas']['summary_function']!=null and settings['detail_for_crossed_datasets_datas']['summary_function']!='') %}        
+                                                <td style="text-align:{{settings['detail_for_crossed_datasets_datas']['text_align']}};border-left: 2px solid #c9cad7;">
+                                                    {{ extras.formatter_helper.formatValue(summary_horizontal,format,prefix,suffix) }}
+                                                </td>
+                                                {% endif %}        
+                                                </tr>
+                                                {% endfor %}
+                                                    <!-- -->
+                                                    {% if (settings['detail_for_crossed_datasets_datas']['summary_function']!=null and settings['detail_for_crossed_datasets_datas']['summary_function']!='') %}          
+                                                    <tr style="border-top: 2px solid #c9cad7;">
+                                                    <td style="text-align:left;padding-left: 20px;" colspan="{% if (settings['basic_options']['show_row_number_in_first_column'] == true)%}2{% else %}1{% endif %}">
+                                                        <b>({{(settings['detail_for_crossed_datasets_datas']['summary_function'] | trans ({},'TechPromuxDynamicReportBundle') )}})</b>
+                                                    </td>
+                                                    <!-- -->
+                                                    {% set summary_final = (settings['detail_for_crossed_datasets_datas']['summary_function']=='SUM' or settings['detail_for_crossed_datasets_datas']['summary_function']=='AVG' )?0:null %}        
+                                                    {% for i in 0..((result['labels']|length)-1) %}
+                                                        {% set summary_vertical = (settings['detail_for_crossed_datasets_datas']['summary_function']=='SUM' or settings['detail_for_crossed_datasets_datas']['summary_function']=='AVG' )?0:null %}        
+                                                        {% for series,row in result['data'] %}
+                                                            {% set col = row[i] %}
+                                                            {% if (settings['detail_for_crossed_datasets_datas']['summary_function']=='SUM') %}        
+                                                            {% set summary_vertical = summary_vertical + col%}
+                                                            {% set summary_final = summary_final + col%}
+                                                            {% elseif (settings['detail_for_crossed_datasets_datas']['summary_function']=='AVG') %}        
+                                                            {% set summary_vertical = summary_vertical + (col/(result['data']| length))%}
+                                                            {% set summary_final = summary_final + (col/(result['data']| length)/(result['labels']|length))%}
+                                                            {% elseif (settings['detail_for_crossed_datasets_datas']['summary_function']=='MIN') %}        
+                                                            {% set summary_vertical = (summary_vertical==null or summary_vertical>col)?col:summary_vertical %}
+                                                            {% set summary_final = (summary_final==null or summary_final>col)?col:summary_final %}
+                                                            {% elseif (settings['detail_for_crossed_datasets_datas']['summary_function']=='MAX') %}        
+                                                            {% set summary_vertical = (summary_vertical==null or summary_vertical<col)?col:summary_vertical %}
+                                                            {% set summary_final = (summary_final==null or summary_final<col)?col:summary_final %}
+                                                            {% endif %}
+                                                                {% endfor %}
+                                                                    <td style="text-align:{{settings['detail_for_crossed_datasets_datas']['text_align']}};">
+                                                                        {{ extras.formatter_helper.formatValue(summary_vertical,format,prefix,suffix) }}
+                                                                    </td>
+                                                                    {% endfor %}
+                                                                        <td style="text-align:{{settings['detail_for_crossed_datasets_datas']['text_align']}};">
+                                                                            {{ extras.formatter_helper.formatValue(summary_final,format,prefix,suffix) }}
+                                                                        </td>    
+                                                                    </tr>
+                                                                    {% endif %} 
+                                                                    </tbody>
+                                                                </table>    
+
+
+                                                                {% endblock component_content %}
+
+                                                                    {% block component_stylesheets %}
+                                                                        {{parent()}}
+                                                                        <style>
+
+                                                                        </style>    
+                                                                    {% endblock component_stylesheets %}
+
+                                                                    {% block component_javascripts %}
+                                                                        {{parent()}}
+
+                                                                        {% block component_javascripts_order_buttons %}
+                                                                            <script>
+                                                                                // configure full screen button
+                                                                                $(document).ready(function () {
+                                                                                    $('#component-panel-header-title-{{component.id}}').removeClass('col-md-10').addClass('col-md-6');
+                                                                                    $('#component-panel-header-custom-{{component.id}}').removeClass('hide').addClass('col-md-4').css({'padding-top': '5px'}).html('<b>{{ extras.datamodel_details_descriptions[settings['detail_for_label']['detail_id']]['title'] }} / {{ extras.datamodel_details_descriptions[settings['detail_for_crossed_datasets_series']['detail_id']]['title'] }} => {{ extras.datamodel_details_descriptions[settings['detail_for_crossed_datasets_datas']['detail_id']]['title'] }}</b>');
+                                                                                    $('#component-panel-header-toolbox-{{component.id}}').removeClass('col-md-1').addClass('col-md-2').css({width: '140px'});
+                                                                                    // linking order menus with filters form submit action
+                                                                                    $('#component-crosstable-toolbox-orderby-{{component.id}}').appendTo($('#component-panel-header-toolbox-{{component.id}}'));
+                                                                                });
+                                                                                // configure order buttons options
+                                                                                $(document).on('click', 'a.tpx-component-crosstable-orderby-arrow-{{component.id}}', function (event) {
+                                                                                    event.preventDefault();
+                                                                                    event.stopPropagation();
+                                                                                    console.log('TPX-Component-CrossTable: ordering results');
+                                                                                    $('a.tpx-component-crosstable-orderby-arrow-{{component.id}}').parent().removeClass('active');
+                                                                                    $(this).parent().addClass('active');
+                                                                                    $('#component-crosstable-toolbox-orderby-{{component.id}} button.btn.btn-default.dropdown-toggle').trigger('click');
+                                                                                    $("#tpx-component-filters-form-{{component.id}} #form__sort_by").val($(this).attr('data-sort-by'));
+                                                                                    $("#tpx-component-filters-form-{{component.id}} #form__sort_type").val($(this).attr('data-sort-order'));
+                                                                                    $("#tpx-component-filters-form-{{component.id}}").trigger('submit');
+                                                                                }); /**/
+                                                                            </script>
+                                                                        {% endblock component_javascripts_order_buttons %}
+
+                                                                        {% block component_javascripts_load_data_from_ajax %}
+                                                                            <script>
+                                                                                $(document).on('data-loaded', '#tpx-component-panel-content-{{component.id}}', function (event) {
+
+                                                                                    $('#component-panel-content-{{component.id}}').html($('#component-panel-content-{{component.id}}').attr('data-loaded'));
+                                                                                    $('#component-panel-content-{{component.id}}').attr('data-loaded', '');
+                                                                                    $('#component-panel-header-custom-{{component.id}}').html('');
+                                                                                });</script>
+                                                                            {% endblock component_javascripts_load_data_from_ajax %}
+
+                                                                    {% endblock component_javascripts %}

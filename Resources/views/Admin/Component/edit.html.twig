@@ -1,0 +1,98 @@
+{% extends "SonataAdminBundle:CRUD:edit.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('vendor/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css') }}">
+    <style>
+        label span.control-label__text {
+            margin-left: 5px;
+        }
+
+        #{{form.vars.id}}_settings hr {
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox, .radio {
+            margin-top: 0px;
+        }
+
+    </style>
+{% endblock stylesheets %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('vendor/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js') }}"></script>
+    <script>
+        $(document).on('sonata-collection-item-added', '#{{ form.vars.id }}_data_options > div.form-group, #{{ form.vars.id }}_component_options > div.form-group', function () {
+
+            var labels = $(this).find('label[data-ctype-modify="parent"]');
+            for (var i = 0; i < labels.length; i++) {
+                $(labels[i]).parent().addClass($(labels[i]).attr('data-ctype-modify-parent-addclass'));
+            }
+        });
+
+        $(document).on('sonata-collection-item-added', '#{{ form.vars.id }}_data_options > div.form-group, #{{ form.vars.id }}_component_options > div.form-group', function () {
+            $(this).find('input.color-picker').each(function (id, elem) {
+                $(elem).parent().css({'width': '120px'});
+                if ($(elem).siblings().length == 0) {
+                    $(elem).parent().addClass('input-group colorpicker-component').append('<span class="input-group-addon" style="background-color: #eee;"><i></i></span>').colorpicker({format: 'rgb'});
+                }
+            });
+        });
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('ul.sidebar-menu a[href="{{ admin.getParent().generateUrl('list', [], true) }}"]').parent().addClass('active');
+            $('ul.sidebar-menu a[href="{{ admin.getParent().generateUrl('list', [], true) }}"]').parent().parent().addClass('active');
+            $('ul.sidebar-menu a[href="{{ admin.getParent().generateUrl('list', [], true) }}"]').parent().parent().addClass('menu-open');
+            $('ul.sidebar-menu a[href="{{ admin.getParent().generateUrl('list', [], true) }}"]').parent().parent().css({display: 'block'});
+            $('ul.sidebar-menu a[href="{{ admin.getParent().generateUrl('list', [], true) }}"]').parent().parent().parent().addClass('active');
+
+            $('.sidebar-toggle').trigger('click');
+
+            $('div.with-remove-box-header div.box-header').hide();
+            //$('.nav-tabs-custom li:eq(1) a').tab('show');
+
+            $('#{{ form.vars.id }}_options input.color-picker').parent().addClass('input-group colorpicker-component').append('<span class="input-group-addon" style="background-color: #eee;"><i></i></span>').colorpicker({format: 'rgb'});
+
+            // reparing view for settings tab
+
+        });
+    </script>
+
+    <script>
+        // add listeners for add events
+        $(document).ready(function () {
+
+            var labels = $('#sonata-ba-field-container-{{ form.vars.id }}_templateContainer, #sonata-ba-field-container-{{ form.vars.id }}_position')
+                .find('label[data-ctype-modify="parent"]');
+            for (var i = 0; i < labels.length; i++) {
+                $(labels[i]).parent().addClass($(labels[i]).attr('data-ctype-modify-parent-addclass')).css({
+                    'padding-left': '0px',
+                    //'padding-right': '0px'
+                });
+            }
+
+            $('#{{ form.vars.id }}_data_options > div.form-group').each(function (id, el) {
+                $(document.createElement('hr')).insertAfter($($(el).children()[0]));
+                $(el).children().filter('div').addClass('row');
+                $(el).append(document.createElement('hr'));
+                $(el).addClass('container-fluid').trigger('sonata-collection-item-added');
+            });
+
+            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-export_data_options ul div.checkbox').addClass('col-md-2');
+            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-export_data_options ul').addClass('row');
+
+            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-filter_result_details').addClass('col-md-6');
+            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-order_result_details').addClass('col-md-6');
+            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-export_data_options').addClass('col-md-6');
+
+            $('#{{ form.vars.id }}_data_options > div.form-group, #{{ form.vars.id }}_component_options > div.form-group').trigger('sonata-collection-item-added');
+
+        });
+    </script>
+
+{% endblock javascripts %}

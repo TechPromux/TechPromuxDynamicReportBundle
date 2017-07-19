@@ -1,0 +1,86 @@
+{% extends 'TechPromuxDynamicReportBundle:ComponentAdmin:edit.html.twig' %}
+
+{% block stylesheets %}
+    {{parent()}}
+    <link rel="stylesheet" href="{{ asset('vendor/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css') }}">
+    <style>
+        #sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_label
+        {
+            margin-bottom:0px;
+        }
+        #sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_crossed_datasets_series
+        {
+            margin-top:-15px;
+            margin-bottom:0px;
+        }
+        #sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_crossed_datasets_datas
+        {
+            margin-top:-15px;
+            margin-bottom:0px;
+        }
+        #{{form.vars.id}}_settings_detail_for_label .checkbox label,
+        #{{form.vars.id}}_settings_detail_for_label .radio label ,
+        #{{form.vars.id}}_settings_details_for_multiple_datasets .checkbox label,
+        #{{form.vars.id}}_settings_details_for_multiple_datasets .radio label ,
+        #{{form.vars.id}}_settings_detail_for_crossed_datasets_series .checkbox label,
+        #{{form.vars.id}}_settings_detail_for_crossed_datasets_series .radio label ,
+        #{{form.vars.id}}_settings_detail_for_crossed_datasets_datas .checkbox label,
+        #{{form.vars.id}}_settings_detail_for_crossed_datasets_datas .radio label
+        #{{form.vars.id}}_settings_colors_for_crossed_datasets_series .radio label
+        {
+            margin-top: 15px;
+        }
+    </style>
+{% endblock stylesheets %}
+{% block javascripts %}
+    {{parent()}}
+    <script>
+        
+        $(document).on('change', '#{{form.vars.id}}_settings_chart_options_series_datasets_type', function (event) {
+
+            var type = $(this).val();
+            if (type == 'multiple_datasets')
+            {
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings-details_for_multiple_datasets').removeClass('hide');
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_crossed_datasets_series').addClass('hide');
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_crossed_datasets_datas').addClass('hide');
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings-colors_for_crossed_datasets_series').addClass('hide');
+            }
+            else //if (type=='crossed_datasets')
+            {
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings-details_for_multiple_datasets').addClass('hide');
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_crossed_datasets_series').removeClass('hide');
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_crossed_datasets_datas').removeClass('hide');
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings-colors_for_crossed_datasets_series').removeClass('hide');
+            }
+
+        });
+        
+        $(document).on('sonata-collection-item-added', '#{{form.vars.id}}_settings_colors_for_crossed_datasets_series', function () {
+            $(this).children().addClass('col-xs-4');
+        });        
+
+        $(document).ready(function () {
+
+            // Prepare Component Settings
+
+            $('#{{form.vars.id}}_settings_chart_options').parent().addClass('row');
+            $('#{{form.vars.id}}_settings_detail_for_label').parent().addClass('row');
+            $('#{{form.vars.id}}_settings_detail_for_crossed_datasets_series').parent().addClass('row');
+            $('#{{form.vars.id}}_settings_detail_for_crossed_datasets_datas').parent().addClass('row');
+            $('#{{form.vars.id}}_settings_colors_for_crossed_datasets_series').parent().addClass('row');
+
+            $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_label hr:last').remove();
+            $('#sonata-ba-field-container-{{form.vars.id}}_settings-details_for_multiple_datasets hr:first').remove();
+            $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_crossed_datasets_series hr').remove();
+            $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_crossed_datasets_datas hr:first').remove();
+            $('#sonata-ba-field-container-{{form.vars.id}}_settings-colors_for_crossed_datasets_series hr:first').remove();
+
+            $('#{{form.vars.id}}_settings_chart_options_series_datasets_type').trigger('change');
+            
+            $('#{{form.vars.id}}_settings_colors_for_crossed_datasets_series').children().addClass('col-xs-4');
+            //-------------------------------------
+
+        });
+    </script>
+{% endblock javascripts %}

@@ -1,0 +1,30 @@
+doctrine:
+    orm:
+        resolve_target_entities:
+#            TechPromux\Bundle\DynamicReportBundle\Entity\Component: TechPromux\Bundle\DynamicReportBundle\Entity\DataModelComponent
+
+sonata_media:
+    contexts:
+        techpromux_dynamic_report_media_image:
+            providers:
+                - sonata.media.provider.image
+
+            formats:
+                admin:    { width: 75, quality: 75}
+                abstract: { width: 100, quality: 100}
+                small:    { width: 300, quality: 100}
+                large:    { width: 750, quality: 100}
+                wide:     { width: 820, quality: 100}
+
+sonata_admin:
+    dashboard:
+        blocks:
+            - { position: right, type: sonata.admin.block.admin_list, settings: { groups: [techpromux_dynamic_reports_admin] } }
+
+        groups:
+            techpromux_dynamic_reports_admin:
+                label: Dynamic Reports
+                label_catalogue: TechPromuxDynamicReportBundle
+                icon: '<i class="glyphicon glyphicon-cog"></i>'
+                items:
+                    - techpromux_dynamic_report.admin.report

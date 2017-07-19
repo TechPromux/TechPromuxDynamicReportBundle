@@ -1,0 +1,339 @@
+{% extends 'TechPromuxDynamicReportBundle:Component:component.render.base.layout.html.twig' %}
+
+{% block component_header_toolbox_export_links %}
+    {% set export_icons_classes = { 'xls':'fa-file-excel-o', 'xml':'fa-file-code-o', 'csv':'fa-file-text-o', 'json':'fa-file-o', 'png': 'fa-file-image-o'} %}
+    {{parent()}}
+{% endblock component_header_toolbox_export_links %}
+
+
+{% block component_content %}
+    {{parent()}}
+
+    <div id="component-chart-{{chart_type}}-{{component.id}}" style="text-align: center;">
+
+        <div id="component-chart-{{chart_type}}-legend-top-{{component.id}}" style="text-align:center;padding: 15px;"></div>
+
+        <div id="component-chart-{{chart_type}}-canvas-container-{{component.id}}" class="tpx-component-chart-{{chart_type}}-canvas-container-{{component.id}}">
+            <canvas id="component-chart-{{chart_type}}-canvas-{{component.id}}" width="{% if (settings['chart_options']['width'] is defined)%}{{settings['chart_options']['width']}}{%else%}700{%endif%}" height="{% if (settings['chart_options']['width'] is defined)%}{{settings['chart_options']['height']}}{%else%}400{%endif%}"></canvas>
+        </div>
+
+        <div id="component-chart-{{chart_type}}-legend-bottom-{{component.id}}" style="text-align:center;padding: 15px;" class="col-md-12">
+            <ul class="tpx-component-chart-{{chart_type}}-legend-bottom list-unstyled nav navbar-top-links"></ul>
+        </div>
+
+        <div id="component-chart-{{chart_type}}-extras-{{component.id}}">
+            <div id="component-chart-{{chart_type}}-tooltip-{{component.id}}"></div>
+
+            <div id="component-chart-{{chart_type}}-toolbox-orderby-{{component.id}}" class="btn-group tpx-component-chart-{{chart_type}}-orderby pull-right" style="margin-right: 5px;">
+                <button aria-expanded="false" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="{{ 'Order' | trans({},'TechPromuxDynamicReportBundle')}}">
+                    <i class="glyphicon glyphicon-sort-by-attributes"></i>
+                </button>
+                <ul id="component-chart-{{chart_type}}-orderby-options-{{component.id}}" class="dropdown-menu dropdown-menu-right" role="menu">
+                    {% for order_by in order_by_options %}
+                        <li>
+                            <a class="tpx-component-chart-{{chart_type}}-orderby-arrow-{{component.id}}" data-sort-by="{{order_by.id}}" data-sort-order="ASC" href="#sort-asc-by-{{ order_by.abbreviation }}" >
+                                <i class="fa fa-sort-{{order_by.sort_icon}}-asc"></i>{{order_by.title}}: {{'ASC Order' | trans({},'TechPromuxDynamicReportBundle')}}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="tpx-component-chart-{{chart_type}}-orderby-arrow-{{component.id}}" data-sort-by="{{order_by.id}}" data-sort-order="DESC" href="#sort-desc-by-{{ order_by.abbreviation }}" >
+                                <i class="fa fa-sort-{{order_by.sort_icon}}-desc"></i>{{order_by.title}}: {{'DESC Order' | trans({},'TechPromuxDynamicReportBundle')}}
+                            </a>
+                        </li>
+                        {% if (loop.revindex0!=0)%}<li class="divider"></li>{% endif%}
+                        {% endfor %}
+                </ul>
+            </div> 
+            <div id="component-chart-{{chart_type}}-toolbox-fullscreen-{{component.id}}" class="btn-group tpx-component-chart-{{chart_type}}-fullscreen pull-right" style="margin-right: 5px;">
+                <button type="button" class="btn btn-default" title="{{ 'Full Screen Resize' | trans({},'TechPromuxDynamicReportBundle')}}">
+                    <i class="glyphicon glyphicon-resize-full"></i>
+                </button>
+                <button type="button" class="btn btn-default hide" title="{{ 'Adjust Screen Resize' | trans({},'TechPromuxDynamicReportBundle')}}">
+                    <i class="glyphicon glyphicon-resize-small"></i>
+                </button>
+            </div> 
+        </div> 
+    </div>
+
+{% endblock component_content %}
+
+{% block component_stylesheets %}
+    {{parent()}}
+    <style>
+        .tpx-component-chart-{{chart_type}}-windows-fullscreen-{{component.id}}
+        {
+            /*width: 95vw;
+            height: 95vw;*/
+            position: fixed;
+            /*margin-left:0vw;*/
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 5px !important;
+            z-index:1501
+        }
+
+        #tpx-component-chart-{{chart_type}}-tooltip-{{component.id}} {
+            opacity: 1;
+            position: absolute;
+            background: rgba(0, 0, 0, .8);
+            color: white;
+            /*padding: 5px;*/
+            border-radius: 3px;
+            -webkit-transition: all .1s ease;
+            transition: all .1s ease;
+            pointer-events: none;
+            -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+            text-align: left;
+        }
+        #tpx-component-chart-{{chart_type}}-tooltip-{{component.id}} .chartjs-tooltip-key
+        {
+            display:inline-block;
+            width:10px;
+            height:10px;
+        }
+    </style>    
+{% endblock component_stylesheets %}
+
+{% block component_javascripts %}
+    {{parent()}}
+
+    {% block component_javascripts_add_full_screen_and_order_button %}
+        <script>
+            // configure full screen button
+            $(document).ready(function () {
+            $('#component-panel-header-title-{{component.id}}').removeClass('col-md-10').addClass('col-md-8');
+                    $('#component-panel-header-toolbox-{{component.id}}').removeClass('col-md-1').addClass('col-md-4').css({width: '180px'});
+                    // linking order menus with filters form submit action
+                    $('#component-chart-{{chart_type}}-toolbox-orderby-{{component.id}}').appendTo($('#component-panel-header-toolbox-{{component.id}}'));
+                    // resize windows options 
+                    $('#component-chart-{{chart_type}}-toolbox-fullscreen-{{component.id}}').appendTo($('#component-panel-header-toolbox-{{component.id}}'));
+            });</script>
+        {% endblock component_javascripts_add_full_screen_and_order_button %}
+
+    {% block component_javascripts_full_screen %}
+        <script>
+                    // configure full screen button events
+                    $(document).on('click', '#tpx-component-chart-{{chart_type}}-toolbox-fullscreen-{{component.id}} button', function (event) {
+            event.preventDefault();
+                    event.stopPropagation();
+                    if ($('#component-panel-{{component.id}}').attr('resize-screen-mode') == "full-screen")
+            {
+            window.tpx_component_chart_{{chart_type}}_custom_chartjs_options_{{component.id | replace({'-':'_'}) }}.maintainAspectRatio = true;
+                    $('#component-panel-{{component.id}}').removeClass('tpx-component-chart-{{chart_type}}-windows-fullscreen-{{component.id}}');
+                    $('#component-panel-{{component.id}}').attr('resize-screen-mode', 'small-screen');
+                    $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').attr('style', '');
+                    $('#component-{{component.id}}').attr('style', '');
+                    $('#component-chart-{{chart_type}}-legend-top-{{component.id}}').removeClass('pull-left').removeClass('col-md-3').css({'text-align':'center'});
+                    $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}}').removeClass('pull-left').removeClass('col-md-3').css({'text-align':'center'});
+                    $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').removeClass('pull-right').removeClass('col-md-9');
+            }
+            else
+            {
+            window.tpx_component_chart_{{chart_type}}_custom_chartjs_options_{{component.id | replace({'-':'_'}) }}.maintainAspectRatio = false;
+                    $('#component-panel-{{component.id}}').addClass('tpx-component-chart-{{chart_type}}-windows-fullscreen-{{component.id}}');
+                    $('#component-panel-{{component.id}}').attr('resize-screen-mode', 'full-screen');
+                    $('#component-chart-{{chart_type}}-legend-top-{{component.id}}').addClass('pull-left').addClass('col-md-3').css({'text-align':'left'});
+                    $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}}').addClass('pull-left').addClass('col-md-3').css({'text-align':'left'});
+                    $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').addClass('pull-right').addClass('col-md-9');
+                    var chart_height = 0;
+                    var chart_width = 0;
+                    if ($('#component-chart-{{chart_type}}-legend-top-{{component.id}}').innerWidth() + $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').innerWidth() <= $('#component-panel-{{component.id}}').innerWidth())
+            {
+            chart_height = $('#component-panel-{{component.id}}').innerHeight()
+                    - $('#component-panel-heading-{{component.id}}').innerHeight() - 20;
+                    chart_width = (chart_height * 2 < $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').innerWidth()) ? chart_height * 2 : $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').innerWidth();
+            }
+            else
+            {
+            $('#component-chart-{{chart_type}}-legend-top-{{component.id}}').removeClass('pull-left');
+                    $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}}').removeClass('pull-left');
+                    $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').removeClass('pull-right');
+                    chart_height = $('#component-panel-{{component.id}}').innerHeight()
+                    - $('#component-panel-heading-{{component.id}}').innerHeight()
+                    - $('#component-chart-{{chart_type}}-legend-top-{{component.id}}').innerHeight()
+                    - ($('#component-chart-{{chart_type}}-legend-bottom-{{component.id}} ul').children().length > 0 ?
+                            $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}}').innerHeight() : - 10) - 20;
+                    chart_width = (chart_height * 2 < $('#component-panel-{{component.id}}').innerWidth()) ? chart_height * 2 : $('#component-panel-{{component.id}}').innerWidth();
+            }
+            $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').attr('style', 'width:' + chart_width + 'px;height:' + chart_height + 'px;margin:auto;padding:15px;');
+                    $('#component-{{component.id}}').attr('style', 'position:fixed;top:0;left:0px;bottom:0px;right:0px;background-color:#ecf0f5;z-index:1500');
+            }
+
+            $(this).parent().children().removeClass('hide');
+                    $(this).addClass('hide');
+                    tpx_component_chart_{{chart_type}}_render_custom_chartjs_{{component.id | replace({'-':'_'}) }}(false);
+            }); /**/
+        </script>
+    {% endblock component_javascripts_full_screen %}
+    {% block component_javascripts_order_buttons %}
+        <script>
+                    // configure order buttons options
+                    $(document).on('click', 'a.tpx-component-chart-{{chart_type}}-orderby-arrow-{{component.id}}', function (event) {
+            event.preventDefault();
+                    event.stopPropagation();
+                    console.log('TPX-Component-Chart-{{chart_type}}: ordering results');
+                    $('a.tpx-component-chart-{{chart_type}}-orderby-arrow-{{component.id}}').parent().removeClass('active');
+                    $(this).parent().addClass('active');
+                    $('#component-chart-{{chart_type}}-toolbox-orderby-{{component.id}} button.btn.btn-default.dropdown-toggle').trigger('click');
+                    $("#tpx-component-filters-form-{{component.id}} #form__sort_by").val($(this).attr('data-sort-by'));
+                    $("#tpx-component-filters-form-{{component.id}} #form__sort_type").val($(this).attr('data-sort-order'));
+                    $("#tpx-component-filters-form-{{component.id}}").trigger('submit');
+            }); /**/
+        </script>
+    {% endblock component_javascripts_order_buttons %}
+    {% block component_javascripts_export_png %}
+        <script>
+                    // save as png options
+                    $(document).ready(function () {
+            $('a.tpx-component-toolbox-export-link-default-{{component.id}}[data-format="png"]')
+                    .removeClass('tpx-component-toolbox-export-link-default-{{component.id}}')
+                    .addClass('tpx-component-chart-{{chart_type}}-toolbox-export-png-{{component.id}}')
+                    .attr('href', '#tpx-component-chart-{{chart_type}}-toolbox-export-png-{{component.id}}');
+            });
+                    $(document).on('click', 'a.tpx-component-chart-{{chart_type}}-toolbox-export-png-{{component.id}}', function (event) {
+            console.log('TPX-Component-Chart-{{chart_type}}: exporting chart to png');
+                    $('#component-panel-header-toolbox-export-{{component.id}} button.btn.btn-default.dropdown-toggle').trigger('click');
+                    var image_data = window.tpx_component_chart_{{chart_type}}_object_{{component.id | replace({'-':'_'}) }}.toBase64Image();
+                    var time = new Date();
+                    var filename = "{{ component.title | replace(' ','_') | lower}}" + (time.getFullYear() + "_" + time.getMonth() + "_" + time.getDate() + "_" + time.getHours() + "_" + time.getMinutes() + "_" + time.getSeconds()) + ".png";
+                    $(this).attr('download', filename).attr("href", image_data);
+                    //$(this).attr("href", $("#tpx-component-chart-{{chart_type}}-canvas-{{component.id}}").get(0).toDataURL('image/png'));
+            }); /**/
+        </script>
+    {% endblock component_javascripts_export_png %}
+    {% block component_javascripts_load_data_from_ajax %}
+        <script>
+                    // loading data from ajax
+                    $('#component-panel-content-{{component.id}}').on('data-loaded', function (event) {
+            if ($('#component-panel-content-{{component.id}}').attr('data-loaded') != null && $('#component-panel-content-{{component.id}}').attr('data-loaded') != '')
+            {
+            var data_loaded = $('#component-panel-content-{{component.id}}').attr('data-loaded');
+                    $('#component-panel-content-{{component.id}}').attr('data-loaded', '');
+                    window.tpx_component_chart_{{chart_type}}_data_default_{{component.id | replace({'-':'_'}) }} = JSON.parse(data_loaded);
+                    window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }} = JSON.parse(data_loaded);
+            }
+            tpx_component_chart_{{chart_type}}_render_custom_chartjs_{{component.id | replace({'-':'_'}) }}(true);
+            }); /**/
+        </script>
+    {% endblock component_javascripts_load_data_from_ajax %}
+    {% block component_javascripts_render_chart %}
+        <script>
+                    // function for rendering custom chart
+
+                            function tpx_component_chart_{{chart_type}}_render_custom_chartjs_{{component.id | replace({'-':'_'}) }}(update_legend = false) {
+
+                            console.log('TPX-Component-Chart-{{chart_type}}: init rendering chart');
+                                    // creating chart 
+                                    if (window.tpx_component_chart_{{chart_type}}_object_{{component.id | replace({'-':'_'}) }} != null)
+                            {
+                            console.log('TPX-Component-Chart-{{chart_type}}: destroying old chart');
+                                    window.tpx_component_chart_{{chart_type}}_object_{{component.id | replace({'-':'_'}) }}.destroy();
+                            }
+
+                            console.log('TPX-Component-Chart-{{chart_type}}: creating chart');
+                                    window.tpx_component_chart_{{chart_type}}_canvas_ctx_{{component.id | replace({'-':'_'}) }} = document.getElementById("tpx-component-chart-{{chart_type}}-canvas-{{component.id}}").getContext("2d");
+                                    window.tpx_component_chart_{{chart_type}}_factory_{{component.id | replace({'-':'_'}) }} = new Chart(window.tpx_component_chart_{{chart_type}}_canvas_ctx_{{component.id | replace({'-':'_'}) }});
+                                    window.tpx_component_chart_{{chart_type}}_object_{{component.id | replace({'-':'_'}) }} = window.tpx_component_chart_{{chart_type}}_factory_{{component.id | replace({'-':'_'}) }}
+                                    .{{chart_type}}(
+                                            window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }},
+                                            window.tpx_component_chart_{{chart_type}}_custom_chartjs_options_{{component.id | replace({'-':'_'}) }}
+                                            );
+                                    console.log('TPX-Component-Chart-{{chart_type}}: executing render chart legend');
+                                    tpx_component_chart_{{chart_type}}_render_custom_chartjs_legend_{{component.id | replace({'-':'_'}) }}(update_legend);
+                                    console.log('TPX-Component-Chart-{{chart_type}}: ending rendering chart');
+                            }
+        </script>
+    {% endblock component_javascripts_render_chart %}
+    {% block component_javascripts_render_chart_legend %}
+        <script>
+                    // function for rendering custom chart
+
+                    function tpx_component_chart_{{chart_type}}_render_custom_chartjs_legend_{{component.id | replace({'-':'_'}) }}(update_legend = false) {
+
+                    console.log('TPX-Component-Chart-{{chart_type}}: creating chart legend');
+                            // creating chart legend
+                            if (update_legend == false)
+                            return;
+                            console.log('TPX-Component-Chart-{{chart_type}}: obtaining chart legend');
+                            var legend_{{component.id | replace({'-':'_'}) }} = window.tpx_component_chart_{{chart_type}}_object_{{component.id | replace({'-':'_'}) }}.generateLegend();
+                            console.log('TPX-Component-Chart-{{chart_type}}: showing chart legend');
+                            $('#component-chart-{{chart_type}}-legend-top-{{component.id}}').html('');
+                            $('#component-chart-{{chart_type}}-legend-top-{{component.id}}').append(legend_{{component.id | replace({'-':'_'}) }});
+                            $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}} ul').html('');
+                            $('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li, #tpx-component-chart-{{chart_type}}-legend-bottom-{{component.id}} ul.tpx-component-chart-{{chart_type}}-legend-bottom li').each(function (id, el) {
+                    $(this).attr('data-legend-offset', id);
+                            $(this).attr('data-legend-show', "true");
+                            /**/{%if (settings['chart_options']['series_datasets_type'] is defined and settings['chart_options']['series_datasets_type'] == 'crossed_datasets')%}
+                            $(this).attr('data-legend-prefix', "{{settings['detail_for_crossed_datasets_datas']['show_prefix'] ? extras.datamodel_details_descriptions[settings['detail_for_crossed_datasets_datas']['detail_id']]['prefix'] : ''}}");
+                            $(this).attr('data-legend-suffix', "{{settings['detail_for_crossed_datasets_datas']['show_suffix'] ? extras.datamodel_details_descriptions[settings['detail_for_crossed_datasets_datas']['detail_id']]['suffix'] : ''}}");
+                            /**/{%endif%}
+                    });
+                            /**/{%if (settings['chart_options']['series_datasets_type'] is defined and settings['chart_options']['series_datasets_type'] == 'multiple_datasets')%}
+                            /**/{%for d in settings['details_for_multiple_datasets']%}
+                            $($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li')[{{loop.index0}}]).attr('data-legend-prefix', '{{ d['show_prefix'] ? extras.datamodel_details_descriptions[d['detail_id']]['prefix'] : ''}}');
+                            $($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li')[{{loop.index0}}]).attr('data-legend-suffix', '{{ d['show_suffix'] ? extras.datamodel_details_descriptions[d['detail_id']]['suffix'] : ''}}');
+                            /**/{%endfor%}
+                            /**/{%endif%}/**/
+                            console.log('TPX-Component-Chart-{{chart_type}}: ending rendering legend');
+                    }
+        </script>
+    {% endblock component_javascripts_render_chart_legend %}
+    {% block component_javascripts_configure_legend %}
+        <script>
+                    // configure legend options from chart
+                    $(document).on('click', '#tpx-component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li, #tpx-component-chart-{{chart_type}}-legend-bottom-{{component.id}} ul.tpx-component-chart-{{chart_type}}-legend-bottom li', function () {
+                    console.log('TPX-Component-Chart-{{chart_type}}: click on chart legend to hide or show it');
+                            var show = $(this).attr('data-legend-show');
+                            if (show == "true")
+                            $(this).css({
+                    opacity: 0.3,
+                            cursor: 'not-allowed'
+                    });
+                            else
+                            $(this).css({
+                    opacity: 1,
+                            cursor: 'pointer'
+                    });
+                            $(this).attr('data-legend-show', show == "true" ? "false" : "true");
+                            var default_datasets = window.tpx_component_chart_{{chart_type}}_data_default_{{component.id | replace({'-':'_'}) }}.datasets;
+                            var new_datasets = [];
+                            var new_labels = [];
+                            var pos = 0;
+                            var legends = $('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li, #tpx-component-chart-{{chart_type}}-legend-bottom-{{component.id}} ul.tpx-component-chart-{{chart_type}}-legend-bottom li');
+                            for (var i = 0; i < legends.length; i++)
+                    {
+                    if ($(legends[i]).attr('data-legend-show') == "true")
+                    {
+                    new_datasets[pos] = {
+                    label: default_datasets[i].label,
+                            fillColor: default_datasets[i].fillColor,
+                            strokeColor: default_datasets[i].strokeColor,
+                            pointColor: default_datasets[i].pointColor,
+                            pointStrokeColor: default_datasets[i].pointStrokeColor,
+                            pointHighlightFill: default_datasets[i].pointHighlightFill,
+                            pointHighlightStroke: default_datasets[i].pointHighlightStroke,
+                            data: default_datasets[i].data
+                    };
+                            pos++;
+                    }
+                    }
+                    window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }}.datasets = new_datasets;
+                            tpx_component_chart_{{chart_type}}_render_custom_chartjs_{{component.id | replace({'-':'_'}) }}(false);
+                    }); /**/
+
+        </script>
+    {% endblock component_javascripts_configure_legend %}
+    {% block component_javascripts_configure_tooltip %}
+        <script>
+                            // configure tooltips options from chart
+                            $(document).on('mouseout', '#tpx-component-chart-{{chart_type}}-canvas-{{component.id}}', function(event){
+                    $('#component-chart-{{chart_type}}-tooltip-{{component.id}}').css({opacity:0});
+                    });
+        </script>
+    {% endblock component_javascripts_configure_tooltip %}
+    {% block component_javascripts_render_chart_data %}
+    {% endblock component_javascripts_render_chart_data %}
+{% endblock component_javascripts %}

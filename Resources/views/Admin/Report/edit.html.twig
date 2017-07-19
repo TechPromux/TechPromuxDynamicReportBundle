@@ -1,0 +1,29 @@
+{% extends "SonataAdminBundle:CRUD:edit.html.twig" %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // general options and configurations
+
+        {% if object.id != null %}
+        $(document).ready(function () {
+
+            var first_children = $('nav.navbar ul.nav.navbar-nav.navbar-right').children();
+            $('nav.navbar ul.nav.navbar-nav.navbar-right').append(
+                $('nav.navbar div.navbar-left ul.nav.navbar-nav li')
+            ).append(first_children);
+
+            var execute_link = $('nav.navbar ul.nav.navbar-nav.navbar-right li a[href="{{ admin.generateObjectUrl('execute',object) }}"]');
+            $(execute_link).html('<i class="fa fa-table" aria-hidden="true"></i>'+$(execute_link).html());
+            $(execute_link).parent().removeClass('first').removeClass('last');
+
+            var components_link = $('nav.navbar ul.nav.navbar-nav.navbar-right li a[href="{{ admin.generateObjectUrl('techpromux_dynamic_report.admin.report|techpromux_dynamic_report.admin.component.list',object) }}"]');
+            $(components_link).html('<i class="fa fa-cubes" aria-hidden="true"></i>'+$(components_link).html());
+            $(components_link).parent().removeClass('first').removeClass('last');
+
+           // $('.sidebar-toggle').trigger('click');
+
+        });
+        {% endif %}
+    </script>
+{% endblock %}

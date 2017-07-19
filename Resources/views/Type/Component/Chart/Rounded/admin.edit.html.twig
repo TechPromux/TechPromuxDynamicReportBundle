@@ -1,0 +1,29 @@
+{% extends 'TechPromuxDynamicReportBundle:Component:Chart/edit.html.twig' %}
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+        #sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_data
+        {
+            margin-top:-15px;
+            margin-bottom:0px;
+        }        
+        #{{form.vars.id}}_settings_detail_for_data .checkbox label,
+        #{{form.vars.id}}_settings_detail_for_data .radio label
+        {
+            margin-top: 15px;
+        }
+    </style>
+{% endblock stylesheets %}
+{% block javascripts %}
+    {{parent()}}
+    <script>
+        $(document).ready(function () {
+
+            $('#{{form.vars.id}}_settings_detail_for_data').parent().addClass('row');
+
+            $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_data hr:first').remove();
+
+        });
+    </script>
+{% endblock javascripts %}
+

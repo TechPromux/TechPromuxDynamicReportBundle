@@ -1,0 +1,77 @@
+{% extends 'TechPromuxDynamicReportBundle:Component:Chart/edit.html.twig' %}
+
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+        #sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_data,
+        #sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_radius,
+        #sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_series        
+        {
+            margin-top:-15px;
+            margin-bottom:0px;
+        }        
+        #{{form.vars.id}}_settings_detail_for_data .checkbox label,
+        #{{form.vars.id}}_settings_detail_for_data .radio label,
+        #{{form.vars.id}}_settings_detail_for_radius .checkbox label,
+        #{{form.vars.id}}_settings_detail_for_radius .radio label,
+        #{{form.vars.id}}_settings_detail_for_series .checkbox label,
+        #{{form.vars.id}}_settings_detail_for_series .radio label
+        {
+            margin-top: 15px;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+        $(document).ready(function () {
+
+            $('#{{form.vars.id}}_settings_detail_for_data').parent().addClass('row');
+            $('#{{form.vars.id}}_settings_detail_for_radius').parent().addClass('row');
+            $('#{{form.vars.id}}_settings_detail_for_series').parent().addClass('row');
+
+            $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_data hr').remove();
+            $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_radius hr').remove();
+            $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_series hr').remove();
+            
+            $(document.createElement('hr')).insertBefore( $($('#sonata-ba-field-container-{{form.vars.id}}_settings-details_for_order').children()[0]));
+
+        });
+    </script>
+    <script>
+        $(document).on('change', '#{{form.vars.id}}_settings_chart_options_chart_type', function (event) {
+            var type = $(this).val();
+            if (type == 'ScatterStroke')
+            {
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_radius').addClass('hide');
+            }
+            else //if (type=='ScatterBubble')
+            {
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_radius').removeClass('hide');
+            }
+        });
+
+        $(document).on('change', '#{{form.vars.id}}_settings_chart_options_series_type', function (event) {
+            var type = $(this).val();
+            if (type == 'single_serie')
+            {
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_series').addClass('hide');
+                 $('#sonata-ba-field-container-{{form.vars.id}}_settings_chart_options-single_serie_color').removeClass('hide');
+            }
+            else //if (type=='multiple_serie')
+            {
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings-detail_for_series').removeClass('hide');
+                 $('#sonata-ba-field-container-{{form.vars.id}}_settings_chart_options-single_serie_color').addClass('hide');
+            }
+        });
+
+        $(document).ready(function () {
+
+            $('#{{form.vars.id}}_settings_chart_options_chart_type').trigger('change');
+            $('#{{form.vars.id}}_settings_chart_options_series_type').trigger('change');
+
+        });
+    </script>
+{% endblock javascripts %}
+

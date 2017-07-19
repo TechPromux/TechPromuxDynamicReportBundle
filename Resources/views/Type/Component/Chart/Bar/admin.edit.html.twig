@@ -1,0 +1,26 @@
+{% extends 'TechPromuxDynamicReportBundle:Component:Chart/edit.html.twig' %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+        $(document).on('change', '#{{form.vars.id}}_settings_chart_options_chart_type', function (event) {
+
+            var type = $(this).val();
+            if (type == 'StackedBar')
+            {
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings_chart_options-stacked_chart_bar_presentation').removeClass('hide');
+            }
+            else //if (type=='Bar')
+            {
+                $('#sonata-ba-field-container-{{form.vars.id}}_settings_chart_options-stacked_chart_bar_presentation').addClass('hide');
+            }
+
+        });
+
+        $(document).ready(function () {
+
+            $('#{{form.vars.id}}_settings_chart_options_chart_type').trigger('change');
+        });
+    </script>
+{% endblock javascripts %}
+

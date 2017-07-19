@@ -1,0 +1,42 @@
+{% extends "SonataAdminBundle:CRUD:list.html.twig" %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // general options and configs
+        $(document).ready(function () {
+
+            var sidebar_menu_links = $('ul.sidebar-menu a');
+            for (var i = 0; i < sidebar_menu_links.length; i++) {
+                if ($(sidebar_menu_links[i]).attr('href').endsWith('{{ admin.getParent().generateUrl('list') }}')) {
+                    $(sidebar_menu_links[i]).parent().addClass('active');
+                    $(sidebar_menu_links[i]).parent().parent().addClass('active');
+                    $(sidebar_menu_links[i]).parent().parent().addClass('menu-open');
+                    $(sidebar_menu_links[i]).parent().parent().css({'display': 'block'});
+                    $(sidebar_menu_links[i]).parent().parent().parent().addClass('active');
+                }
+            }
+        });
+    </script>
+    <script>
+        // general options and configurations
+
+        $(document).ready(function () {
+
+            //var first_children = $('nav.navbar ul.nav.navbar-nav.navbar-right').children();
+            $('nav.navbar .navbar-collapse .navbar-left').find('ul.nav.navbar-nav').addClass('navbar-right');
+            $('nav.navbar .navbar-collapse .navbar-left').parent().append($('nav.navbar .navbar-collapse .navbar-left').children());
+
+            var edit_link = $('nav.navbar ul.nav.navbar-nav.navbar-right li a[href="{{ admin.getParent().generateObjectUrl('edit',admin.getParent().getSubject()) }}"]');
+            $(edit_link).html('<i class="fa fa-pencil" aria-hidden="true"></i>' + $(edit_link).html());
+            $(edit_link).parent().removeClass('first').removeClass('last');
+
+            var execute_link = $('nav.navbar ul.nav.navbar-nav.navbar-right li a[href="{{ admin.getParent().generateObjectUrl('execute',admin.getParent().getSubject()) }}"]');
+            $(execute_link).html('<i class="fa fa-table" aria-hidden="true"></i>' + $(execute_link).html());
+            $(execute_link).parent().removeClass('first').removeClass('last');
+
+            // $('.sidebar-toggle').trigger('click');
+
+        });
+    </script>
+{% endblock %}

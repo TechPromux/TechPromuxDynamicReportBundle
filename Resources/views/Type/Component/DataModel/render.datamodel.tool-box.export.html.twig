@@ -1,0 +1,77 @@
+{% if ( settings['export_data_options']is defined and (settings['export_data_options'] | length)>0 ) %}
+    <div id="component-panel-header-toolbox-export-{{ component.id }}"
+         class="btn-group export-options pull-right" style="margin-left: 5px;">
+        <button aria-expanded="false" type="button" class="btn btn-default dropdown-toggle"
+                id="component-toolbox-export-button-{{ component.id }}"
+                data-toggle="dropdown"
+                title="{{ 'export' | trans({},'TechPromuxDynamicReportBundle') }}">
+            <i class="glyphicon glyphicon-floppy-disk"></i>
+        </button>
+        <ul id="component-panel-header-toolbox-export-formats-{{ component.id }}"
+            class="dropdown-menu dropdown-menu-right" role="menu">
+            {% block component_header_toolbox_export_links %}
+
+                {% set export_icons_classes = component_type.getExportablesFormatsIconsClasses() %}
+
+                {% for format in settings['export_data_options'] %}
+                    <li>
+                        <a class="component-toolbox-export-link-default-{{ component.id }} component-toolbox-export-link-default-{{ component.id }}-{{ format }}"
+                           data-format="{{ format }}"
+                           href="{{ path(component_type.getExportActionPathName(),{'id': component.report.id, 'childId': component.id, 'format': format }) }}"
+                           download="{{ component.title | replace({' ':'_'}) | lower }}.{{ format }}"
+                           target="_blank">
+                            <i class="fa {{ export_icons_classes[format] }}"></i>
+                            <span>{{ 'save_as' | trans({},'TechPromuxDynamicReportBundle') }}{{ format|upper }}</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            {% endblock component_header_toolbox_export_links %}
+        </ul>
+    </div>
+    <script>
+        // linking export formats buttons with filters form submit action
+
+        $(document).on('click', '#component-toolbox-export-link-default-{{ component.id }}', function (event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            $('#component-toolbox-export-button-{{ component.id }}').trigger('click');
+
+            var $iframe,
+                iframe_doc,
+                iframe_html;
+
+            var url = $(this).attr('href');
+
+            $('#component-export-helper-iframe-{{ component.id }}').remove();
+
+            if (($iframe = $('#component-export-helper-iframe-{{ component.id }}')).length === 0) {
+                $iframe = $("<iframe id='component-export-helper-iframe-{{ component.id }}'" +
+                    " style='display: none' src='about:blank'></iframe>"
+                ).appendTo("body");
+            }
+
+            iframe_doc = $iframe[0].contentWindow || $iframe[0].contentDocument;
+            if (iframe_doc.document) {
+                iframe_doc = iframe_doc.document;
+            }
+
+            iframe_html = '<form method="POST" action="' + url + '">';
+
+            var alls_field_value = (decodeURI($('#component-filters-form-{{ component.id }}').serialize())).split('&');
+            for (var i = 0; i < alls_field_value.length; i++) {
+                var name_value = alls_field_value[i].split('=');
+                var name = name_value[0];
+                var value = decodeURIComponent(name_value[1]);
+                iframe_html += '<input type="hidden" name="' + name + '" value="' + value + '"/>';
+            }
+            iframe_html += '</form>';
+
+            iframe_doc.open();
+            iframe_doc.write(iframe_html);
+            $(iframe_doc).find('form').submit();
+        });
+        //
+    </script>
+{% endif %}

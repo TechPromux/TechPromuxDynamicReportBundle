@@ -1,0 +1,251 @@
+{% extends 'TechPromuxDynamicReportBundle:Component:Chart/component.render.base.chart.html.twig' %}
+{% set chart_type = 'Line' %}
+{% set chart_legend_type = 'line-legend' %}
+
+{% block component_javascripts_render_chart_legend %}
+    <script>
+        // function for rendering custom chart
+
+        function tpx_component_chart_{{chart_type}}_render_custom_chartjs_legend_{{component.id | replace({'-':'_'}) }}(update_legend = false) {
+
+        console.log('TPX-Component-Chart-{{chart_type}}: creating chart legend');
+                // creating chart legend
+                if (update_legend == false)
+                return;
+                console.log('TPX-Component-Chart-{{chart_type}}: obtaining chart legend');
+                var legend_{{component.id | replace({'-':'_'}) }} = window.tpx_component_chart_{{chart_type}}_object_{{component.id | replace({'-':'_'}) }}.generateLegend();
+                console.log('TPX-Component-Chart-{{chart_type}}: showing chart legend');
+                $('#component-chart-{{chart_type}}-legend-top-{{component.id}}').html('');
+                $('#component-chart-{{chart_type}}-legend-top-{{component.id}}').append(legend_{{component.id | replace({'-':'_'}) }});
+                $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}} ul').html('');
+                /**/{%if (settings['chart_options']['limit_max'] is defined and settings['chart_options']['limit_max']!='' and settings['chart_options']['limit_max']!=null)%}
+                $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}} ul').append($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li:visible:last')); //.addClass('hide');
+                /**/{%endif%}
+                /**/{%if (settings['chart_options']['limit_min'] is defined and settings['chart_options']['limit_min']!='' and settings['chart_options']['limit_min']!=null)%}
+                $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}} ul').append($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li:visible:last')); //.addClass('hide');
+                $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}} ul li:last').insertBefore($('#component-chart-{{chart_type}}-legend-bottom-{{component.id}} ul li:first')); //.addClass('hide');
+                /**/{%endif%}
+
+                /**/$('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li, #tpx-component-chart-{{chart_type}}-legend-bottom-{{component.id}} ul.tpx-component-chart-{{chart_type}}-legend-bottom li').each(function (id, el) {
+        $(this).attr('data-legend-offset', id);
+                $(this).attr('data-legend-show', "true");
+                /**/{%if (settings['chart_options']['series_datasets_type'] is defined and settings['chart_options']['series_datasets_type'] == 'crossed_datasets')%}
+                $(this).attr('data-legend-prefix', "{{settings['detail_for_crossed_datasets_datas']['show_prefix'] ? extras.datamodel_details_descriptions[settings['detail_for_crossed_datasets_datas']['detail_id']]['prefix'] : ''}}");
+                $(this).attr('data-legend-suffix', "{{settings['detail_for_crossed_datasets_datas']['show_suffix'] ? extras.datamodel_details_descriptions[settings['detail_for_crossed_datasets_datas']['detail_id']]['suffix'] : ''}}");
+                /**/{%endif%}
+        });
+                /**/{%if (settings['chart_options']['series_datasets_type'] is defined and settings['chart_options']['series_datasets_type'] == 'multiple_datasets')%}
+                /**/{%for d in settings['details_for_multiple_datasets']%}
+                $($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li')[{{loop.index0}}]).attr('data-legend-prefix', '{{ d['show_prefix'] ? extras.datamodel_details_descriptions[d['detail_id']]['prefix'] : ''}}');
+                $($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li')[{{loop.index0}}]).attr('data-legend-suffix', '{{ d['show_suffix'] ? extras.datamodel_details_descriptions[d['detail_id']]['suffix'] : ''}}');
+                /**/{%endfor%}
+                /**/{%endif%}/**/
+                console.log('TPX-Component-Chart-{{chart_type}}: ending rendering legend');
+        }
+    </script>
+{% endblock component_javascripts_render_chart_legend %}
+
+{% block component_javascripts_render_chart_data %}
+
+    {{parent()}}
+    <script>
+
+        // initial options and executing rendering chart
+
+        $(document).ready(function () {
+
+        window.tpx_component_chart_{{chart_type}}_data_default_{{component.id | replace({'-':'_'}) }} = {{chart_data | raw}};
+                window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }} = {{chart_data|raw}};
+                window.tpx_component_chart_{{chart_type}}_custom_chartjs_options_{{component.id | replace({'-':'_'}) }} = {
+                // Boolean - Whether to animate the chart
+                animation: true,
+                        // Number - Number of animation steps
+                        animationSteps: 60,
+                        // String - Animation easing effect
+                        // Possible effects are:
+                        // [easeInOutQuart, linear, easeOutBounce, easeInBack, easeInOutQuad,
+                        //  easeOutQuart, easeOutQuad, easeInOutBounce, easeOutSine, easeInOutCubic,
+                        //  easeInExpo, easeInOutBack, easeInCirc, easeInOutElastic, easeOutBack,
+                        //  easeInQuad, easeInOutExpo, easeInQuart, easeOutQuint, easeInOutCirc,
+                        //  easeInSine, easeOutExpo, easeOutCirc, easeOutCubic, easeInQuint,
+                        //  easeInElastic, easeInOutSine, easeInOutQuint, easeInBounce,
+                        //  easeOutElastic, easeInCubic]
+                        animationEasing: "easeOutQuart",
+                        // Boolean - If we should show the scale at all
+                        showScale: true,
+                        // Boolean - If we want to override with a hard coded scale
+                        scaleOverride: false,
+                        // ** Required if scaleOverride is true **
+                        // Number - The number of steps in a hard coded scale
+                        scaleSteps: null,
+                        // Number - The value jump in the hard coded scale
+                        scaleStepWidth: null,
+                        // Number - The scale starting value
+                        scaleStartValue: null,
+                        // String - Colour of the scale line
+                        scaleLineColor: "rgba(0,0,0,.1)",
+                        // Number - Pixel width of the scale line
+                        scaleLineWidth: 1,
+                        // Boolean - Whether to show labels on the scale
+                        scaleShowLabels: true,
+                        // Interpolated JS string - can access value
+                        scaleLabel: "<%=value%>",
+                        // Boolean - Whether the scale should stick to integers, not floats even if drawing space is there
+                        scaleIntegersOnly: true,
+                        // Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+                        scaleBeginAtZero: false,
+                        // String - Scale label font declaration for the scale label
+                        scaleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+                        // Number - Scale label font size in pixels
+                        scaleFontSize: 12,
+                        // String - Scale label font weight style
+                        scaleFontStyle: "normal",
+                        // String - Scale label font colour
+                        scaleFontColor: "#666",
+                        // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+                        maintainAspectRatio: true,
+                        // Boolean - Determines whether to draw tooltips on the canvas or not
+                        showTooltips: true,
+                        // Array - Array of string names to attach tooltip events
+                        tooltipEvents: ["mousemove", "touchstart", "touchmove"],
+                        // String - Tooltip background colour
+                        tooltipFillColor: "rgba(0,0,0,0.8)",
+                        // String - Tooltip label font declaration for the scale label
+                        tooltipFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+                        // Number - Tooltip label font size in pixels
+                        tooltipFontSize: 14,
+                        // String - Tooltip font weight style
+                        tooltipFontStyle: "normal",
+                        // String - Tooltip label font colour
+                        tooltipFontColor: "#fff",
+                        // String - Tooltip title font declaration for the scale label
+                        tooltipTitleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+                        // Number - Tooltip title font size in pixels
+                        tooltipTitleFontSize: 14,
+                        // String - Tooltip title font weight style
+                        tooltipTitleFontStyle: "bold",
+                        // String - Tooltip title font colour
+                        tooltipTitleFontColor: "#fff",
+                        // String - Tooltip title template
+                        //tooltipTitleTemplate: "<%= label%>",
+                        // Number - pixel width of padding around tooltip text
+                        tooltipYPadding: 6,
+                        // Number - pixel width of padding around tooltip text
+                        tooltipXPadding: 6,
+                        // Number - Size of the caret on the tooltip
+                        tooltipCaretSize: 8,
+                        // Number - Pixel radius of the tooltip border
+                        tooltipCornerRadius: 6,
+                        // Number - Pixel offset from point x to tooltip edge
+                        tooltipXOffset: 10,
+                        // String - Template string for single tooltips
+                        tooltipTemplate: {% raw %}"<%if (label){%><%=label%>: <%}%><%= value %>",{% endraw %}
+                        // String - Template string for multiple tooltips
+                        //multiTooltipTemplate: "<%= value %>",
+                        // FieldFunction - Will fire on animation progression.
+                        onAnimationProgress: function () {
+                        },
+                        // FieldFunction - Will fire on animation completion.
+                        onAnimationComplete: function () {
+                        },
+                        // Boolean - whether or not the chart should be responsive and resize when the browser does.
+                        responsive: {% if (settings['chart_options']['width'] is defined and settings['chart_options']['width']!='')%}false{%else%}true{%endif%},
+                        // FieldFunction - Determines whether to execute the customTooltips function instead of drawing the built in tooltips (See [Advanced - External Tooltips](#advanced-usage-external-tooltips))
+                        customTooltips: function (tooltip) {
+                        var tooltipEl = $('#component-chart-{{chart_type}}-tooltip-{{component.id}}');
+                                if (!tooltip) {
+                        tooltipEl.css({
+                        opacity: 0
+                        });
+                                return;
+                        }
+                        tooltipEl.css({
+                        padding: '5px'
+                        });
+                                tooltipEl.removeClass('above below');
+                                tooltipEl.addClass(tooltip.yAlign);
+                                var innerHtml = '';
+                                if ($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul li[data-legend-show="true"]').length == 0)
+                                return;
+                                if (tooltip.labels != null && tooltip.labels != undefined)
+                        {
+                        innerHtml += [
+                                '<div class="chartjs-tooltip-section">',
+                                '	<span class="chartjs-tooltip-value">' + tooltip.title + '</span>',
+                                '	<hr style="margin-top:5px;margin-bottom:5px;"></hr>',
+                                '</div>'
+                        ].join('');
+                                for (var i = 0; i < $('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul li[data-legend-show="true"]').length /*tooltip.labels.length*/; i++) {
+                        var legend = $($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li[data-legend-show="true"]')[i]);
+                                var prefix = $(legend).attr('data-legend-prefix');
+                                var suffix = $(legend).attr('data-legend-suffix');
+                                var label = tooltip.labels[i].substring(0, tooltip.labels[i].lastIndexOf(': ')) + ': ' + prefix + tooltip.labels[i].substring(tooltip.labels[i].lastIndexOf(':') + 2, tooltip.labels[i].length + 1) + suffix;
+                                innerHtml += [
+                                        '<div class="chartjs-tooltip-section">',
+                                        '	<span class="chartjs-tooltip-key" style="background-color:' + tooltip.legendColors[i].fill + '"></span>',
+                                        '	<span class="chartjs-tooltip-value">' + label + '</span>',
+                                        '</div>'
+                                ].join('');
+                        }
+                        } else
+                        {
+                        var legend = $($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li[data-legend-show="true"]')[0]);
+                                var prefix = $(legend).attr('data-legend-prefix');
+                                var suffix = $(legend).attr('data-legend-suffix');
+                                var label = tooltip.text.substring(0, tooltip.text.lastIndexOf(': ')) + ': ' + prefix + tooltip.text.substring(tooltip.text.lastIndexOf(':') + 2, tooltip.text.length + 1) + suffix;
+                                innerHtml += [
+                                        '<div class="chartjs-tooltip-section">',
+                                        '	<span class="chartjs-tooltip-value">' + label + '</span>',
+                                        '</div>'
+                                ].join('');
+                        }
+                        tooltipEl.html(innerHtml);
+                                tooltipEl.css({
+                                opacity: 1,
+                                        left: tooltip.chart.canvas.offsetLeft + tooltip.x + 'px',
+                                        top: tooltip.chart.canvas.offsetTop + tooltip.y + 'px',
+                                        fontFamily: tooltip.fontFamily,
+                                        fontSize: tooltip.fontSize,
+                                        fontStyle: tooltip.fontStyle,
+                                });
+                        },
+                        //  ----- Line Chart Options ----------------
+                        //Boolean - Whether grid lines are shown across the chart
+                        scaleShowGridLines: true,
+                        //String - Colour of the grid lines
+                        scaleGridLineColor: "rgba(0,0,0,.05)",
+                        //Number - Width of the grid lines
+                        scaleGridLineWidth: 1,
+                        //Boolean - Whether to show horizontal lines (except X axis)
+                        scaleShowHorizontalLines: true,
+                        //Boolean - Whether to show vertical lines (except Y axis)
+                        scaleShowVerticalLines: true,
+                        //Boolean - Whether the line is curved between points
+                        bezierCurve: true,
+                        //Number - Tension of the bezier curve between points
+                        bezierCurveTension: 0.4,
+                        //Boolean - Whether to show a dot for each point
+                        pointDot: true,
+                        //Number - Radius of each point dot in pixels
+                        pointDotRadius: 4,
+                        //Number - Pixel width of point dot stroke
+                        pointDotStrokeWidth: 1,
+                        //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+                        pointHitDetectionRadius: 20,
+                        //Boolean - Whether to show a stroke for datasets
+                        datasetStroke: true,
+                        //Number - Pixel width of dataset stroke
+                        datasetStrokeWidth: 2,
+                        //Boolean - Whether to fill the dataset with a colour
+                        datasetFill: true,
+                        //String - A legend template
+                        legendTemplate: {% raw %}"<ul class=\"<%=name.toLowerCase()%>-legend list-unstyled nav navbar-top-links\"><% for (var i=0; i<datasets.length; i++){%><li style=\"margin:5px;cursor:pointer;opacity:1;\"><span style=\"background-color:<%=datasets[i].strokeColor%>;padding:0px 5px 0px 10px\"></span><span style=\"padding-left:7px;\"><strong><%if(datasets[i].label){%><%=datasets[i].label%><%}%></strong></span></li><%}%></ul>",{% endraw %}
+                        //Boolean - Whether to horizontally center the label and point dot inside the grid
+                        offsetGridLines: true
+
+                };
+                $('#component-panel-content-{{component.id}}').trigger('data-loaded');
+        });
+
+    </script>
+{% endblock component_javascripts_render_chart_data %}

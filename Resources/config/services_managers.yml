@@ -1,0 +1,32 @@
+services:
+    # Manager Services
+
+    techpromux_dynamic_report.manager.util_dynamic_report:
+        class: TechPromux\Bundle\DynamicReportBundle\Manager\UtilDynamicReportManager
+        arguments: [~]
+        tags:
+            - { name: techpromux.entity_manager}
+        calls:
+            - [ setServiceContainer,['@service_container']]
+            - [ setComponentManager,['@techpromux_dynamic_report.manager.component']]
+
+    techpromux_dynamic_report.manager.report:
+        class: TechPromux\Bundle\DynamicReportBundle\Manager\ReportManager
+        arguments: [~]
+        tags:
+            - { name: techpromux.entity_manager}
+        calls:
+            - [ setServiceContainer,['@service_container']]
+            - [ setUtilDynamicReportManager,['@techpromux_dynamic_report.manager.util_dynamic_report']]
+
+    techpromux_dynamic_report.manager.component:
+        class: TechPromux\Bundle\DynamicReportBundle\Manager\ComponentManager
+        arguments: [~]
+        tags:
+            - { name: techpromux.entity_manager}
+        calls:
+            - [ setServiceContainer,['@service_container']]
+            - [ setReportManager,['@techpromux_dynamic_report.manager.report']]
+            - [ setDataModelManager,['@techpromux_dynamic_query.manager.datamodel']]
+            - [ setUtilDynamicReportManager,['@techpromux_dynamic_report.manager.util_dynamic_report']]
+

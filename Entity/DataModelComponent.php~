@@ -1,0 +1,28 @@
+<?php
+
+namespace TechPromux\Bundle\DynamicReportBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\VarDumper\Cloner\Data;
+use TechPromux\Bundle\BaseBundle\Entity\Resource\BaseResource;
+use TechPromux\Bundle\DynamicQueryBundle\Entity\DataModel;
+
+/**
+ * DataModelComponent
+ *
+ * @ORM\Table(name="techpromux_dynamic_report_datamodel_component")
+ * @ORM\Entity()
+ */
+class DataModelComponent extends Component
+{
+
+    /**
+     * @var DataModel
+     *
+     * @ORM\ManyToOne(targetEntity="TechPromux\Bundle\DynamicQueryBundle\Entity\DataModel")
+     * @ORM\JoinColumn(name="datamodel_id", referencedColumnName="id", nullable=false)
+     */
+    private $datamodel;
+
+
+}

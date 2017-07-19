@@ -1,0 +1,24 @@
+{% extends (template is defined)?template:"TechPromuxDynamicReportBundle:Type:Template/_base_layout.html.twig" %}
+
+{% block title %}
+    {{report.title}}
+{% endblock title %}
+
+{% block sonata_head_title %}
+    {{report.title}}
+{% endblock sonata_head_title %}
+
+{% block page_title %}
+    <i class="glyphicon glyphicon-stats"></i> {{report.title}}
+{% endblock page_title %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('.sidebar-toggle').trigger('click');
+        });
+
+    </script>
+{% endblock %}

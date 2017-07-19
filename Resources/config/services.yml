@@ -1,0 +1,8 @@
+imports:
+    - { resource: 'services_admins.yml'}
+    - { resource: 'services_managers.yml'}
+
+services:
+#    tech_promux_dynamic_report.example:
+#        class: TechPromux\Bundle\DynamicReportBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]

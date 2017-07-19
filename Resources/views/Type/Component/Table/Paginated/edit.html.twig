@@ -1,0 +1,24 @@
+{% extends 'TechPromuxDynamicReportBundle:Admin:Component/edit.html.twig' %}
+
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+        #{{form.vars.id}}_component_options_paginator_options .checkbox label,
+        #{{form.vars.id}}_component_options_paginator_options .radio label
+        {
+            margin-top: 15px;
+        }
+    </style>
+{% endblock stylesheets %}
+{% block javascripts %}
+    {{parent()}}
+    <script>
+        $(document).ready(function () {
+
+            // Prepare Component Settings
+
+            $('#{{form.vars.id}}_component_options_paginator_options').parent().addClass('row');
+
+        });
+    </script>
+{% endblock javascripts %}

@@ -1,0 +1,71 @@
+{% extends 'SonataAdminBundle:Core:dashboard.html.twig' %}
+
+{% set locale = app.request.locale %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% for stylesheet in stylesheets %}
+        <link rel="stylesheet" href="{{ asset(stylesheet) }}">
+    {% endfor %}
+    <style>
+        .panel-body {
+            padding-top: 0px;
+        }
+
+        section.content-header {
+            padding: 0px;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% for javascript in javascripts %}
+        <script src="{{ asset(javascript) }}"></script>
+    {% endfor %}
+{% endblock %} 
+
+{% block content %}
+    <div class='panel panel-default'>
+        <div class='panel-heading'>
+            <h3 class='panel-title' style="font-size: 20px;">
+                <strong>{% block page_title %}{% endblock page_title %}</strong></h3>
+        </div>
+        <div class='panel-body'>
+            <div class="row">
+                <div>
+                    {% block page_content_top %}
+                        {{ include('TechPromuxDynamicReportBundle:Type:Template/_container_content_render_macro.html.twig',
+                        { 'request': request,
+                            'container':'content_top',
+                            'container_class': 'report-content-top',
+                            'container_style':'',
+                            'components':components,
+                            'debug_template_zone':debug_template_zone}) }}
+                    {% endblock %}
+                </div>
+                <div>
+                    {% block page_content %}
+                        {{ include('TechPromuxDynamicReportBundle:Type:Template/_container_content_render_macro.html.twig',
+                        {'request': request,
+                            'container':'content',
+                            'container_class': 'report-content',
+                            'container_style':'',
+                            'components':components,
+                            'debug_template_zone':debug_template_zone}) }}
+                    {% endblock %}
+                </div>
+                <div>
+                    {% block page_content_bottom %}
+                        {{ include('TechPromuxDynamicReportBundle:Type:Template/_container_content_render_macro.html.twig',
+                        {'request': request,
+                            'container':'content_bottom',
+                            'container_class': 'report-content-bottom',
+                            'container_style':'','components':components,
+                            'debug_template_zone':debug_template_zone}) }}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
