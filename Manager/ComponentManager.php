@@ -1,11 +1,11 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Manager;
+namespace  TechPromux\DynamicReportBundle\Manager;
 
-use TechPromux\Bundle\BaseBundle\Manager\Resource\BaseResourceManager;
-use TechPromux\Bundle\DynamicQueryBundle\Manager\DataModelManager;
-use TechPromux\Bundle\DynamicReportBundle\Entity\Component;
-use TechPromux\Bundle\DynamicReportBundle\Type\Component\BaseComponentType;
+use  TechPromux\BaseBundle\Manager\Resource\BaseResourceManager;
+use  TechPromux\DynamicQueryBundle\Manager\DataModelManager;
+use  TechPromux\DynamicReportBundle\Entity\Component;
+use  TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
 
 /**
  * ComponentRepository
@@ -122,11 +122,11 @@ class ComponentManager extends BaseResourceManager
 
     //-------------------------------------------------------------
 
-    public function duplicateComponent(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $object)
+    public function duplicateComponent(\TechPromux\DynamicReportBundle\Entity\Component $object)
     {
 
         $component = $this->findById($object->getId());
-        /* @var $component \TechPromux\Bundle\DynamicReportBundle\Entity\Component */
+        /* @var $component \TechPromux\DynamicReportBundle\Entity\Component */
 
         $duplicatedComponent = $this->createNewEntity();
 
@@ -141,8 +141,8 @@ class ComponentManager extends BaseResourceManager
         $duplicatedComponent->setEnabled(false);
 
         $this->prePersist($duplicatedComponent);
-        $this->getDoctrineEntityManager()->persist($duplicatedComponent);
-        $this->getDoctrineEntityManager()->flush($duplicatedComponent);
+        $this->getEntityManager()->persist($duplicatedComponent);
+        $this->getEntityManager()->flush($duplicatedComponent);
 
         return $duplicatedComponent;
     }
@@ -224,7 +224,7 @@ class ComponentManager extends BaseResourceManager
             $details = $this->getDatamodelManager()->getEnabledDetailsDescriptionsFromDataModel($datamodel_id);
 
             $details_for_labels_choices = array();
-            $details_for_data_choices = array();
+            $details_for_datas_choices = array();
             $details_for_series_choices = array();
 
             foreach ($details as $dt) {
@@ -232,24 +232,24 @@ class ComponentManager extends BaseResourceManager
                 $details_for_labels_choices[$dt['title'] . ' (' . $dt['abbreviation'] . ')'] = $dt['id'];
                 $details_for_series_choices[$dt['title'] . ' (' . $dt['abbreviation'] . ')'] = $dt['id'];
 
-                switch ($component_type->getDataModelDatasetWithDataDetailsType()) {
+                switch ($component_type->getSupportedDataTypeFromDataModelDetails()) {
                     case 'number':
                         if ($dt['classification'] == 'number')
-                            $details_for_data_choices[$dt['title'] . ' (' . $dt['abbreviation'] . ')'] = $dt['id'];
+                            $details_for_datas_choices[$dt['title'] . ' (' . $dt['abbreviation'] . ')'] = $dt['id'];
                         break;
                     case 'datetime':
                         if ($dt['classification'] == 'datetime')
-                            $details_for_data_choices[$dt['title'] . ' (' . $dt['abbreviation'] . ')'] = $dt['id'];
+                            $details_for_datas_choices[$dt['title'] . ' (' . $dt['abbreviation'] . ')'] = $dt['id'];
                         break;
                     case 'number_datetime':
                         if ($dt['classification'] == 'number' || $dt['classification'] == 'datetime')
-                            $details_for_data_choices[$dt['title'] . ' (' . $dt['abbreviation'] . ')'] = $dt['id'];
+                            $details_for_datas_choices[$dt['title'] . ' (' . $dt['abbreviation'] . ')'] = $dt['id'];
                         break;
                     case 'all':
-                        $details_for_data_choices[$dt['title'] . ' (' . $dt['abbreviation'] . ')'] = $dt['id'];
+                        $details_for_datas_choices[$dt['title'] . ' (' . $dt['abbreviation'] . ')'] = $dt['id'];
                         break;
                     default:
-                        $details_for_data_choices[$dt['title'] . ' (' . $dt['abbreviation'] . ')'] = $dt['id'];
+                        $details_for_datas_choices[$dt['title'] . ' (' . $dt['abbreviation'] . ')'] = $dt['id'];
                         break;
                 }
             }
@@ -257,7 +257,7 @@ class ComponentManager extends BaseResourceManager
             return array(
                 'details' => $details,
                 'details_for_labels_choices' => $details_for_labels_choices,
-                'details_for_data_choices' => $details_for_data_choices,
+                'details_for_data_choices' => $details_for_datas_choices,
                 'details_for_series_choices' => $details_for_series_choices,
             );
         }

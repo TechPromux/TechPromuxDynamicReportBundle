@@ -1,6 +1,6 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Type\Component;
+namespace TechPromux\DynamicReportBundle\Type\Component;
 
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
@@ -8,10 +8,11 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use TechPromux\Bundle\DynamicQueryBundle\Type\ConditionalOperator\BaseConditionalOperatorType;
-use TechPromux\Bundle\DynamicReportBundle\Entity\Component;
-use TechPromux\Bundle\DynamicReportBundle\Manager\ComponentManager;
-use TechPromux\Bundle\DynamicReportBundle\Manager\UtilDynamicReportManager;
+use Symfony\Component\Templating\EngineInterface;
+use  TechPromux\DynamicQueryBundle\Type\ConditionalOperator\BaseConditionalOperatorType;
+use  TechPromux\DynamicReportBundle\Entity\Component;
+use  TechPromux\DynamicReportBundle\Manager\ComponentManager;
+use  TechPromux\DynamicReportBundle\Manager\UtilDynamicReportManager;
 
 abstract class AbstractComponentType implements BaseComponentType
 {
@@ -41,19 +42,26 @@ abstract class AbstractComponentType implements BaseComponentType
     }
 
     /**
-     * @return \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var EngineInterface
      */
-    public function getServiceContainer()
-    {
-        return $this->getUtilDynamicReportManager()->getServiceContainer();
-    }
+    private $templating;
 
     /**
-     * @return object|\Symfony\Bundle\TwigBundle\TwigEngine
+     * @return EngineInterface
      */
     public function getTemplating()
     {
-        return $this->getServiceContainer()->get('templating');
+        return $this->templating;
+    }
+
+    /**
+     * @param EngineInterface $templating
+     * @return AbstractComponentType
+     */
+    public function setTemplating($templating)
+    {
+        $this->templating = $templating;
+        return $this;
     }
 
     //-------------------------------------------------------------------
@@ -73,7 +81,7 @@ abstract class AbstractComponentType implements BaseComponentType
      */
     public function getBaseTemplateForEditForm()
     {
-        return $this->getBundleName() . 'Type:Component/edit.html.twig';
+        return '@' . $this->getBundleName() . '/Type/Component/edit.html.twig';
     }
 
     /**
@@ -98,16 +106,52 @@ abstract class AbstractComponentType implements BaseComponentType
     /**
      * @return array
      */
-    public function getExportablesFormatsIconsClasses(){
+    public function getExportablesFormatsIconsClasses()
+    {
         return array();
     }
 
     /**
      * @return bool
      */
-    public function getDataModelDatasetResultPaginated(){
+    public function getDataModelDatasetResultPaginated()
+    {
         return false;
     }
+
+    //---------------------------------------------------------------------------------------------
+
+    /**
+     * @return array
+     */
+    public function getDefaultDataSettings(Component $component)
+    {
+        $default_settings = array();
+
+        $default_settings['dataset_export_options'] = $this->getExportablesFormats();
+
+        return $default_settings;
+
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefaultDataSettingsForEditForm(Component $component)
+    {
+        $keys = array();
+
+        $keys[] = array('dataset_export_options', 'choice', array(
+            //'label' => $this->trans('Formats to Allow Export Data'),
+            'choices' => $this->getExportablesFormats(),
+            'multiple' => true, 'expanded' => true, 'required' => false
+        ));
+
+        return $keys;
+
+    }
+
+    //--------------------------------------------------------------------------------------
 
     /**
      * @param Component $component
@@ -216,7 +260,7 @@ abstract class AbstractComponentType implements BaseComponentType
     {
         $all = $this->getMergedDataParametersAndSettings($request, $component, $parameters);
 
-        return $this->createComponentContent($request, $component, $all);
+        return $this->createRenderableContent($request, $component, $all);
     }
 
     /**
@@ -241,10 +285,18 @@ abstract class AbstractComponentType implements BaseComponentType
      */
     public function export(Request $request = null, Component $component, array $parameters = array())
     {
-        $all = $this->getMergedDataParametersAndSettings($request, $component, $parameters);
+        $format = $request->get('_format', null);
 
-        // exportContent
-        return $all;
+        if (is_null($format))
+            throw new \Exception('export format must be indicated');
+
+        if (!in_array($format, $this->getExportablesFormats())) {
+            throw new \Exception('requested format not supported');
+        }
+
+        $exportableData = $this->createExportableData($request, $component, $parameters);
+
+        return $this->createExportableContent($request, $component, $exportableData, $format);
     }
 
     //-----------------------------------------------------------------------------------
@@ -253,10 +305,65 @@ abstract class AbstractComponentType implements BaseComponentType
      * @param Request|null $request
      * @param Component $component
      * @param array $parameters
+     * @param bool $full_exportable_data
+     * @return array
+     */
+    protected function getMergedDataParametersAndSettings(Request $request = null, Component $component, array $parameters = array(), $full_exportable_data = false)
+    {
+
+        $data = $this->getDataFromComponentExecution($request, $component, $parameters, $full_exportable_data);
+
+        $settings = array_merge(is_array($component->getDataOptions()) ? $component->getDataOptions() : array(),
+            is_array($component->getComponentOptions()) ? $component->getComponentOptions() : array());
+
+        $formatter_helper = $this->getUtilDynamicReportManager()->getComponentManager()->getDatamodelManager()->getUtilDynamicQueryManager();;
+
+        $preferred_locale = $this->getUtilDynamicReportManager()->getSecurityManager()->getLocaleFromAuthenticatedUser();
+
+        $all = array(
+            'component' => $component,
+            'component_type' => $this,
+            'parameters' => $parameters,
+            'settings' => $settings,
+            'data' => $data,
+            'extras' => array(
+                'formatter_helper' => $formatter_helper,
+                'locale' => $preferred_locale,
+            ),
+        );
+
+        if (!$full_exportable_data) {
+            $filters_form = $this->createFiltersForm($request, $component, $parameters);
+
+            $filters_form->handleRequest($request); // or handleRequest?
+
+            //if (!$filters_form->isValid()) { // if ($request->isXmlHttpRequest())
+            //    throw new \Exception("ERROR!!!. Filter data isn´t valid");
+            //}
+
+            $all['filters_form'] = $filters_form->createView();
+        }
+
+        return $all;
+    }
+
+    /**
+     * @param Request|null $request
+     * @param Component $component
+     * @param array $parameters
+     * @param bool $full_exportable_data
+     * @return mixed
+     */
+    protected abstract function getDataFromComponentExecution(Request $request = null, Component $component, array $parameters = array(), $full_exportable_data = false);
+
+    /**
+     * @param Request|null $request
+     * @param Component $component
+     * @param array $parameters
      *
      * @return string|Response
      */
-    protected function createComponentContent(Request $request = null, Component $component, array $parameters = array())
+    protected function createRenderableContent(Request $request = null, Component $component, array $parameters = array())
     {
         if ($request->isXmlHttpRequest())
             return $this->getTemplating()->renderResponse($this->getTemplateForRenderComponent(), $parameters);
@@ -264,48 +371,26 @@ abstract class AbstractComponentType implements BaseComponentType
             return $this->getTemplating()->render($this->getTemplateForRenderComponent(), $parameters);
     }
 
-    /**
-     * @param Request|null $request
-     * @param Component $component
-     * @param array $parameters
-     *
-     * @return string|Response
-     */
-    protected abstract function createComponentData(Request $request = null, Component $component, array $parameters = array());
+    //----------------------------------------------------------------------------------------
 
     /**
-     * @param Request|null $request
-     * @param Component $component
-     * @param array $parameters
      *
+     * @param \TechPromux\DynamicReportBundle\Entity\Component $component
+     * @param \Doctrine\DBAL\Query\QueryBuilder $queryBuilder
+     * @param array $format
      * @return array
      */
-    protected function getMergedDataParametersAndSettings(Request $request = null, Component $component, array $parameters = array())
-    {
+    public abstract function createExportableData(Request $request = null, Component $component, array $parameters = array());
 
-        $data = $this->createComponentData($request, $component, $parameters);
 
-        $filters_form = $this->createFiltersForm($request, $component, $parameters);
-
-        $filters_form->handleRequest($request); // or handleRequest?
-
-        //if (!$filters_form->isValid()) { // if ($request->isXmlHttpRequest())
-        //    throw new \Exception("ERROR!!!. Filter data isn´t valid");
-        //}
-
-        $all = array(
-            'component' => $component,
-            'component_type' => $this,
-            'parameters' => $parameters,
-            'settings' => array_merge(is_array($component->getDataOptions()) ? $component->getDataOptions() : array(),
-                is_array($component->getComponentOptions()) ? $component->getComponentOptions() : array()),
-            'data' => $data,
-            'filters_form' => $filters_form->createView(),
-            'extras' => array(),
-        );
-
-        return $all;
-    }
+    /**
+     * @param Request $request
+     * @param Component $component
+     * @param array $exportableData
+     * @param $format
+     * @return mixed
+     */
+    public abstract function createExportableContent(Request $request, Component $component, array $exportableData = array(), $format);
 
     //----------------------------------------------------------------------------------------
 
@@ -415,7 +500,7 @@ abstract class AbstractComponentType implements BaseComponentType
      */
     public function getExportActionPathName()
     {
-        return 'admin_techpromux_dynamicreport_report_component_export';
+        return 'admin_techpromux_dynamicreport_report_component_exportTo';
     }
 
 

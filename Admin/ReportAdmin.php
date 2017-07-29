@@ -1,15 +1,15 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Admin;
+namespace  TechPromux\DynamicReportBundle\Admin;
 
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use TechPromux\Bundle\BaseBundle\Admin\Resource\BaseResourceAdmin;
-use TechPromux\Bundle\DynamicReportBundle\Entity\Report;
-use TechPromux\Bundle\DynamicReportBundle\Manager\ReportManager;
+use  TechPromux\BaseBundle\Admin\Resource\BaseResourceAdmin;
+use  TechPromux\DynamicReportBundle\Entity\Report;
+use  TechPromux\DynamicReportBundle\Manager\ReportManager;
 
 class ReportAdmin extends BaseResourceAdmin
 {

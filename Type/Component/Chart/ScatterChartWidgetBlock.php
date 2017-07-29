@@ -1,6 +1,6 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Type\Component\Chart;
+namespace  TechPromux\DynamicReportBundle\Type\Component\Chart;
 
 class ScatterChartComponentBlock extends AbstractChartComponentBlock {
 
@@ -48,7 +48,7 @@ class ScatterChartComponentBlock extends AbstractChartComponentBlock {
         ));
     }
 
-    public function getHasSeriesData(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component) {
+    public function getHasSeriesData(\TechPromux\DynamicReportBundle\Entity\Component $component) {
         return false;
     }
 
@@ -92,7 +92,7 @@ class ScatterChartComponentBlock extends AbstractChartComponentBlock {
         return $default_settings;
     }
 
-    public function createEditFormKeysSettings(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component) {
+    public function createEditFormKeysSettings(\TechPromux\DynamicReportBundle\Entity\Component $component) {
 
         $keys = parent::createEditFormKeysSettings($component);
 
@@ -263,7 +263,7 @@ class ScatterChartComponentBlock extends AbstractChartComponentBlock {
         return $keys;
     }
 
-    public function detailsDescriptionsToFilterBy(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component) {
+    public function detailsDescriptionsToFilterBy(\TechPromux\DynamicReportBundle\Entity\Component $component) {
 
         $settings = $component->getSettings();
 
@@ -297,7 +297,7 @@ class ScatterChartComponentBlock extends AbstractChartComponentBlock {
         return $details_for_filter;
     }
 
-    public function detailsForOrderOptionsInChart(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component) {
+    public function detailsForOrderOptionsInChart(\TechPromux\DynamicReportBundle\Entity\Component $component) {
         $settings = $component->getSettings();
 
         $order_by_options = array();
@@ -338,7 +338,7 @@ class ScatterChartComponentBlock extends AbstractChartComponentBlock {
         return $order_by_options;
     }
 
-    public function seriesFillColors(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component, array $result) {
+    public function seriesFillColors(\TechPromux\DynamicReportBundle\Entity\Component $component, array $result) {
 
         $settings = $component->getSettings();
 
@@ -359,11 +359,11 @@ class ScatterChartComponentBlock extends AbstractChartComponentBlock {
         return $chart_series_colors;
     }
 
-    public function preUpdate(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component) {
+    public function preUpdate(\TechPromux\DynamicReportBundle\Entity\Component $component) {
         parent::preUpdate($component);
     }
 
-    public function createExportableData(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component, \Doctrine\DBAL\Query\QueryBuilder $queryBuilder) {
+    public function createExportableData(\TechPromux\DynamicReportBundle\Entity\Component $component, \Doctrine\DBAL\Query\QueryBuilder $queryBuilder) {
 
         // OBTAIN SETTINGS
 
@@ -444,7 +444,7 @@ class ScatterChartComponentBlock extends AbstractChartComponentBlock {
         return $data;
     }
 
-    public function renderDefaultResponse(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component, \Doctrine\DBAL\Query\QueryBuilder $queryBuilder) {
+    public function renderDefaultResponse(\TechPromux\DynamicReportBundle\Entity\Component $component, \Doctrine\DBAL\Query\QueryBuilder $queryBuilder) {
 
         $result = $this->createExportableData($component, $queryBuilder);
 

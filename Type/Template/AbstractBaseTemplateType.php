@@ -6,7 +6,7 @@
  * Time: 15:05
  */
 
-namespace TechPromux\Bundle\DynamicReportBundle\Type\Template;
+namespace  TechPromux\DynamicReportBundle\Type\Template;
 
 
 abstract class AbstractBaseTemplateType implements BaseTemplateType
@@ -32,7 +32,7 @@ abstract class AbstractBaseTemplateType implements BaseTemplateType
      */
     public function getFolderPath()
     {
-        return 'TechPromuxDynamicReportBundle:Type:Template';
+        return '@TechPromuxDynamicReportBundle/Type/Template';
     }
 
 }

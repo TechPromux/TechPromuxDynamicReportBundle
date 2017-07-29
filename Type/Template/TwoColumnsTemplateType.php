@@ -6,7 +6,7 @@
  * Time: 15:19
  */
 
-namespace TechPromux\Bundle\DynamicReportBundle\Type\Template;
+namespace  TechPromux\DynamicReportBundle\Type\Template;
 
 
 class TwoColumnsTemplateType extends AbstractBaseTemplateType

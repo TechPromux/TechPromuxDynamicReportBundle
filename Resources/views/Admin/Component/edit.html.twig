@@ -83,14 +83,20 @@
                 $(el).addClass('container-fluid').trigger('sonata-collection-item-added');
             });
 
-            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-export_data_options ul div.checkbox').addClass('col-md-2');
-            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-export_data_options ul').addClass('row');
+            $('#{{ form.vars.id }}_component_options > div.form-group').each(function (id, el) {
+                $(document.createElement('hr')).insertAfter($($(el).children()[0]));
+                $(el).children().filter('div').addClass('row');
+                $(el).append(document.createElement('hr'));
+                $(el).addClass('container-fluid').trigger('sonata-collection-item-added');
+            });
 
-            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-filter_result_details').addClass('col-md-6');
-            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-order_result_details').addClass('col-md-6');
-            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-export_data_options').addClass('col-md-6');
+            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-dataset_paginator_options').addClass('col-md-6');
+            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-dataset_filter_options').addClass('col-md-6');
+            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-dataset_order_options').addClass('col-md-6');
+            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-dataset_export_options').addClass('col-md-6');
 
-            $('#{{ form.vars.id }}_data_options > div.form-group, #{{ form.vars.id }}_component_options > div.form-group').trigger('sonata-collection-item-added');
+            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-dataset_export_options ul div.checkbox').addClass('col-md-2');
+            $('#sonata-ba-field-container-{{ form.vars.id }}_data_options-dataset_export_options ul').addClass('row');
 
         });
     </script>

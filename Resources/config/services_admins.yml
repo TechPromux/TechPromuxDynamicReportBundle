@@ -3,8 +3,8 @@ services:
     # Admin services
 
     techpromux_dynamic_report.admin.report:
-        class: TechPromux\Bundle\DynamicReportBundle\Admin\ReportAdmin
-        arguments: [~, TechPromux\Bundle\DynamicReportBundle\Entity\Report, TechPromuxDynamicReportBundle:ReportAdmin]
+        class:  TechPromux\DynamicReportBundle\Admin\ReportAdmin
+        arguments: [~,  TechPromux\DynamicReportBundle\Entity\Report, TechPromuxDynamicReportBundle:ReportAdmin]
         tags:
             - { name: sonata.admin, manager_type: orm, group: techpromux_dynamic_reports_admin, label: Report }
         calls:
@@ -14,8 +14,8 @@ services:
 
 
     techpromux_dynamic_report.admin.component:
-        class: TechPromux\Bundle\DynamicReportBundle\Admin\ComponentAdmin
-        arguments: [~, TechPromux\Bundle\DynamicReportBundle\Entity\Component, TechPromuxDynamicReportBundle:ComponentAdmin]
+        class:  TechPromux\DynamicReportBundle\Admin\ComponentAdmin
+        arguments: [~,  TechPromux\DynamicReportBundle\Entity\Component, TechPromuxDynamicReportBundle:ComponentAdmin]
         tags:
             - { name: sonata.admin, manager_type: orm, group: techpromux_dynamic_reports_admin, label: Component }
         calls:

@@ -1,0 +1,135 @@
+{% extends app.request.isXmlHttpRequest?
+'@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.datamodel.ajax.html.twig'
+:'@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.datamodel.html.twig' %}
+
+{% block component_content %}
+    {{ parent() }}
+
+    <table id="component-table-paginated-data-{{ component.id }}"
+           class="table table-bordered table-hover table-striped table-condensed" style="margin-bottom: 0px;">
+        <thead>
+        <tr>
+            {% if (settings['basic_options']['show_row_number'] == true) %}
+                <th style="text-align:center;padding-left: 20px;">
+                    <b>#</b>
+                </th>
+            {% endif %}
+            <th style="text-align:center;padding-left: 20px;">
+                <strong>{{ extras.datamodel_details_descriptions[settings['dataset_crossed_detail_for_labels']['detail_id']]['title'] }}
+                    / {{ extras.datamodel_details_descriptions[settings['dataset_crossed_detail_for_series']['detail_id']]['title'] }}
+                    => {{ extras.datamodel_details_descriptions[settings['dataset_crossed_detail_for_datas']['detail_id']]['title'] }}
+                </strong>
+            </th>
+            {% for label in data['_labels'] %}
+                <th title="{{ label }}"
+                    style="text-align:{{ settings['dataset_crossed_detail_for_labels']['text_align'] }};"> {{ label }} </th>
+            {% endfor %}
+            {% if (settings['dataset_crossed_detail_for_datas']['summary_function']!=null and settings['dataset_crossed_detail_for_datas']['summary_function']!='') %}
+                <th style="text-align:{{ settings['dataset_crossed_detail_for_labels']['text_align'] }};border-left: 2px solid #c9cad7;">
+                    ({{ (settings['dataset_crossed_detail_for_datas']['summary_function'] | trans ({},'TechPromuxDynamicReportBundle') ) }}
+                    )
+                </th>
+            {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+        {% set format = extras.datamodel_details_descriptions[settings['dataset_crossed_detail_for_datas']['detail_id']]['format'] %}
+        {% set prefix = settings['dataset_crossed_detail_for_datas']['show_prefix']?extras.datamodel_details_descriptions[settings['dataset_crossed_detail_for_datas']['detail_id']]['prefix']:'' %}
+        {% set suffix = settings['dataset_crossed_detail_for_datas']['show_suffix']?extras.datamodel_details_descriptions[settings['dataset_crossed_detail_for_datas']['detail_id']]['suffix']:'' %}
+        {% for serie, row in data['_datas'] %}
+            <tr>
+                {% if (settings['basic_options']['show_row_number'] == true) %}
+                    <td style="text-align:center;">{{ loop.index }}</td>
+                {% endif %}
+                <td style="text-align:{{ settings['dataset_crossed_detail_for_series']['text_align'] }};">
+                    <b>{{ serie }}</b></td>
+                {% set summary_horizontal_values = [] %}
+                {% for col in row %}
+
+                    {% set summary_horizontal_values = extras.formatter_helper.pushValueToArray(summary_horizontal_values, col) %}
+
+                    {% set text_color = '' %}
+                    {% set text_title = '' %}
+
+                    {# incluir aqui los colores de los limits #}
+
+                    <td style="text-align:{{ settings['dataset_crossed_detail_for_datas']['text_align'] }};">
+                        {% if (text_color!='') %}
+                        <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
+                           data-placement="top" data-toggle="tooltip">
+                            {% endif %}
+                            {{ prefix~ extras.formatter_helper.formatValue(col,format)~suffix }}
+                            {% if (text_color!='') %}
+                        </b>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+                {% if (settings['dataset_crossed_detail_for_datas']['summary_function']!=null and settings['dataset_crossed_detail_for_datas']['summary_function']!='') %}
+                    <td style="text-align:{{ settings['dataset_crossed_detail_for_datas']['text_align'] }};border-left: 2px solid #c9cad7;">
+                        {% set summary_horizontal = extras.formatter_helper.summarizeValues(settings['dataset_crossed_detail_for_datas']['summary_function'],summary_horizontal_values ) %}
+                        {{ prefix~extras.formatter_helper.formatValue(summary_horizontal,format)~suffix }}
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        <!-- -->
+        {% if (settings['dataset_crossed_detail_for_datas']['summary_function']!=null and settings['dataset_crossed_detail_for_datas']['summary_function']!='') %}
+            <tr style="border-top: 2px solid #c9cad7;">
+                <td style="text-align:left;padding-left: 20px;"
+                    colspan="{% if (settings['basic_options']['show_row_number'] == true) %}2{% else %}1{% endif %}">
+                    <b>({{ (settings['dataset_crossed_detail_for_datas']['summary_function'] | trans ({},'TechPromuxDynamicReportBundle') ) }}
+                        )</b>
+                </td>
+                {% set summary_final_values = [] %}
+                {% for i in 0..((data['_labels']|length)-1) %}
+                    {% set summary_vertical_values = [] %}
+                    {% for series,row in data['_datas'] %}
+                        {% set col = row[i] %}
+                        {% set summary_vertical_values = extras.formatter_helper.pushValueToArray(summary_vertical_values, col) %}
+                        {% set summary_final_values = extras.formatter_helper.pushValueToArray(summary_final_values, col) %}
+                    {% endfor %}
+                    <td style="text-align:{{ settings['dataset_crossed_detail_for_datas']['text_align'] }};">
+                        {% set summary_vertical = extras.formatter_helper.summarizeValues(settings['dataset_crossed_detail_for_datas']['summary_function'],summary_vertical_values ) %}
+                        {{ prefix~extras.formatter_helper.formatValue(summary_vertical,format)~suffix }}
+                    </td>
+                {% endfor %}
+                <td style="text-align:{{ settings['dataset_crossed_detail_for_datas']['text_align'] }};">
+                    {% set summary_final = extras.formatter_helper.summarizeValues(settings['dataset_crossed_detail_for_datas']['summary_function'],summary_final_values ) %}
+                    {{ prefix~extras.formatter_helper.formatValue(summary_final,format)~suffix }}
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+
+{% endblock component_content %}
+
+{% block component_stylesheets %}
+    {{ parent() }}
+    <style>
+
+    </style>
+{% endblock component_stylesheets %}
+
+{% block component_javascripts %}
+    {{ parent() }}
+    <script>
+
+        $(document).on('data-loaded', '#component-panel-content-{{ component.id }}', function (event) {
+
+            var data = $('#component-panel-content-{{ component.id }}').attr('data-loaded');
+
+            var tableData = $('<div>').append(data).find('#component-table-paginated-data-{{ component.id }}');
+
+            $('#component-panel-content-{{ component.id }}').html(tableData);
+
+            //var _sort_by = $('#component-filters-form-{{ component.id }} #filters_form_{{ component.id }}__sort_by').val();
+            //var _sort_type = $('#component-filters-form-{{ component.id }} #filters_form_{{ component.id }}__sort_type').val().toLowerCase();
+            //$('component-crosstable-orderby-arrow-{{ component.id }}').parent().removeClass('active';
+            //$('component-crosstable-orderby-arrow-{{ component.id }}-'+_sort_by+'-'+_sort_type).parent().addClass('active');
+        });
+
+    </script>
+
+{% endblock component_javascripts %}

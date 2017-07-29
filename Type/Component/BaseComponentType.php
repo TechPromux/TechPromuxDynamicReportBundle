@@ -1,11 +1,11 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Type\Component;
+namespace TechPromux\DynamicReportBundle\Type\Component;
 
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use TechPromux\Bundle\DynamicReportBundle\Entity\Component;
+use  TechPromux\DynamicReportBundle\Entity\Component;
 
 interface BaseComponentType
 {
@@ -53,7 +53,7 @@ interface BaseComponentType
     public function getHasDataModelDataset();
 
     /**
-     * 'multiple', 'multiple_without_label', 'crossed' or 'single'
+     * 'multiple', 'crossed', 'series_single', 'series_multiple'
      *
      * @return string
      */
@@ -70,7 +70,7 @@ interface BaseComponentType
      *
      * @return string
      */
-    public function getDataModelDatasetWithDataDetailsType();
+    public function getSupportedDataTypeFromDataModelDetails();
 
     /**
      * @return array

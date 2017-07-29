@@ -1,13 +1,13 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Controller;
+namespace  TechPromux\DynamicReportBundle\Controller;
 
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\Request;
-use TechPromux\Bundle\DynamicReportBundle\Entity\Component;
-use TechPromux\Bundle\DynamicReportBundle\Entity\Report;
-use TechPromux\Bundle\DynamicReportBundle\Manager\ReportManager;
-use TechPromux\Bundle\DynamicReportBundle\Type\Component\BaseComponentType;
+use  TechPromux\DynamicReportBundle\Entity\Component;
+use  TechPromux\DynamicReportBundle\Entity\Report;
+use  TechPromux\DynamicReportBundle\Manager\ReportManager;
+use  TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
 
 class ReportAdminController extends CRUDController
 {
@@ -62,6 +62,9 @@ class ReportAdminController extends CRUDController
                 $stylesheets = array_merge($stylesheets, array_diff($component_type->getStylesheets(), $stylesheets));
             }
         }
+        //dump($template->getAbsolutePath());
+
+        //dump($this->get('templating.')->getPaths());
 
         return $this->render($this->admin->getTemplate('execute'), array(
             'request' => $request,

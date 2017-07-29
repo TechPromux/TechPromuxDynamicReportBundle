@@ -1,6 +1,6 @@
-{% if ( settings['export_data_options']is defined and (settings['export_data_options'] | length)>0 ) %}
+{% if ( settings['dataset_export_options'] is defined and (settings['dataset_export_options'] | length)>0 ) %}
     <div id="component-panel-header-toolbox-export-{{ component.id }}"
-         class="btn-group export-options pull-right" style="margin-left: 5px;">
+         class="btn-group toolbox-export-options pull-right" style="margin-left: 5px;">
         <button aria-expanded="false" type="button" class="btn btn-default dropdown-toggle"
                 id="component-toolbox-export-button-{{ component.id }}"
                 data-toggle="dropdown"
@@ -13,15 +13,15 @@
 
                 {% set export_icons_classes = component_type.getExportablesFormatsIconsClasses() %}
 
-                {% for format in settings['export_data_options'] %}
+                {% for format in settings['dataset_export_options'] %}
                     <li>
                         <a class="component-toolbox-export-link-default-{{ component.id }} component-toolbox-export-link-default-{{ component.id }}-{{ format }}"
                            data-format="{{ format }}"
-                           href="{{ path(component_type.getExportActionPathName(),{'id': component.report.id, 'childId': component.id, 'format': format }) }}"
+                           href="{{ path(component_type.getExportActionPathName(),{'id': component.report.id, 'childId': component.id, '_format': format }) }}"
                            download="{{ component.title | replace({' ':'_'}) | lower }}.{{ format }}"
                            target="_blank">
                             <i class="fa {{ export_icons_classes[format] }}"></i>
-                            <span>{{ 'save_as' | trans({},'TechPromuxDynamicReportBundle') }}{{ format|upper }}</span>
+                            <span>{{ 'save_as' | trans({},'TechPromuxDynamicReportBundle') }} {{ format|upper }}</span>
                         </a>
                     </li>
                 {% endfor %}
@@ -31,7 +31,7 @@
     <script>
         // linking export formats buttons with filters form submit action
 
-        $(document).on('click', '#component-toolbox-export-link-default-{{ component.id }}', function (event) {
+        $(document).on('click', '.component-toolbox-export-link-default-{{ component.id }}', function (event) {
 
             event.preventDefault();
             event.stopPropagation();

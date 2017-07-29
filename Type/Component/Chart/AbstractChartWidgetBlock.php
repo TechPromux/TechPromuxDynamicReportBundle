@@ -1,8 +1,8 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Type\Component\Chart;
+namespace  TechPromux\DynamicReportBundle\Type\Component\Chart;
 
-abstract class AbstractChartComponentBlock extends \TechPromux\Bundle\DynamicReportBundle\Type\Component\AbstractComponentBlock {
+abstract class AbstractChartComponentBlock extends \TechPromux\DynamicReportBundle\Type\Component\AbstractComponentBlock {
 
     public function __construct($type) {
         parent::__construct($type);
@@ -29,7 +29,7 @@ abstract class AbstractChartComponentBlock extends \TechPromux\Bundle\DynamicRep
         return array_merge(parent::getExportablesFormats(), array('png' => 'png'));
     }
 
-    public function getHasSeriesData(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component) {
+    public function getHasSeriesData(\TechPromux\DynamicReportBundle\Entity\Component $component) {
         return true;
     }
 
@@ -83,7 +83,7 @@ abstract class AbstractChartComponentBlock extends \TechPromux\Bundle\DynamicRep
         return $default_settings;
     }
 
-    public function createEditFormKeysSettings(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component) {
+    public function createEditFormKeysSettings(\TechPromux\DynamicReportBundle\Entity\Component $component) {
 
         $keys = array();
 
@@ -298,7 +298,7 @@ abstract class AbstractChartComponentBlock extends \TechPromux\Bundle\DynamicRep
         return $keys;
     }
 
-    public function createExportableData(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component, \Doctrine\DBAL\Query\QueryBuilder $queryBuilder) {
+    public function createExportableData(\TechPromux\DynamicReportBundle\Entity\Component $component, \Doctrine\DBAL\Query\QueryBuilder $queryBuilder) {
 
         // OBTAIN SETTINGS
 
@@ -407,7 +407,7 @@ abstract class AbstractChartComponentBlock extends \TechPromux\Bundle\DynamicRep
         return $data;
     }
 
-    public function detailsDescriptionsToFilterBy(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component) {
+    public function detailsDescriptionsToFilterBy(\TechPromux\DynamicReportBundle\Entity\Component $component) {
 
         $settings = $component->getSettings();
 
@@ -443,7 +443,7 @@ abstract class AbstractChartComponentBlock extends \TechPromux\Bundle\DynamicRep
         return $details_for_filter;
     }
 
-    public function detailsForOrderOptionsInChart(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component) {
+    public function detailsForOrderOptionsInChart(\TechPromux\DynamicReportBundle\Entity\Component $component) {
         $settings = $component->getSettings();
 
         $order_by_options = array();
@@ -491,7 +491,7 @@ abstract class AbstractChartComponentBlock extends \TechPromux\Bundle\DynamicRep
         return $order_by_options;
     }
 
-    public function seriesFillColors(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component, array $result) {
+    public function seriesFillColors(\TechPromux\DynamicReportBundle\Entity\Component $component, array $result) {
 
         $chart_series_colors = array();
 
@@ -527,7 +527,7 @@ abstract class AbstractChartComponentBlock extends \TechPromux\Bundle\DynamicRep
         return $chart_series_colors;
     }
 
-    public function createDefaultResponse(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component, array $parameters = array()) {
+    public function createDefaultResponse(\TechPromux\DynamicReportBundle\Entity\Component $component, array $parameters = array()) {
         $chart_parameters = array_merge($parameters, array(
             'order_by_options' => $this->detailsForOrderOptionsInChart($component),
             'chart_series_colors' => $this->seriesFillColors($component, $parameters['result'])
@@ -535,7 +535,7 @@ abstract class AbstractChartComponentBlock extends \TechPromux\Bundle\DynamicRep
         return parent::createDefaultResponse($component, $chart_parameters);
     }
 
-    public function preUpdate(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component) {
+    public function preUpdate(\TechPromux\DynamicReportBundle\Entity\Component $component) {
 
         parent::preUpdate($component);
 

@@ -1,12 +1,13 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Compiler;
+namespace  TechPromux\DynamicReportBundle\Compiler;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Reference;
 
-class ComponentTypeCompilerPass implements CompilerPassInterface {
+class ComponentTypeCompilerPass implements CompilerPassInterface
+{
 
     public function process(ContainerBuilder $container)
     {
@@ -14,8 +15,12 @@ class ComponentTypeCompilerPass implements CompilerPassInterface {
             return;
         }
 
+        $templatingDefinitionId = 'templating';
+
+        $managerDefinitionId = 'techpromux_dynamic_report.manager.util_dynamic_report';
+
         $managerDefinition = $container->getDefinition(
-            'techpromux_dynamic_report.manager.util_dynamic_report'
+            $managerDefinitionId
         );
 
         $taggedServicesIds = $container->findTaggedServiceIds(
@@ -23,9 +28,23 @@ class ComponentTypeCompilerPass implements CompilerPassInterface {
         );
 
         foreach ($taggedServicesIds as $id => $tags) {
-            //$type = $container->getDefinition($id);
+
+            $componentTypeDefinition = $container->getDefinition($id);
+
+            $componentTypeDefinition->addMethodCall(
+                'setTemplating',
+                array(new \Symfony\Component\DependencyInjection\Reference($templatingDefinitionId))
+            );
+
+            $componentTypeDefinition->addMethodCall(
+                'setUtilDynamicReportManager',
+                array(new \Symfony\Component\DependencyInjection\Reference($managerDefinitionId))
+            );
+
             $managerDefinition->addMethodCall(
-                'addComponentType', array(new \Symfony\Component\DependencyInjection\Reference($id)));
+                'addComponentType',
+                array(new \Symfony\Component\DependencyInjection\Reference($id))
+            );
 
         }
     }

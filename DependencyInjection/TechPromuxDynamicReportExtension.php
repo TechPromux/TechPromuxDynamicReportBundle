@@ -1,6 +1,6 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\DependencyInjection;
+namespace  TechPromux\DynamicReportBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;

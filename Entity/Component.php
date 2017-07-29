@@ -1,9 +1,9 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Entity;
+namespace  TechPromux\DynamicReportBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use TechPromux\Bundle\BaseBundle\Entity\Resource\BaseResource;
+use  TechPromux\BaseBundle\Entity\Resource\BaseResource;
 
 /**
  * Component
@@ -59,7 +59,7 @@ class Component extends BaseResource
     /**
      * @var DataModel
      *
-     * @ORM\ManyToOne(targetEntity="TechPromux\Bundle\DynamicQueryBundle\Entity\DataModel")
+     * @ORM\ManyToOne(targetEntity="TechPromux\DynamicQueryBundle\Entity\DataModel")
      * @ORM\JoinColumn(name="datamodel_id", referencedColumnName="id", nullable=false)
      */
     private $datamodel;
@@ -192,11 +192,11 @@ class Component extends BaseResource
     /**
      * Set report
      *
-     * @param \TechPromux\Bundle\DynamicReportBundle\Entity\Report $report
+     * @param \TechPromux\DynamicReportBundle\Entity\Report $report
      *
      * @return Component
      */
-    public function setReport(\TechPromux\Bundle\DynamicReportBundle\Entity\Report $report)
+    public function setReport(\TechPromux\DynamicReportBundle\Entity\Report $report)
     {
         $this->report = $report;
 
@@ -206,7 +206,7 @@ class Component extends BaseResource
     /**
      * Get report
      *
-     * @return \TechPromux\Bundle\DynamicReportBundle\Entity\Report
+     * @return \TechPromux\DynamicReportBundle\Entity\Report
      */
     public function getReport()
     {
@@ -216,11 +216,11 @@ class Component extends BaseResource
     /**
      * Set datamodel
      *
-     * @param \TechPromux\Bundle\DynamicQueryBundle\Entity\DataModel $datamodel
+     * @param \TechPromux\DynamicQueryBundle\Entity\DataModel $datamodel
      *
      * @return Component
      */
-    public function setDatamodel(\TechPromux\Bundle\DynamicQueryBundle\Entity\DataModel $datamodel)
+    public function setDatamodel(\TechPromux\DynamicQueryBundle\Entity\DataModel $datamodel)
     {
         $this->datamodel = $datamodel;
 
@@ -230,7 +230,7 @@ class Component extends BaseResource
     /**
      * Get datamodel
      *
-     * @return \TechPromux\Bundle\DynamicQueryBundle\Entity\DataModel
+     * @return \TechPromux\DynamicQueryBundle\Entity\DataModel
      */
     public function getDatamodel()
     {

@@ -115,57 +115,54 @@
 
     {% block component_javascripts_full_screen %}
         <script>
-                    // configure full screen button events
-                    $(document).on('click', '#tpx-component-chart-{{chart_type}}-toolbox-fullscreen-{{component.id}} button', function (event) {
-            event.preventDefault();
-                    event.stopPropagation();
-                    if ($('#component-panel-{{component.id}}').attr('resize-screen-mode') == "full-screen")
-            {
-            window.tpx_component_chart_{{chart_type}}_custom_chartjs_options_{{component.id | replace({'-':'_'}) }}.maintainAspectRatio = true;
-                    $('#component-panel-{{component.id}}').removeClass('tpx-component-chart-{{chart_type}}-windows-fullscreen-{{component.id}}');
-                    $('#component-panel-{{component.id}}').attr('resize-screen-mode', 'small-screen');
-                    $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').attr('style', '');
-                    $('#component-{{component.id}}').attr('style', '');
-                    $('#component-chart-{{chart_type}}-legend-top-{{component.id}}').removeClass('pull-left').removeClass('col-md-3').css({'text-align':'center'});
-                    $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}}').removeClass('pull-left').removeClass('col-md-3').css({'text-align':'center'});
-                    $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').removeClass('pull-right').removeClass('col-md-9');
-            }
-            else
-            {
-            window.tpx_component_chart_{{chart_type}}_custom_chartjs_options_{{component.id | replace({'-':'_'}) }}.maintainAspectRatio = false;
-                    $('#component-panel-{{component.id}}').addClass('tpx-component-chart-{{chart_type}}-windows-fullscreen-{{component.id}}');
-                    $('#component-panel-{{component.id}}').attr('resize-screen-mode', 'full-screen');
-                    $('#component-chart-{{chart_type}}-legend-top-{{component.id}}').addClass('pull-left').addClass('col-md-3').css({'text-align':'left'});
-                    $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}}').addClass('pull-left').addClass('col-md-3').css({'text-align':'left'});
-                    $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').addClass('pull-right').addClass('col-md-9');
+            // configure full screen button events
+            $(document).on('click', '#tpx-component-chart-{{ chart_type }}-toolbox-fullscreen-{{ component.id }} button', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                if ($('#component-panel-{{ component.id }}').attr('resize-screen-mode') == "full-screen") {
+                    window.tpx_component_chart_{{ chart_type }}_custom_chartjs_options_{{ component.id | replace({'-':'_'}) }}.maintainAspectRatio = true;
+                    $('#component-panel-{{ component.id }}').removeClass('tpx-component-chart-{{ chart_type }}-windows-fullscreen-{{ component.id }}');
+                    $('#component-panel-{{ component.id }}').attr('resize-screen-mode', 'small-screen');
+                    $('#component-chart-{{ chart_type }}-canvas-container-{{ component.id }}').attr('style', '');
+                    $('#component-{{ component.id }}').attr('style', '');
+                    $('#component-chart-{{ chart_type }}-legend-top-{{ component.id }}').removeClass('pull-left').removeClass('col-md-3').css({'text-align': 'center'});
+                    $('#component-chart-{{ chart_type }}-legend-bottom-{{ component.id }}').removeClass('pull-left').removeClass('col-md-3').css({'text-align': 'center'});
+                    $('#component-chart-{{ chart_type }}-canvas-container-{{ component.id }}').removeClass('pull-right').removeClass('col-md-9');
+                }
+                else {
+                    window.tpx_component_chart_{{ chart_type }}_custom_chartjs_options_{{ component.id | replace({'-':'_'}) }}.maintainAspectRatio = false;
+                    $('#component-panel-{{ component.id }}').addClass('tpx-component-chart-{{ chart_type }}-windows-fullscreen-{{ component.id }}');
+                    $('#component-panel-{{ component.id }}').attr('resize-screen-mode', 'full-screen');
+                    $('#component-chart-{{ chart_type }}-legend-top-{{ component.id }}').addClass('pull-left').addClass('col-md-3').css({'text-align': 'left'});
+                    $('#component-chart-{{ chart_type }}-legend-bottom-{{ component.id }}').addClass('pull-left').addClass('col-md-3').css({'text-align': 'left'});
+                    $('#component-chart-{{ chart_type }}-canvas-container-{{ component.id }}').addClass('pull-right').addClass('col-md-9');
                     var chart_height = 0;
                     var chart_width = 0;
-                    if ($('#component-chart-{{chart_type}}-legend-top-{{component.id}}').innerWidth() + $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').innerWidth() <= $('#component-panel-{{component.id}}').innerWidth())
-            {
-            chart_height = $('#component-panel-{{component.id}}').innerHeight()
-                    - $('#component-panel-heading-{{component.id}}').innerHeight() - 20;
-                    chart_width = (chart_height * 2 < $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').innerWidth()) ? chart_height * 2 : $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').innerWidth();
-            }
-            else
-            {
-            $('#component-chart-{{chart_type}}-legend-top-{{component.id}}').removeClass('pull-left');
-                    $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}}').removeClass('pull-left');
-                    $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').removeClass('pull-right');
-                    chart_height = $('#component-panel-{{component.id}}').innerHeight()
-                    - $('#component-panel-heading-{{component.id}}').innerHeight()
-                    - $('#component-chart-{{chart_type}}-legend-top-{{component.id}}').innerHeight()
-                    - ($('#component-chart-{{chart_type}}-legend-bottom-{{component.id}} ul').children().length > 0 ?
-                            $('#component-chart-{{chart_type}}-legend-bottom-{{component.id}}').innerHeight() : - 10) - 20;
-                    chart_width = (chart_height * 2 < $('#component-panel-{{component.id}}').innerWidth()) ? chart_height * 2 : $('#component-panel-{{component.id}}').innerWidth();
-            }
-            $('#component-chart-{{chart_type}}-canvas-container-{{component.id}}').attr('style', 'width:' + chart_width + 'px;height:' + chart_height + 'px;margin:auto;padding:15px;');
-                    $('#component-{{component.id}}').attr('style', 'position:fixed;top:0;left:0px;bottom:0px;right:0px;background-color:#ecf0f5;z-index:1500');
-            }
+                    if ($('#component-chart-{{ chart_type }}-legend-top-{{ component.id }}').innerWidth() + $('#component-chart-{{ chart_type }}-canvas-container-{{ component.id }}').innerWidth() <= $('#component-panel-{{ component.id }}').innerWidth()) {
+                        chart_height = $('#component-panel-{{ component.id }}').innerHeight()
+                            - $('#component-panel-heading-{{ component.id }}').innerHeight() - 20;
+                        chart_width = (chart_height * 2 < $('#component-chart-{{ chart_type }}-canvas-container-{{ component.id }}').innerWidth()) ? chart_height * 2 : $('#component-chart-{{ chart_type }}-canvas-container-{{ component.id }}').innerWidth();
+                    }
+                    else {
+                        $('#component-chart-{{ chart_type }}-legend-top-{{ component.id }}').removeClass('pull-left');
+                        $('#component-chart-{{ chart_type }}-legend-bottom-{{ component.id }}').removeClass('pull-left');
+                        $('#component-chart-{{ chart_type }}-canvas-container-{{ component.id }}').removeClass('pull-right');
+                        chart_height = $('#component-panel-{{ component.id }}').innerHeight()
+                            - $('#component-panel-heading-{{ component.id }}').innerHeight()
+                            - $('#component-chart-{{ chart_type }}-legend-top-{{ component.id }}').innerHeight()
+                            - ($('#component-chart-{{ chart_type }}-legend-bottom-{{ component.id }} ul').children().length > 0 ?
+                                $('#component-chart-{{ chart_type }}-legend-bottom-{{ component.id }}').innerHeight() : -10) - 20;
+                        chart_width = (chart_height * 2 < $('#component-panel-{{ component.id }}').innerWidth()) ? chart_height * 2 : $('#component-panel-{{ component.id }}').innerWidth();
+                    }
+                    $('#component-chart-{{ chart_type }}-canvas-container-{{ component.id }}').attr('style', 'width:' + chart_width + 'px;height:' + chart_height + 'px;margin:auto;padding:15px;');
+                    $('#component-{{ component.id }}').attr('style', 'position:fixed;top:0;left:0px;bottom:0px;right:0px;background-color:#ecf0f5;z-index:1500');
+                }
 
-            $(this).parent().children().removeClass('hide');
-                    $(this).addClass('hide');
-                    tpx_component_chart_{{chart_type}}_render_custom_chartjs_{{component.id | replace({'-':'_'}) }}(false);
-            }); /**/
+                $(this).parent().children().removeClass('hide');
+                $(this).addClass('hide');
+                tpx_component_chart_{{ chart_type }}_render_custom_chartjs_{{ component.id | replace({'-':'_'}) }}(false);
+            });
+            /**/
         </script>
     {% endblock component_javascripts_full_screen %}
     {% block component_javascripts_order_buttons %}

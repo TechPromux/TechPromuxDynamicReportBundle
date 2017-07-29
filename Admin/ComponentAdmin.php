@@ -1,16 +1,16 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Admin;
+namespace  TechPromux\DynamicReportBundle\Admin;
 
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
-use TechPromux\Bundle\BaseBundle\Admin\Resource\BaseResourceAdmin;
-use TechPromux\Bundle\DynamicReportBundle\Entity\Component;
-use TechPromux\Bundle\DynamicReportBundle\Manager\ComponentManager;
-use TechPromux\Bundle\DynamicReportBundle\Type\Component\BaseComponentType;
+use  TechPromux\BaseBundle\Admin\Resource\BaseResourceAdmin;
+use  TechPromux\DynamicReportBundle\Entity\Component;
+use  TechPromux\DynamicReportBundle\Manager\ComponentManager;
+use  TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
 
 class ComponentAdmin extends BaseResourceAdmin
 {
@@ -19,7 +19,7 @@ class ComponentAdmin extends BaseResourceAdmin
         'copy' => 'COPY',
         'render' => 'RENDER',
         'execute' => 'EXECUTE',
-        'export' => 'EXPORT',
+        'exportTo' => 'EXPORT',
         'saveas' => 'SAVEAS',
     );
 
@@ -56,7 +56,7 @@ class ComponentAdmin extends BaseResourceAdmin
             $collection->add('copy', $this->getRouterIdParameter() . '/copy');
             $collection->add('render', $this->getRouterIdParameter() . '/render');
             $collection->add('execute', $this->getRouterIdParameter() . '/execute');
-            $collection->add('export', $this->getRouterIdParameter() . '/export');
+            $collection->add('exportTo', $this->getRouterIdParameter() . '/export-to');
             //$collection->add('saveas', $this->getRouterIdParameter() . '/saveas/{format}');
         }
     }
@@ -104,7 +104,7 @@ class ComponentAdmin extends BaseResourceAdmin
                     //'show' => array(),
                     'edit' => array(),
                     'copy' => array(
-                        'template' => $this->getResourceManager()->getCoreBundleName() . ':Admin:CRUD/list__action_copy.html.twig'
+                        'template' => $this->getResourceManager()->getBaseBundleName() . ':Admin:CRUD/list__action_copy.html.twig'
                     ),
                     'delete' => array(),
                 )
@@ -123,7 +123,7 @@ class ComponentAdmin extends BaseResourceAdmin
         $datamodel_manager = $this->getResourceManager()->getDataModelManager();
 
         $parent = false;
-        /* @var $parent \TechPromux\Bundle\DynamicReportBundle\Entity\Report */
+        /* @var $parent \TechPromux\DynamicReportBundle\Entity\Report */
 
         if ($object->getId() === null) {
             $parent = $this->getParent()->getSubject();
@@ -235,7 +235,7 @@ class ComponentAdmin extends BaseResourceAdmin
 
                 //-------------------------------------------------------------
 
-                $keys = $this->getDefaultComponentSettingsKeysForEditForm();
+                $keys = $component_type->getDefaultDataSettingsForEditForm($object);
 
                 //-------------------------------------------------------------------------
                 $formMapper
@@ -343,589 +343,12 @@ class ComponentAdmin extends BaseResourceAdmin
 
         /* @var $component_type BaseComponentType */
 
-        $object->setDataOptions($this->getDefaultComponentSettings());
+        $object->setDataOptions($component_type->getDefaultDataSettings($object));
         $object->setComponentOptions($component_type->getDefaultCustomSettings());
 
     }
 
     //-----------------------------------------------------------------------------------------------
 
-    /**
-     * @return array
-     */
-    protected function getDefaultComponentSettings()
-    {
-        $object = $this->getSubject();
-
-        $component_type_name = $object->getComponentType();
-
-        $component_type = $this->getResourceManager()->getUtilDynamicReportManager()->getComponentTypeById($component_type_name);
-        /* @var $component_type BaseComponentType */
-
-        $default_settings = array();
-
-        if ($component_type->getHasDataModelDataset()) {
-
-            $default_settings['dataset_type'] = $component_type->getDataModelDatasetType();
-
-            $datamodel_id = $object->getDatamodel()->getId();
-
-            $details = $this->getResourceManager()->getDatamodelManager()->getEnabledDetailsDescriptionsFromDataModel($datamodel_id);
-
-            switch ($component_type->getDataModelDatasetType()) {
-                case 'multiple':
-
-                    $default_settings['dataset_multiple_detail_for_label'] = array(
-                        'detail_id' => null,
-                        'show_prefix' => true,
-                        'show_suffix' => true,
-                        'show_filter' => true,
-                    );
-
-                case 'multiple_without_label':
-
-                    $default_settings['dataset_multiple_details_for_data'] = array();
-
-                    foreach ($details as $dt) {
-                        $default_settings['dataset_multiple_details_for_data'][] = array(
-                            'detail_id' => $dt['id'],
-                            'detail_label' => 'title',
-                            'text_align' => ($dt['classification'] == 'number' ? 'right' : ($dt['classification'] == 'datetime' ? 'center' : 'left')),
-                            'text_with' => '',
-                            'show_prefix' => true,
-                            'show_suffix' => true,
-                        );
-                    }
-
-                    break;
-
-                case 'crossed':
-
-                    $default_settings['dataset_crossed_detail_for_label'] = array(
-                        'detail_id' => null,
-                        'show_prefix' => true,
-                        'show_suffix' => true,
-                        'show_filter' => true,
-                    );
-                    $default_settings['dataset_crossed_detail_for_data'] = array(
-                        'detail_id' => null,
-                        'show_prefix' => true,
-                        'show_suffix' => true,
-                        'show_filter' => true,
-                    );
-                    $default_settings['dataset_crossed_detail_for_series'] = array(
-                        'detail_id' => null,
-                        'show_prefix' => true,
-                        'show_suffix' => true,
-                        'show_filter' => true,
-                    );
-
-                    break;
-                case 'single':
-
-                    $default_settings['dataset_single_detail_for_label'] = array(
-                        'detail_id' => null,
-                        'show_prefix' => true,
-                        'show_suffix' => true,
-                        'show_filter' => true,
-                    );
-                    $default_settings['dataset_single_detail_for_data'] = array(
-                        'detail_id' => null,
-                        'show_prefix' => true,
-                        'show_suffix' => true,
-                        'show_filter' => true,
-                    );
-                    break;
-            }
-
-            $default_settings['filter_result_details'] = array();
-
-            foreach ($details as $dt) {
-                $default_settings['filter_result_details'][] = array(
-                    'detail_id' => $dt['id'],
-                );
-            }
-            $default_settings['order_result_details'] = array();
-
-
-        }
-
-        $default_settings['export_data_options'] = $component_type->getExportablesFormats();
-
-        return $default_settings;
-
-    }
-
-    /**
-     * @return array
-     */
-    protected function getDataModelDetailsChoices()
-    {
-        $object = $this->getSubject();
-
-        return $this->getResourceManager()->getDataModelDetailsChoices($object);
-    }
-
-    /**
-     * @return array
-     */
-    public function getDefaultComponentSettingsKeysForEditForm()
-    {
-        $object = $this->getSubject();
-
-        $component_type_name = $object->getComponentType();
-
-        $component_type = $this->getResourceManager()->getUtilDynamicReportManager()->getComponentTypeById($component_type_name);
-        /* @var $component_type BaseComponentType */
-
-        //-----------------------------------------------------------
-
-        $keys = array();
-
-        if ($component_type->getHasDataModelDataset()) {
-
-            $details = $this->getDataModelDetailsChoices();
-
-            $details_for_labels_choices = $details['details_for_labels_choices'];
-            $details_for_data_choices = $details['details_for_data_choices'];
-            $details_for_series_choices = $details['details_for_series_choices'];
-
-            $default_settings['dataset_type'] = $component_type->getDataModelDatasetType();
-
-            switch ($component_type->getDataModelDatasetType()) {
-                case 'multiple':
-
-                    $keys[] = array('dataset_multiple_detail_for_label', 'sonata_type_immutable_array', array(
-                        //'label' => false,
-                        'keys' => array(
-                            array('detail_id', 'choice', array(
-                                //'label' => 'Detail',
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => $details_for_labels_choices, // TODO preguntar al component type si el data es numeric or date
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                            )
-                            ),
-                            array('detail_label', 'choice', array(
-                                //'label' => 'Label Header',
-                                'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            )),
-                            array('text_align', 'choice', array(
-                                //'label' => 'Text Align',
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                ),
-                            )
-                            ),
-                            array('text_with', 'text', array(
-                                //'label' => 'Width',
-                                "required" => false,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                                'attr' => array(
-                                    'placeholder' => 'px',
-                                    //'style' => 'width: 70px;'
-                                )
-                            )),
-                            array('show_prefix', 'checkbox', array(
-                                //'label' => 'Prefix',
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                            array('show_suffix', 'checkbox', array(
-                                //'label' => 'Suffix',
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                        )
-                    ));
-
-                case 'multiple_without_label':
-
-                    $keys[] = array('dataset_multiple_details_for_data', 'sonata_type_native_collection', array(
-                        'entry_type' => 'sonata_type_immutable_array',
-                        'allow_add' => true,
-                        'allow_delete' => true,
-                        'entry_options' => array(
-                            'keys' => array(
-                                array('detail_id', 'choice', array(
-                                    //'label' => 'Detail',
-                                    "multiple" => false, "expanded" => false, "required" => true,
-                                    'choices' => $details_for_data_choices, // TODO preguntar al component type si el data es numeric or date
-                                    "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                                )
-                                ),
-                                array('detail_label', 'choice', array(
-                                    //'label' => 'Label Header',
-                                    'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                                    "multiple" => false, "expanded" => false, "required" => true,
-                                    "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                                )),
-                                array('text_align', 'choice', array(
-                                    //'label' => 'Text Align',
-                                    "multiple" => false, "expanded" => false, "required" => true,
-                                    'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                                    "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    ),
-                                )
-                                ),
-                                array('text_with', 'text', array(
-                                    //'label' => 'Width',
-                                    "required" => false,
-                                    "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                                    'attr' => array(
-                                        'placeholder' => 'px',
-                                        //'style' => 'width: 70px;'
-                                    )
-                                )),
-                                array('show_prefix', 'checkbox', array(
-                                    //'label' => 'Prefix',
-                                    'required' => false,
-                                    "label_attr" => array(
-                                        'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                        'style' => 'width: 170px;max-width: 200%;'
-                                    ),
-                                )),
-                                array('show_suffix', 'checkbox', array(
-                                    //'label' => 'Suffix',
-                                    'required' => false,
-                                    "label_attr" => array(
-                                        'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                        'style' => 'width: 170px;max-width: 200%;'
-                                    ),
-                                )),
-                            )
-                        )
-                    ));
-
-                    break;
-                case 'crossed':
-
-                    $keys[] = array('dataset_crossed_detail_for_label', 'sonata_type_immutable_array', array(
-                        //'label' => false,
-                        'keys' => array(
-                            array('detail_id', 'choice', array(
-                                //'label' => 'Detail',
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => $details_for_labels_choices, // TODO preguntar al component type si el data es numeric or date
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                            )
-                            ),
-                            array('detail_label', 'choice', array(
-                                //'label' => 'Label Header',
-                                'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            )),
-                            array('text_align', 'choice', array(
-                                //'label' => 'Text Align',
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                ),
-                            )
-                            ),
-                            array('text_with', 'text', array(
-                                //'label' => 'Width',
-                                "required" => false,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                                'attr' => array(
-                                    'placeholder' => 'px',
-                                    //'style' => 'width: 70px;'
-                                )
-                            )),
-                            array('show_prefix', 'checkbox', array(
-                                //'label' => 'Prefix',
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                            array('show_suffix', 'checkbox', array(
-                                //'label' => 'Suffix',
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                        )
-                    ));
-
-                    $keys[] = array('dataset_crossed_detail_for_data', 'sonata_type_immutable_array', array(
-                        // 'label' => false,
-                        'keys' => array(
-                            array('detail_id', 'choice', array(
-                                //'label' => 'Detail',
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => $details_for_data_choices, // TODO preguntar al component type si el data es numeric or date
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                            )
-                            ),
-                            array('detail_label', 'choice', array(
-                                //'label' => 'Label Header',
-                                'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            )),
-                            array('text_align', 'choice', array(
-                                //'label' => 'Text Align',
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                ),
-                            )
-                            ),
-                            array('text_with', 'text', array(
-                                //'label' => 'Width',
-                                "required" => false,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                                'attr' => array(
-                                    'placeholder' => 'px',
-                                    //'style' => 'width: 70px;'
-                                )
-                            )),
-                            array('show_prefix', 'checkbox', array(
-                                //'label' => 'Prefix',
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                            array('show_suffix', 'checkbox', array(
-                                //'label' => 'Suffix',
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                        )
-                    ));
-
-                    $keys[] = array('dataset_crossed_detail_for_series', 'sonata_type_immutable_array', array(
-                        //'label' => false,
-                        'keys' => array(
-                            array('detail_id', 'choice', array(
-                                //'label' => 'Detail',
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => $details_for_series_choices, // TODO preguntar al component type si el data es numeric or date
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                            )
-                            ),
-                            array('detail_label', 'choice', array(
-                                //'label' => 'Label Header',
-                                'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            )),
-                            array('text_align', 'choice', array(
-                                //'label' => 'Text Align',
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                ),
-                            )
-                            ),
-                            array('text_with', 'text', array(
-                                //'label' => 'Width',
-                                "required" => false,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                                'attr' => array(
-                                    'placeholder' => 'px',
-                                    //'style' => 'width: 70px;'
-                                )
-                            )),
-                            array('show_prefix', 'checkbox', array(
-                                //'label' => 'Prefix',
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                            array('show_suffix', 'checkbox', array(
-                                //'label' => 'Suffix',
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                        )
-                    ));
-
-                    break;
-                case 'single':
-
-                    $keys[] = array('dataset_single_detail_for_label', 'sonata_type_immutable_array', array(
-                        //'label' => false,
-                        'keys' => array(
-                            array('detail_id', 'choice', array(
-                                //'label' => 'Detail',
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => $details_for_labels_choices, // TODO preguntar al component type si el data es numeric or date
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                            )
-                            ),
-                            array('detail_label', 'choice', array(
-                                //'label' => 'Label Header',
-                                'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            )),
-                            array('text_align', 'choice', array(
-                                //'label' => 'Text Align',
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                ),
-                            )
-                            ),
-                            array('text_with', 'text', array(
-                                //'label' => 'Width',
-                                "required" => false,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                                'attr' => array(
-                                    'placeholder' => 'px',
-                                    //'style' => 'width: 70px;'
-                                )
-                            )),
-                            array('show_prefix', 'checkbox', array(
-                                //'label' => 'Prefix',
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                            array('show_suffix', 'checkbox', array(
-                                //'label' => 'Suffix',
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                        )
-                    ));
-
-                    $keys[] = array('dataset_single_detail_for_data', 'sonata_type_immutable_array', array(
-                        // 'label' => false,
-                        'keys' => array(
-                            array('detail_id', 'choice', array(
-                                //'label' => 'Detail',
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => $details_for_data_choices, // TODO preguntar al component type si el data es numeric or date
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                            )
-                            ),
-                            array('detail_label', 'choice', array(
-                                //'label' => 'Label Header',
-                        'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            )),
-                            array('text_align', 'choice', array(
-                                //'label' => 'Text Align',
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                ),
-                            )
-                            ),
-                            array('text_with', 'text', array(
-                                //'label' => 'Width',
-                                "required" => false,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                                'attr' => array(
-                                    'placeholder' => 'px',
-                                    //'style' => 'width: 70px;'
-                                )
-                            )),
-                            array('show_prefix', 'checkbox', array(
-                                //'label' => 'Prefix',
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                            array('show_suffix', 'checkbox', array(
-                                //'label' => 'Suffix',
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                        )
-                    ));
-
-
-                    break;
-            }
-
-            $keys[] = array('filter_result_details', 'sonata_type_native_collection', array(
-                //'label' => $this->trans('Details to Order Results'),
-                'entry_type' => 'sonata_type_immutable_array',
-                'allow_add' => true,
-                'allow_delete' => true,
-                'entry_options' => array(
-                    'keys' => array(
-                        array('detail_id', 'choice', array(
-                            'label' => 'Detail',
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => $details_for_labels_choices,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-7'),
-                        )
-                        )
-                    ),
-                )
-            ));
-
-            $keys[] = array('order_result_details', 'sonata_type_native_collection', array(
-                //'label' => $this->trans('Details to Order Results'),
-                'entry_type' => 'sonata_type_immutable_array',
-                'allow_add' => true,
-                'allow_delete' => true,
-                'entry_options' => array(
-                    'keys' => array(
-                        array('detail_id', 'choice', array(
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => $details_for_labels_choices,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-7'),
-                        )
-                        ),
-                        array('order_type', 'choice', array(
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => array('asc' => 'asc', 'desc' => 'desc'), // TODO add translator
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-3'),
-                        )
-                        ),
-                    )
-                )
-            ));
-
-        }
-
-        $keys[] = array('export_data_options', 'choice', array(
-            //'label' => $this->trans('Formats to Allow Export Data'),
-            'choices' => $component_type->getExportablesFormats(),
-            'multiple' => true, 'expanded' => true, 'required' => false
-        ));
-
-        return $keys;
-
-    }
 
 }

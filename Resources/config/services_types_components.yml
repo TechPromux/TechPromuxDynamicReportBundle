@@ -1,0 +1,20 @@
+services:
+#    tech_prommux_dynamic_report.example:
+#        class:  TechPromux\DynamicReportBundle\Example
+#        arguments: ["@service_id", "plain_value", %parameter%]
+
+    # Component Services
+
+    techprommux_dynamic_report.type.component.paginated_table:
+        class:  TechPromux\DynamicReportBundle\Type\Component\Table\PaginatedTableComponentType
+        tags:
+            - { name: techpromux_dynamic_report.type.component }
+        calls:
+            #- [ setComponentManager, [@techprommux_dynamic_report.manager.reportcomponent] ]
+
+    techprommux_dynamic_report.type.component.crossed_table:
+        class:  TechPromux\DynamicReportBundle\Type\Component\Table\CrossedTableComponentType
+        tags:
+            - { name: techpromux_dynamic_report.type.component }
+        calls:
+            #- [ setComponentManager, [@techprommux_dynamic_report.manager.reportcomponent] ]

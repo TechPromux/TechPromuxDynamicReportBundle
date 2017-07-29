@@ -35,7 +35,7 @@
             <div class="row">
                 <div>
                     {% block page_content_top %}
-                        {{ include('TechPromuxDynamicReportBundle:Type:Template/_container_content_render_macro.html.twig',
+                        {{ include('@TechPromuxDynamicReportBundle/Type/Template/_container_content_render_macro.html.twig',
                         { 'request': request,
                             'container':'content_top',
                             'container_class': 'report-content-top',
@@ -46,7 +46,7 @@
                 </div>
                 <div>
                     {% block page_content %}
-                        {{ include('TechPromuxDynamicReportBundle:Type:Template/_container_content_render_macro.html.twig',
+                        {{ include('@TechPromuxDynamicReportBundle/Type/Template/_container_content_render_macro.html.twig',
                         {'request': request,
                             'container':'content',
                             'container_class': 'report-content',
@@ -57,7 +57,7 @@
                 </div>
                 <div>
                     {% block page_content_bottom %}
-                        {{ include('TechPromuxDynamicReportBundle:Type:Template/_container_content_render_macro.html.twig',
+                        {{ include('@TechPromuxDynamicReportBundle/Type/Template/_container_content_render_macro.html.twig',
                         {'request': request,
                             'container':'content_bottom',
                             'container_class': 'report-content-bottom',

@@ -1,9 +1,9 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Entity;
+namespace  TechPromux\DynamicReportBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use TechPromux\Bundle\BaseBundle\Entity\Resource\BaseResource;
+use  TechPromux\BaseBundle\Entity\Resource\BaseResource;
 
 /**
  * Report
@@ -68,11 +68,11 @@ class Report extends BaseResource
     /**
      * Add component
      *
-     * @param \TechPromux\Bundle\DynamicReportBundle\Entity\Component $component
+     * @param \TechPromux\DynamicReportBundle\Entity\Component $component
      *
      * @return Report
      */
-    public function addComponent(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component)
+    public function addComponent(\TechPromux\DynamicReportBundle\Entity\Component $component)
     {
         $this->components[] = $component;
 
@@ -82,9 +82,9 @@ class Report extends BaseResource
     /**
      * Remove component
      *
-     * @param \TechPromux\Bundle\DynamicReportBundle\Entity\Component $component
+     * @param \TechPromux\DynamicReportBundle\Entity\Component $component
      */
-    public function removeComponent(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component)
+    public function removeComponent(\TechPromux\DynamicReportBundle\Entity\Component $component)
     {
         $this->components->removeElement($component);
     }

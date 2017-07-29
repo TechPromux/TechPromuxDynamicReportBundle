@@ -1,11 +1,11 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Type\Component\Table;
+namespace TechPromux\DynamicReportBundle\Type\Component\Table;
 
 use Symfony\Component\HttpFoundation\Request;
-use TechPromux\Bundle\DynamicReportBundle\Entity\Component;
-use TechPromux\Bundle\DynamicReportBundle\Type\Component\AbstractDataModelComponentType;
-use TechPromux\Bundle\DynamicReportBundle\Type\Component\Response;
+use  TechPromux\DynamicReportBundle\Entity\Component;
+use  TechPromux\DynamicReportBundle\Type\Component\AbstractDataModelComponentType;
+use  TechPromux\DynamicReportBundle\Type\Component\Response;
 
 class PaginatedTableComponentType extends AbstractDataModelComponentType
 {
@@ -41,12 +41,6 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
     public function getDefaultCustomSettings()
     {
         return array(
-            'paginator_options' => array(
-                'initial_page' => 1,
-                'items_per_page' => 32,
-                'max_paginator_links' => 5,
-                'show_row_number_in_first_column' => true,
-            ),
             'limit_indicators' => array(),
         );
     }
@@ -56,7 +50,7 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
      */
     public function getTemplateForEditForm()
     {
-        return $this->getBundleName() . ':Type:Component/Table/Paginated/edit.html.twig';
+        return '@'.$this->getBundleName() . '/Type/Component/Table/Paginated/edit.html.twig';
     }
 
     /**
@@ -68,19 +62,20 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
     }
 
     /**
-     * 'multiple', 'multiple_without_label', 'crossed' or 'single'
+     * 'multiple', 'crossed', 'series_single', 'series_multiple'
      *
      * @return string
      */
     public function getDataModelDatasetType()
     {
-        return 'multiple_without_label';
+        return 'multiple';
     }
 
     /**
      * @return bool
      */
-    public function getDataModelDatasetResultPaginated(){
+    public function getDataModelDatasetResultPaginated()
+    {
         return true;
     }
 
@@ -89,7 +84,7 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
      *
      * @return string
      */
-    public function getDataModelDatasetWithDataDetailsType()
+    public function getSupportedDataTypeFromDataModelDetails()
     {
         return 'all';
     }
@@ -108,37 +103,6 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
         //-------------------------------------------------------------
 
         $keys = array();
-
-        $keys[] = array('paginator_options', 'sonata_type_immutable_array', array(
-            'keys' => array(
-                array('initial_page', 'number', array('label' => 'Initial Page',
-                    "label_attr" => array(
-                        //'class' => 'pull-left',
-                        'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'
-                    ),
-                )),
-                array('items_per_page', 'number', array('label' => 'Items Per Page',
-                    "label_attr" => array(
-                        // 'class' => 'pull-left',
-                        'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'
-                    ),
-                )),
-                array('max_paginator_links', 'number', array('label' => 'Max Paginator Links',
-                    "label_attr" => array(
-                        //'class' => 'pull-left',
-                        'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-3'
-                    ),
-                )),
-                array('show_row_number_in_first_column', 'checkbox', array(
-                    'required' => false,
-                    "label_attr" => array(
-                        //'class' => 'pull-left',
-                        //'style' => 'margin-right:5px;',
-                        'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'
-                    ),
-                )),
-            )
-        ));
 
         $keys[] = array('limit_indicators', 'sonata_type_native_collection', array(
             'entry_type' => 'sonata_type_immutable_array',
@@ -198,7 +162,7 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
      */
     public function getTemplateForRenderComponent()
     {
-        return $this->getBundleName() . ':Type:Component/Table/Paginated/render.html.twig';
+        return '@'.$this->getBundleName() . '/Type/Component/Table/Paginated/render.html.twig';
     }
 
     /**
@@ -222,7 +186,7 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
 
     public function getIconClassName()
     {
-        return 'fa-list-alt';
+        return 'fa-table';
     }
 
     //----------------------------------------------------------
@@ -232,11 +196,12 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
      * @param Component $component
      * @param array $data
      * @param array $parameters
+     * @param bool $full_exportable_data
      * @return array
      */
-    protected function getMergedDataParametersAndSettings(Request $request = null, Component $component, array $data = array(), array $parameters = array())
+    protected function getMergedDataParametersAndSettings(Request $request = null, Component $component, array $parameters = array(), $full_exportable_data = false)
     {
-        $all = parent::getMergedDataParametersAndSettings($request, $component, $data, $parameters);
+        $all = parent::getMergedDataParametersAndSettings($request, $component, $parameters, $full_exportable_data);
 
         $settings = $component->getComponentOptions();
 

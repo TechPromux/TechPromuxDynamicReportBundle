@@ -1,6 +1,6 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Type\Component\Chart;
+namespace  TechPromux\DynamicReportBundle\Type\Component\Chart;
 
 class LineChartComponentBlock extends AbstractChartComponentBlock {
 
@@ -60,7 +60,7 @@ class LineChartComponentBlock extends AbstractChartComponentBlock {
         return $default_settings;
     }
 
-    public function createEditFormKeysSettings(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component) {
+    public function createEditFormKeysSettings(\TechPromux\DynamicReportBundle\Entity\Component $component) {
 
         $keys = parent::createEditFormKeysSettings($component);
 
@@ -133,14 +133,14 @@ class LineChartComponentBlock extends AbstractChartComponentBlock {
         return $keys;
     }
 
-    public function preUpdate(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component) {
+    public function preUpdate(\TechPromux\DynamicReportBundle\Entity\Component $component) {
 
         parent::preUpdate($component);
 
         return $component;
     }
 
-    public function renderDefaultResponse(\TechPromux\Bundle\DynamicReportBundle\Entity\Component $component, \Doctrine\DBAL\Query\QueryBuilder $queryBuilder) {
+    public function renderDefaultResponse(\TechPromux\DynamicReportBundle\Entity\Component $component, \Doctrine\DBAL\Query\QueryBuilder $queryBuilder) {
 
         $result = $this->createExportableData($component, $queryBuilder);
 

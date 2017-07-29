@@ -6,15 +6,16 @@
  * Time: 14:13
  */
 
-namespace TechPromux\Bundle\DynamicReportBundle\Manager;
+namespace  TechPromux\DynamicReportBundle\Manager;
 
 
-use TechPromux\Bundle\BaseBundle\Manager\BaseManager;
-use TechPromux\Bundle\DynamicReportBundle\Type\Component\BaseComponentType;
-use TechPromux\Bundle\DynamicReportBundle\Type\Component\Table\PaginatedTableComponentType;
-use TechPromux\Bundle\DynamicReportBundle\Type\Template\BaseTemplateType;
-use TechPromux\Bundle\DynamicReportBundle\Type\Template\DefaultTemplateType;
-use TechPromux\Bundle\DynamicReportBundle\Type\Template\TwoColumnsTemplateType;
+use  TechPromux\BaseBundle\Manager\BaseManager;
+use  TechPromux\BaseBundle\Manager\Security\BaseSecurityManager;
+use  TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
+use  TechPromux\DynamicReportBundle\Type\Component\Table\PaginatedTableComponentType;
+use  TechPromux\DynamicReportBundle\Type\Template\BaseTemplateType;
+use  TechPromux\DynamicReportBundle\Type\Template\DefaultTemplateType;
+use  TechPromux\DynamicReportBundle\Type\Template\TwoColumnsTemplateType;
 
 class UtilDynamicReportManager extends BaseManager
 {
@@ -50,6 +51,31 @@ class UtilDynamicReportManager extends BaseManager
     public function setComponentManager($component_manager)
     {
         $this->component_manager = $component_manager;
+        return $this;
+    }
+
+    //------------------------------------------------------------------------
+
+    /**
+     * @var BaseSecurityManager
+     */
+    private $security_manager;
+
+    /**
+     * @return BaseSecurityManager
+     */
+    public function getSecurityManager()
+    {
+        return $this->security_manager;
+    }
+
+    /**
+     * @param BaseSecurityManager $security_manager
+     * @return UtilDynamicReportManager
+     */
+    public function setSecurityManager($security_manager)
+    {
+        $this->security_manager = $security_manager;
         return $this;
     }
 
@@ -148,16 +174,7 @@ class UtilDynamicReportManager extends BaseManager
      */
     public function getRegisteredComponentTypes()
     {
-        $this->components_types = array(
-            'techpromux.table.paginated' => new PaginatedTableComponentType(),
-
-        );
-
-        foreach ($this->components_types as $c) {
-            $c->setUtilDynamicReportManager($this);
-        }
-
-        return $this->components_types;
+       return $this->components_types;
     }
 
     /**
@@ -210,7 +227,7 @@ class UtilDynamicReportManager extends BaseManager
      */
     public function getComponentTypeById($id)
     {
-        return $this->getRegisteredComponentTypes()[$id];
+        return $this->components_types[$id];
     }
 
     //-------------------------------------------------------------------------------------

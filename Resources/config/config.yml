@@ -1,7 +1,11 @@
+twig:
+    paths:
+         '%kernel.root_dir%/../src/TechPromux/DynamicReportBundle/Resources/views': 'TechPromuxDynamicReportBundle'
+
 doctrine:
     orm:
         resolve_target_entities:
-#            TechPromux\Bundle\DynamicReportBundle\Entity\Component: TechPromux\Bundle\DynamicReportBundle\Entity\DataModelComponent
+#             TechPromux\DynamicReportBundle\Entity\Component:  TechPromux\DynamicReportBundle\Entity\DataModelComponent
 
 sonata_media:
     contexts:

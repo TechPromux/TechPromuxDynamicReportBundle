@@ -1,9 +1,9 @@
 <?php
 
-namespace TechPromux\Bundle\DynamicReportBundle\Manager;
+namespace  TechPromux\DynamicReportBundle\Manager;
 
-use TechPromux\Bundle\BaseBundle\Manager\Resource\BaseResourceManager;
-use TechPromux\Bundle\DynamicReportBundle\Entity\Report;
+use  TechPromux\BaseBundle\Manager\Resource\BaseResourceManager;
+use  TechPromux\DynamicReportBundle\Entity\Report;
 
 /**
  * ReportManager

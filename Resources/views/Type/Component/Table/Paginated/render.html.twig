@@ -1,23 +1,23 @@
 {% extends app.request.isXmlHttpRequest?
-'TechPromuxDynamicReportBundle:Type:Component/DataModel/render.ajax.layout.html.twig'
-:'TechPromuxDynamicReportBundle:Type:Component/DataModel/render.datamodel.html.twig' %}
+'@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.datamodel.ajax.html.twig'
+:'@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.datamodel.html.twig' %}
 
 {% block component_content %}
     {{ parent() }}
 
-    <table id="component-table-paginated-{{ component.id }}"
+    <table id="component-table-paginated-data-{{ component.id }}"
            class="table table-bordered table-hover table-striped table-condensed" style="margin-bottom: 0px;">
         <thead>
         <tr>
-            {% if (settings['paginator_options']['show_row_number_in_first_column'] == true) %}
-                <th style="text-align:center;" id="component-table-paginated-header-{{ component.id }}-#">
+            {% if (settings['dataset_paginator_options']['show_row_number'] == true) %}
+                <th style="text-align:center;" id="component-table-paginated-data-header-{{ component.id }}-#">
                 <span>
                     <a class="table-column-arrow-order-by-{{ component.id }}" data-sort-by="" data-sort-order=""
                        href="#sort-asc-by-">#</a>
                 </span>
                 </th>
             {% endif %}
-            {% for d in settings['dataset_multiple_details_for_data'] %}
+            {% for d in settings['dataset_multiple_details_for_datas'] %}
                 {% if (extras.datamodel_details_descriptions[d['detail_id']] is defined) %} {# asking if is public #}
                     {% if (extras.datamodel_details_descriptions[d['detail_id']].classification == 'number') %}
                         {% set sort_icon_class = 'numeric' %}
@@ -29,18 +29,15 @@
 
                     <th title="{{ extras.datamodel_details_descriptions[d['detail_id']].title }}"
                         style="text-align: center;"
-                        id="component-table-paginated-header-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}">
+                        id="component-table-paginated-data-header-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}">
                         <div class="btn-group" style="width: 100%">
                             <label aria-expanded="false" type="button" class="dropdown-toggle" data-toggle="dropdown"
                                    style="width: 100%">
                                 <span>
-                                    {% if (d['detail_label']=='title') %}
-                                        {{ extras.datamodel_details_descriptions[d['detail_id']].title }}
-                                    {% else %}
-                                        {{ extras.datamodel_details_descriptions[d['detail_id']].abbreviation }}{% endif %}
+                                    {{ extras.datamodel_details_descriptions[d['detail_id']].title }}
                                 </span>
                                 <a href="#sort-by-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}"
-                                   class="component-table-paginated-data-header-sort-icon-{{ component.id }} pull-right">
+                                   class="component-table-paginated-data-data-header-sort-icon-{{ component.id }} pull-right">
 
                                     <i class="fa fa-sort-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}-asc fa-sort-{{ sort_icon_class }}-asc hide"></i>
                                     <i class="fa fa-sort-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}-desc fa-sort-{{ sort_icon_class }}-desc hide"></i>
@@ -49,7 +46,7 @@
                             <ul role="menu"
                                 class="dropdown-menu dropdown-menu-{% if (loop.index0>=loop.revindex0) %}right{% else %}left{% endif %}">
                                 <li>
-                                    <a class="component-table-paginated-data-order-by-{{ component.id }} component-table-paginated-data-order-by-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}-asc"
+                                    <a class="component-table-paginated-data-data-order-by-{{ component.id }} component-table-paginated-data-data-order-by-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}-asc"
                                        data-sort-by="{{ extras.datamodel_details_descriptions[d['detail_id']].id }}"
                                        data-sort-order="ASC"
                                        href="#sort-asc-by-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}">
@@ -57,7 +54,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="component-table-paginated-data-order-by-{{ component.id }} component-table-paginated-data-order-by-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}-desc"
+                                    <a class="component-table-paginated-data-data-order-by-{{ component.id }} component-table-paginated-data-data-order-by-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}-desc"
                                        data-sort-by="{{ extras.datamodel_details_descriptions[d['detail_id']].id }}"
                                        data-sort-order="DESC"
                                        href="#sort-desc-by-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}">
@@ -74,22 +71,14 @@
         <tbody>
         {% for row in data.result %}
             <tr>
-                {% if (settings['paginator_options']['show_row_number_in_first_column'] == true) %}
+                {% if (settings['dataset_paginator_options']['show_row_number'] == true) %}
                     <td style="text-align:center;">{{ (data.paginator.currentPage-1)*data.paginator.maxPerPage + loop.index }}</td>
                 {% endif %}
-                {% for d in settings['dataset_multiple_details_for_data'] %}
+                {% for d in settings['dataset_multiple_details_for_datas'] %}
                     {% if (extras.datamodel_details_descriptions[d['detail_id']] is defined) %} {# asking if detail selected is public #}
                         {% set format = extras.datamodel_details_descriptions[d['detail_id']]['format'] %}
-                        {% if (d['show_prefix'] == true) %}
-                            {% set prefix = extras.datamodel_details_descriptions[d['detail_id']]['prefix'] %}
-                        {% else %}
-                            {% set prefix = '' %}
-                        {% endif %}
-                        {% if (d['show_suffix'] == true) %}
-                            {% set suffix = extras.datamodel_details_descriptions[d['detail_id']]['suffix'] %}
-                        {% else %}
-                            {% set suffix = '' %}
-                        {% endif %}
+                        {% set prefix = extras.datamodel_details_descriptions[d['detail_id']]['prefix'] %}
+                        {% set suffix = extras.datamodel_details_descriptions[d['detail_id']]['suffix'] %}
                         {% set col = row[extras.datamodel_details_descriptions[d['detail_id']]['alias']] %}
                         {% set text_color = '' %}
                         {% set text_title = '' %}
@@ -106,7 +95,7 @@
 
                                 {% if ( limit_indicator['limit_type']=='less_or_equal') %}
                                     {% if (col<=limit_indicator['limit'] ) %}
-                                        {% set text_color = 'color:'~slimit_indicator['limit_color']~';' %}
+                                        {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
                                         {% set text_title =  limit_indicator['limit_message'] %}
                                     {% endif %}
                                 {% endif %}
@@ -167,7 +156,7 @@
     <script>
         // linking table header order arrows with filters form submit action
 
-        $(document).on('click', '#component-table-paginated-{{ component.id }} a.component-table-paginated-data-order-by-{{ component.id }}', function (event) {
+        $(document).on('click', '#component-table-paginated-data-{{ component.id }} a.component-table-paginated-data-data-order-by-{{ component.id }}', function (event) {
             event.preventDefault();
             event.stopPropagation();
 
@@ -181,17 +170,20 @@
 
         $(document).on('data-loaded', '#component-panel-content-{{ component.id }}', function (event) {
 
-            $('#component-panel-content-{{ component.id }}').html($('#component-panel-content-{{ component.id }}').attr('data-loaded'));
-            $('#component-panel-content-{{ component.id }}').attr('data-loaded', '');
+            var data = $('#component-panel-content-{{ component.id }}').attr('data-loaded');
+
+            var tableData = $('<div>').append(data).find('#component-table-paginated-data-{{ component.id }}');
+
+            $('#component-panel-content-{{ component.id }}').html(tableData);
 
             var _sort_by = $('#component-filters-form-{{ component.id }} #filters_form_{{ component.id }}__sort_by').val();
             var _sort_type = $('#component-filters-form-{{ component.id }} #filters_form_{{ component.id }}__sort_type').val().toLowerCase();
 
-            $('#component-table-paginated-{{ component.id }} a i.fa-sort-{{ component.id }}-' + _sort_by + '-' + _sort_type).removeClass('hide');
+            $('#component-table-paginated-data-{{ component.id }} a i.fa-sort-{{ component.id }}-' + _sort_by + '-' + _sort_type).removeClass('hide');
 
-            $('#component-table-paginated-header-{{ component.id }}-' + _sort_by + ' span').css({'color': 'blue'});
-            $('#component-table-paginated-{{ component.id }} a.component-table-paginated-data-order-by-{{ component.id }}-' + _sort_by + '-' + _sort_type).addClass('active');
-            $('#component-table-paginated-{{ component.id }} a.component-table-paginated-data-order-by-{{ component.id }}-' + _sort_by + '-' + _sort_type).parent().addClass('active');
+            $('#component-table-paginated-data-header-{{ component.id }}-' + _sort_by + ' span').css({'color': 'blue'});
+            $('#component-table-paginated-data-{{ component.id }} a.component-table-paginated-data-data-order-by-{{ component.id }}-' + _sort_by + '-' + _sort_type).addClass('active');
+            $('#component-table-paginated-data-{{ component.id }} a.component-table-paginated-data-data-order-by-{{ component.id }}-' + _sort_by + '-' + _sort_type).parent().addClass('active');
         });
 
         // init custom stuffs
