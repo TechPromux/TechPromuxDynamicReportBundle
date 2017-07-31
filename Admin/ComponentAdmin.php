@@ -81,11 +81,12 @@ class ComponentAdmin extends BaseResourceAdmin
         $type_choices = $this->getResourceManager()->getUtilDynamicReportManager()->getComponentsTypesChoicesWithoutGroups();
 
         $listMapper
-            ->addIdentifier('name')
-            ->add('title')
+            ->addIdentifier('title')
             ->add('component_type', 'choice', array(
                 'choices' => $type_choices,
             ))
+            ->add('templateContainer')
+            ->add('position')
             ->add('enabled', null, array('editable' => true,
                 'row_align' => 'center',
                 'header_style' => 'width: 100px',

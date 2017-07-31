@@ -14,29 +14,28 @@
                     <b>#</b>
                 </th>
             {% endif %}
-            <th style="text-align:center;padding-left: 20px;">
-                <strong>{{ extras.datamodel_details_descriptions[settings['dataset_crossed_detail_for_labels']['detail_id']]['title'] }}
-                    / {{ extras.datamodel_details_descriptions[settings['dataset_crossed_detail_for_series']['detail_id']]['title'] }}
-                    => {{ extras.datamodel_details_descriptions[settings['dataset_crossed_detail_for_datas']['detail_id']]['title'] }}
+            <th style="text-align:center;padding-left: 20px;"
+                width="{{ settings['basic_options']['header_first_column_text_with'] }}">
+                <strong>{{ settings['_titles']['labels'] }} / {{ settings['_titles']['series'] }}
+                    => {{ settings['_titles']['datas'] }}
                 </strong>
             </th>
-            {% for label in data['_labels'] %}
+            {% for label in settings['_labels'] %}
                 <th title="{{ label }}"
                     style="text-align:{{ settings['dataset_crossed_detail_for_labels']['text_align'] }};"> {{ label }} </th>
             {% endfor %}
-            {% if (settings['dataset_crossed_detail_for_datas']['summary_function']!=null and settings['dataset_crossed_detail_for_datas']['summary_function']!='') %}
+            {% if (settings['_summary_function']!=null and settings['_summary_function']!='') %}
                 <th style="text-align:{{ settings['dataset_crossed_detail_for_labels']['text_align'] }};border-left: 2px solid #c9cad7;">
-                    ({{ (settings['dataset_crossed_detail_for_datas']['summary_function'] | trans ({},'TechPromuxDynamicReportBundle') ) }}
-                    )
+                    ( {{ settings['_summary_label'] | trans ({},'TechPromuxDynamicReportBundle') }} )
                 </th>
             {% endif %}
         </tr>
         </thead>
         <tbody>
-        {% set format = extras.datamodel_details_descriptions[settings['dataset_crossed_detail_for_datas']['detail_id']]['format'] %}
-        {% set prefix = settings['dataset_crossed_detail_for_datas']['show_prefix']?extras.datamodel_details_descriptions[settings['dataset_crossed_detail_for_datas']['detail_id']]['prefix']:'' %}
-        {% set suffix = settings['dataset_crossed_detail_for_datas']['show_suffix']?extras.datamodel_details_descriptions[settings['dataset_crossed_detail_for_datas']['detail_id']]['suffix']:'' %}
-        {% for serie, row in data['_datas'] %}
+        {% set format = settings['_datas_descriptions_by_data'][0]['format'] %}
+        {% set prefix = settings['_datas_descriptions_by_data'][0]['prefix'] %}
+        {% set suffix = settings['_datas_descriptions_by_data'][0]['suffix'] %}
+        {% for serie, serie_datas in settings['_series'] %}
             <tr>
                 {% if (settings['basic_options']['show_row_number'] == true) %}
                     <td style="text-align:center;">{{ loop.index }}</td>
@@ -44,58 +43,156 @@
                 <td style="text-align:{{ settings['dataset_crossed_detail_for_series']['text_align'] }};">
                     <b>{{ serie }}</b></td>
                 {% set summary_horizontal_values = [] %}
-                {% for col in row %}
+                {% for label in settings['_labels'] %}
 
-                    {% set summary_horizontal_values = extras.formatter_helper.pushValueToArray(summary_horizontal_values, col) %}
+                    {% set col =  serie_datas[label] is defined ?  serie_datas[label] : null %}
+
+                    {% set summary_horizontal_values = formatter_helper.pushValuesToArray(summary_horizontal_values, col) %}
+
+                    {% set summary_col = formatter_helper.summarizeValues(settings['_summary_function'],col ) %}
 
                     {% set text_color = '' %}
                     {% set text_title = '' %}
 
-                    {# incluir aqui los colores de los limits #}
+                    {% if (settings['_limit_indicators'] is defined) %}
+
+                        {% for limit_indicator in settings['_limit_indicators'] %}
+
+                            {% if (formatter_helper.verifyLimitIndicator(summary_col,limit_indicator['limit_type'], limit_indicator['limit'] )) %}
+                                {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
+                                {% set text_title =  limit_indicator['limit_message'] %}
+                            {% endif %}
+
+                        {% endfor %}
+
+                    {% endif %}
 
                     <td style="text-align:{{ settings['dataset_crossed_detail_for_datas']['text_align'] }};">
-                        {% if (text_color!='') %}
-                        <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
-                           data-placement="top" data-toggle="tooltip">
+                        {% if (text_color!='') %} <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
+                                                     data-placement="top" data-toggle="tooltip"> {% endif %}
+
+                            {% if (settings['_summary_function'] == 'COUNT') %}
+                                {{ summary_col }}
+                            {% else %}
+                                {{ prefix~formatter_helper.formatValue(summary_col,format)~suffix }}
                             {% endif %}
-                            {{ prefix~ extras.formatter_helper.formatValue(col,format)~suffix }}
-                            {% if (text_color!='') %}
-                        </b>
-                        {% endif %}
+
+                            {% if (text_color!='') %}</b> {% endif %}
                     </td>
                 {% endfor %}
-                {% if (settings['dataset_crossed_detail_for_datas']['summary_function']!=null and settings['dataset_crossed_detail_for_datas']['summary_function']!='') %}
+                {% if (settings['_summary_function']!=null and settings['_summary_function']!='') %}
+
+                    {% set text_color = '' %}
+                    {% set text_title = '' %}
+
+                    {% set summary_horizontal = formatter_helper.summarizeValues(settings['_summary_function'],summary_horizontal_values ) %}
+
+                    {% if (settings['_limit_indicators'] is defined) %}
+
+                        {% for limit_indicator in settings['_limit_indicators'] %}
+
+                            {% if (formatter_helper.verifyLimitIndicator(summary_horizontal,limit_indicator['limit_type'], limit_indicator['limit'] )) %}
+                                {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
+                                {% set text_title =  limit_indicator['limit_message'] %}
+                            {% endif %}
+
+                        {% endfor %}
+
+                    {% endif %}
+
                     <td style="text-align:{{ settings['dataset_crossed_detail_for_datas']['text_align'] }};border-left: 2px solid #c9cad7;">
-                        {% set summary_horizontal = extras.formatter_helper.summarizeValues(settings['dataset_crossed_detail_for_datas']['summary_function'],summary_horizontal_values ) %}
-                        {{ prefix~extras.formatter_helper.formatValue(summary_horizontal,format)~suffix }}
+
+                        {% if (text_color!='') %} <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
+                                                     data-placement="top" data-toggle="tooltip"> {% endif %}
+
+                            {% if (settings['_summary_function'] == 'COUNT') %}
+                                {{ summary_horizontal }}
+                            {% else %}
+                                {{ prefix~formatter_helper.formatValue(summary_horizontal,format)~suffix }}
+                            {% endif %}
+
+                            {% if (text_color!='') %}</b> {% endif %}
                     </td>
                 {% endif %}
             </tr>
         {% endfor %}
         <!-- -->
-        {% if (settings['dataset_crossed_detail_for_datas']['summary_function']!=null and settings['dataset_crossed_detail_for_datas']['summary_function']!='') %}
+        {% if (settings['_summary_function']!=null and settings['_summary_function']!='') %}
             <tr style="border-top: 2px solid #c9cad7;">
-                <td style="text-align:left;padding-left: 20px;"
+                <td style="text-align:right;padding-left: 20px;"
                     colspan="{% if (settings['basic_options']['show_row_number'] == true) %}2{% else %}1{% endif %}">
-                    <b>({{ (settings['dataset_crossed_detail_for_datas']['summary_function'] | trans ({},'TechPromuxDynamicReportBundle') ) }}
-                        )</b>
+                    <b>( {{ settings['_summary_label'] | trans ({},'TechPromuxDynamicReportBundle') }} )</b>
                 </td>
                 {% set summary_final_values = [] %}
-                {% for i in 0..((data['_labels']|length)-1) %}
+                {% for label in settings['_labels'] %}
                     {% set summary_vertical_values = [] %}
-                    {% for series,row in data['_datas'] %}
-                        {% set col = row[i] %}
-                        {% set summary_vertical_values = extras.formatter_helper.pushValueToArray(summary_vertical_values, col) %}
-                        {% set summary_final_values = extras.formatter_helper.pushValueToArray(summary_final_values, col) %}
+                    {% for series, serie_datas in settings['_series'] %}
+                        {% set col = serie_datas[label] is defined ?  serie_datas[label] : null %}
+                        {% set summary_vertical_values = formatter_helper.pushValuesToArray(summary_vertical_values, col) %}
+                        {% set summary_final_values = formatter_helper.pushValuesToArray(summary_final_values, col) %}
                     {% endfor %}
+
+                    {% set text_color = '' %}
+                    {% set text_title = '' %}
+
+                    {% set summary_vertical = formatter_helper.summarizeValues(settings['_summary_function'],summary_vertical_values ) %}
+
+                    {% if (settings['_limit_indicators'] is defined) %}
+
+                        {% for limit_indicator in settings['_limit_indicators'] %}
+
+                            {% if (formatter_helper.verifyLimitIndicator(summary_vertical,limit_indicator['limit_type'], limit_indicator['limit'] )) %}
+                                {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
+                                {% set text_title =  limit_indicator['limit_message'] %}
+                            {% endif %}
+
+                        {% endfor %}
+
+                    {% endif %}
+
                     <td style="text-align:{{ settings['dataset_crossed_detail_for_datas']['text_align'] }};">
-                        {% set summary_vertical = extras.formatter_helper.summarizeValues(settings['dataset_crossed_detail_for_datas']['summary_function'],summary_vertical_values ) %}
-                        {{ prefix~extras.formatter_helper.formatValue(summary_vertical,format)~suffix }}
+                        {% if (text_color!='') %} <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
+                                                     data-placement="top" data-toggle="tooltip"> {% endif %}
+
+                            {% if (settings['_summary_function'] == 'COUNT') %}
+                                {{ summary_vertical }}
+                            {% else %}
+                                {{ prefix~formatter_helper.formatValue(summary_vertical,format)~suffix }}
+                            {% endif %}
+
+                            {% if (text_color!='') %}</b> {% endif %}
                     </td>
                 {% endfor %}
+
+                {% set text_color = '' %}
+                {% set text_title = '' %}
+
+                {% set summary_final = formatter_helper.summarizeValues(settings['_summary_function'],summary_final_values ) %}
+
+                {% if (settings['_limit_indicators'] is defined) %}
+
+                    {% for limit_indicator in settings['_limit_indicators'] %}
+
+                        {% if (formatter_helper.verifyLimitIndicator(summary_final,limit_indicator['limit_type'], limit_indicator['limit'] )) %}
+                            {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
+                            {% set text_title =  limit_indicator['limit_message'] %}
+                        {% endif %}
+
+                    {% endfor %}
+
+                {% endif %}
+
                 <td style="text-align:{{ settings['dataset_crossed_detail_for_datas']['text_align'] }};">
-                    {% set summary_final = extras.formatter_helper.summarizeValues(settings['dataset_crossed_detail_for_datas']['summary_function'],summary_final_values ) %}
-                    {{ prefix~extras.formatter_helper.formatValue(summary_final,format)~suffix }}
+                    {% if (text_color!='') %} <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
+                                                 data-placement="top" data-toggle="tooltip"> {% endif %}
+
+                        {% if (settings['_summary_function'] == 'COUNT') %}
+                            {{ summary_final }}
+                        {% else %}
+                            {{ prefix~formatter_helper.formatValue(summary_final,format)~suffix }}
+                        {% endif %}
+
+                        {% if (text_color!='') %}</b> {% endif %}
                 </td>
             </tr>
         {% endif %}

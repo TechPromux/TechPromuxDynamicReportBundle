@@ -1,16 +1,28 @@
-{% extends 'TechPromuxDynamicReportBundle:Report:templates/_base_layout.html.twig' %}
+{% extends '@TechPromuxDynamicReportBundle/Type/Template/_base_layout.html.twig' %}
 
 {% block page_content %}
     <div>
         <div class="col-md-6" style="padding-left:0px;padding-right:0px;">
             {% block page_left_col %}
-                {{ include('TechPromuxDynamicReportBundle:Report:templates/_container_content_render_macro.html.twig',{'container':'left_col','container_class': 'report-content-left-col','container_style':'','content':content, 'debug_template_zone':debug_template_zone})}}
-            {% endblock  %}
+                {{ include('@TechPromuxDynamicReportBundle/Type/Template/_container_content_render_macro.html.twig',
+                { 'request': request,
+                    'container':'content_left',
+                    'container_class': 'report-content-left',
+                    'container_style':'',
+                    'components':components,
+                    'debug_template_zone':debug_template_zone}) }}
+            {% endblock %}
         </div>
         <div class="col-md-6" style="padding-left:0px;padding-right:0px;">
             {% block page_right_col %}
-                {{ include('TechPromuxDynamicReportBundle:Report:templates/_container_content_render_macro.html.twig',{'container':'right_col','container_class': 'report-content-right-col','container_style':'','content':content, 'debug_template_zone':debug_template_zone})}}
-            {% endblock  %}
+                {{ include('@TechPromuxDynamicReportBundle/Type/Template/_container_content_render_macro.html.twig',
+                { 'request': request,
+                    'container':'content_right',
+                    'container_class': 'report-content-right',
+                    'container_style':'',
+                    'components':components,
+                    'debug_template_zone':debug_template_zone}) }}
+            {% endblock %}
         </div>
         <div style="clear: both;"></div>
     </div>

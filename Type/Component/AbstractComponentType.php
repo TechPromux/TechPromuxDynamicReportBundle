@@ -311,7 +311,7 @@ abstract class AbstractComponentType implements BaseComponentType
     protected function getMergedDataParametersAndSettings(Request $request = null, Component $component, array $parameters = array(), $full_exportable_data = false)
     {
 
-        $data = $this->getDataFromComponentExecution($request, $component, $parameters, $full_exportable_data);
+        $data = $this->getRenderableData($request, $component, $parameters, $full_exportable_data);
 
         $settings = array_merge(is_array($component->getDataOptions()) ? $component->getDataOptions() : array(),
             is_array($component->getComponentOptions()) ? $component->getComponentOptions() : array());
@@ -323,13 +323,10 @@ abstract class AbstractComponentType implements BaseComponentType
         $all = array(
             'component' => $component,
             'component_type' => $this,
+            'formatter_helper' => $formatter_helper,
             'parameters' => $parameters,
-            'settings' => $settings,
+            'settings' => array_merge($settings, array('_locale' => $preferred_locale)),
             'data' => $data,
-            'extras' => array(
-                'formatter_helper' => $formatter_helper,
-                'locale' => $preferred_locale,
-            ),
         );
 
         if (!$full_exportable_data) {
@@ -354,7 +351,7 @@ abstract class AbstractComponentType implements BaseComponentType
      * @param bool $full_exportable_data
      * @return mixed
      */
-    protected abstract function getDataFromComponentExecution(Request $request = null, Component $component, array $parameters = array(), $full_exportable_data = false);
+    protected abstract function getRenderableData(Request $request = null, Component $component, array $parameters = array(), $full_exportable_data = false);
 
     /**
      * @param Request|null $request

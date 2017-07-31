@@ -19,7 +19,7 @@
         {
         legend_{{component.id | replace({'-':'_'}) }} += '<li style="margin:5px; opacity: 1; cursor: pointer;">';
                 legend_{{component.id | replace({'-':'_'}) }} += '<span class="{{chart_legend_type}}-icon" style="padding:0px 5px 0px 10px;background-color:' + window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }}[x].color + '"></span>';
-                legend_{{component.id | replace({'-':'_'}) }} += '<span class="{{chart_legend_type}}-text" style="padding-left:7px;">' + window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }}[x].label + ' ' + '({{settings['detail_for_data']['show_prefix'] ? extras.datamodel_details_descriptions[settings['detail_for_data']['detail_id']]['prefix'] : ''}}' + window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }}[x].value + '{{settings['detail_for_data']['show_suffix'] ? extras.datamodel_details_descriptions[settings['detail_for_data']['detail_id']]['suffix'] : ''}})' + '</span>';
+                legend_{{component.id | replace({'-':'_'}) }} += '<span class="{{chart_legend_type}}-text" style="padding-left:7px;">' + window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }}[x].label + ' ' + '({{settings['detail_for_data']['show_prefix'] ? settings['_details_descriptions'][settings['detail_for_data']['detail_id']]['prefix'] : ''}}' + window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }}[x].value + '{{settings['detail_for_data']['show_suffix'] ? settings['_details_descriptions'][settings['detail_for_data']['detail_id']]['suffix'] : ''}})' + '</span>';
         }
         legend_{{component.id | replace({'-':'_'}) }} += '</ul>';
                 console.log('TPX-Component-Chart-{{chart_type}}: showing chart legend');
@@ -29,8 +29,8 @@
                 /**/$('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li').each(function (id, el) {
         $(this).attr('data-legend-offset', id);
                 $(this).attr('data-legend-show', "true");
-                $(this).attr('data-legend-prefix', "{{settings['detail_for_data']['show_prefix'] ? extras.datamodel_details_descriptions[settings['detail_for_data']['detail_id']]['prefix'] : ''}}");
-                $(this).attr('data-legend-suffix', "{{settings['detail_for_data']['show_suffix'] ? extras.datamodel_details_descriptions[settings['detail_for_data']['detail_id']]['suffix'] : ''}}");
+                $(this).attr('data-legend-prefix', "{{settings['detail_for_data']['show_prefix'] ? settings['_details_descriptions'][settings['detail_for_data']['detail_id']]['prefix'] : ''}}");
+                $(this).attr('data-legend-suffix', "{{settings['detail_for_data']['show_suffix'] ? settings['_details_descriptions'][settings['detail_for_data']['detail_id']]['suffix'] : ''}}");
         });
                 console.log('TPX-Component-Chart-{{chart_type}}: ending rendering legend');
         }

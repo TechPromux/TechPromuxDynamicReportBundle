@@ -9,7 +9,7 @@
            class="table table-bordered table-hover table-striped table-condensed" style="margin-bottom: 0px;">
         <thead>
         <tr>
-            {% if (settings['dataset_paginator_options']['show_row_number'] == true) %}
+            {% if (settings['basic_options']['show_row_number'] == true) %}
                 <th style="text-align:center;" id="component-table-paginated-data-header-{{ component.id }}-#">
                 <span>
                     <a class="table-column-arrow-order-by-{{ component.id }}" data-sort-by="" data-sort-order=""
@@ -18,46 +18,46 @@
                 </th>
             {% endif %}
             {% for d in settings['dataset_multiple_details_for_datas'] %}
-                {% if (extras.datamodel_details_descriptions[d['detail_id']] is defined) %} {# asking if is public #}
-                    {% if (extras.datamodel_details_descriptions[d['detail_id']].classification == 'number') %}
+                {% if (settings['_details_descriptions'][d['detail_id']] is defined) %} {# asking if is public #}
+                    {% if (settings['_details_descriptions'][d['detail_id']].classification == 'number') %}
                         {% set sort_icon_class = 'numeric' %}
-                    {% elseif (extras.datamodel_details_descriptions[d['detail_id']].classification == 'string') %}
+                    {% elseif (settings['_details_descriptions'][d['detail_id']].classification == 'string') %}
                         {% set sort_icon_class = 'alpha' %}
                     {% else %}
                         {% set sort_icon_class = 'amount' %}
                     {% endif %}
 
-                    <th title="{{ extras.datamodel_details_descriptions[d['detail_id']].title }}"
+                    <th title="{{ settings['_details_descriptions'][d['detail_id']].title }}"
                         style="text-align: center;"
-                        id="component-table-paginated-data-header-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}">
+                        id="component-table-paginated-data-header-{{ component.id }}-{{ settings['_details_descriptions'][d['detail_id']].id }}">
                         <div class="btn-group" style="width: 100%">
                             <label aria-expanded="false" type="button" class="dropdown-toggle" data-toggle="dropdown"
                                    style="width: 100%">
                                 <span>
-                                    {{ extras.datamodel_details_descriptions[d['detail_id']].title }}
+                                    {{ settings['_details_descriptions'][d['detail_id']].title }}
                                 </span>
-                                <a href="#sort-by-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}"
+                                <a href="#sort-by-{{ settings['_details_descriptions'][d['detail_id']].id }}"
                                    class="component-table-paginated-data-data-header-sort-icon-{{ component.id }} pull-right">
 
-                                    <i class="fa fa-sort-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}-asc fa-sort-{{ sort_icon_class }}-asc hide"></i>
-                                    <i class="fa fa-sort-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}-desc fa-sort-{{ sort_icon_class }}-desc hide"></i>
+                                    <i class="fa fa-sort-{{ component.id }}-{{ settings['_details_descriptions'][d['detail_id']].id }}-asc fa-sort-{{ sort_icon_class }}-asc hide"></i>
+                                    <i class="fa fa-sort-{{ component.id }}-{{ settings['_details_descriptions'][d['detail_id']].id }}-desc fa-sort-{{ sort_icon_class }}-desc hide"></i>
                                 </a>
                             </label>
                             <ul role="menu"
                                 class="dropdown-menu dropdown-menu-{% if (loop.index0>=loop.revindex0) %}right{% else %}left{% endif %}">
                                 <li>
-                                    <a class="component-table-paginated-data-data-order-by-{{ component.id }} component-table-paginated-data-data-order-by-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}-asc"
-                                       data-sort-by="{{ extras.datamodel_details_descriptions[d['detail_id']].id }}"
+                                    <a class="component-table-paginated-data-data-order-by-{{ component.id }} component-table-paginated-data-data-order-by-{{ component.id }}-{{ settings['_details_descriptions'][d['detail_id']].id }}-asc"
+                                       data-sort-by="{{ settings['_details_descriptions'][d['detail_id']].id }}"
                                        data-sort-order="ASC"
-                                       href="#sort-asc-by-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}">
+                                       href="#sort-asc-by-{{ settings['_details_descriptions'][d['detail_id']].id }}">
                                         <i class="fa fa-sort-{{ sort_icon_class }}-asc"></i> {{ 'component.table.paginated.order.asc' | trans({},component_type.getBundleName()) }}
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="component-table-paginated-data-data-order-by-{{ component.id }} component-table-paginated-data-data-order-by-{{ component.id }}-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}-desc"
-                                       data-sort-by="{{ extras.datamodel_details_descriptions[d['detail_id']].id }}"
+                                    <a class="component-table-paginated-data-data-order-by-{{ component.id }} component-table-paginated-data-data-order-by-{{ component.id }}-{{ settings['_details_descriptions'][d['detail_id']].id }}-desc"
+                                       data-sort-by="{{ settings['_details_descriptions'][d['detail_id']].id }}"
                                        data-sort-order="DESC"
-                                       href="#sort-desc-by-{{ extras.datamodel_details_descriptions[d['detail_id']].id }}">
+                                       href="#sort-desc-by-{{ settings['_details_descriptions'][d['detail_id']].id }}">
                                         <i class="fa fa-sort-{{ sort_icon_class }}-desc"></i> {{ 'component.table.paginated.order.desc' | trans({},component_type.getBundleName()) }}
                                     </a>
                                 </li>
@@ -71,61 +71,24 @@
         <tbody>
         {% for row in data.result %}
             <tr>
-                {% if (settings['dataset_paginator_options']['show_row_number'] == true) %}
+                {% if (settings['basic_options']['show_row_number'] == true) %}
                     <td style="text-align:center;">{{ (data.paginator.currentPage-1)*data.paginator.maxPerPage + loop.index }}</td>
                 {% endif %}
                 {% for d in settings['dataset_multiple_details_for_datas'] %}
-                    {% if (extras.datamodel_details_descriptions[d['detail_id']] is defined) %} {# asking if detail selected is public #}
-                        {% set format = extras.datamodel_details_descriptions[d['detail_id']]['format'] %}
-                        {% set prefix = extras.datamodel_details_descriptions[d['detail_id']]['prefix'] %}
-                        {% set suffix = extras.datamodel_details_descriptions[d['detail_id']]['suffix'] %}
-                        {% set col = row[extras.datamodel_details_descriptions[d['detail_id']]['alias']] %}
+                    {% if (settings['_details_descriptions'][d['detail_id']] is defined) %} {# asking if detail selected is public #}
+                        {% set format = settings['_details_descriptions'][d['detail_id']]['format'] %}
+                        {% set prefix = settings['_details_descriptions'][d['detail_id']]['prefix'] %}
+                        {% set suffix = settings['_details_descriptions'][d['detail_id']]['suffix'] %}
+                        {% set col = row[settings['_details_descriptions'][d['detail_id']]['alias']] %}
                         {% set text_color = '' %}
                         {% set text_title = '' %}
-                        {% if (settings.limit_indicators[d['detail_id']] is defined) %}
+                        {% if (settings['_limit_indicators'][d['detail_id']] is defined) %}
 
-                            {% for limit_indicator in settings.limit_indicators[d['detail_id']] %}
+                            {% for limit_indicator in settings['_limit_indicators'][d['detail_id']] %}
 
-                                {% if ( limit_indicator['limit_type']=='less_than') %}
-                                    {% if (col<limit_indicator['limit'] ) %}
-                                        {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
-                                        {% set text_title =  limit_indicator['limit_message'] %}
-                                    {% endif %}
-                                {% endif %}
-
-                                {% if ( limit_indicator['limit_type']=='less_or_equal') %}
-                                    {% if (col<=limit_indicator['limit'] ) %}
-                                        {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
-                                        {% set text_title =  limit_indicator['limit_message'] %}
-                                    {% endif %}
-                                {% endif %}
-
-                                {% if ( limit_indicator['limit_type']=='greater_than') %}
-                                    {% if (col>limit_indicator['limit'] ) %}
-                                        {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
-                                        {% set text_title =  limit_indicator['limit_message'] %}
-                                    {% endif %}
-                                {% endif %}
-
-                                {% if ( limit_indicator['limit_type']=='greater_or_equal') %}
-                                    {% if (col>=limit_indicator['limit'] ) %}
-                                        {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
-                                        {% set text_title =  limit_indicator['limit_message'] %}
-                                    {% endif %}
-                                {% endif %}
-
-                                {% if ( limit_indicator['limit_type']=='between') %}
-                                    {% if (col>=limit_indicator['limit'][0] and col<=limit_indicator['limit'][1]) %}
-                                        {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
-                                        {% set text_title =  limit_indicator['limit_message'] %}
-                                    {% endif %}
-                                {% endif %}
-
-                                {% if ( limit_indicator['limit_type']=='not_between') %}
-                                    {% if (col<limit_indicator['limit'][0] or col>limit_indicator['limit'][1]) %}
-                                        {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
-                                        {% set text_title =  limit_indicator['limit_message'] %}
-                                    {% endif %}
+                                {% if (formatter_helper.verifyLimitIndicator(col,limit_indicator['limit_type'], limit_indicator['limit'] )) %}
+                                    {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
+                                    {% set text_title =  limit_indicator['limit_message'] %}
                                 {% endif %}
 
                             {% endfor %}
@@ -137,7 +100,7 @@
                             <b style="cursor: help;{{ text_color }}" title="{{ text_title }}" data-placement="top"
                                data-toggle="tooltip">
                                 {% endif %}
-                                {{ prefix }}{{ extras.formatter_helper.formatValue(col,format) }}{{ suffix }}
+                                {{ prefix }}{{ formatter_helper.formatValue(col,format) }}{{ suffix }}
                                 {% if (text_color!='') %}
                             </b>
                             {% endif %}

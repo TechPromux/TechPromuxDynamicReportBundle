@@ -1,15 +1,12 @@
 <?php
 
-namespace TechPromux\DynamicReportBundle\Type\Component;
+namespace TechPromux\DynamicReportBundle\Type\Component\DataModel;
 
-use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use  TechPromux\DynamicQueryBundle\Entity\DataModelDetail;
 use  TechPromux\DynamicQueryBundle\Type\ConditionalOperator\BaseConditionalOperatorType;
 use  TechPromux\DynamicReportBundle\Entity\Component;
-use  TechPromux\DynamicReportBundle\Manager\ComponentManager;
-use  TechPromux\DynamicReportBundle\Manager\UtilDynamicReportManager;
+use TechPromux\DynamicReportBundle\Type\Component\AbstractComponentType;
 
 abstract class AbstractDataModelComponentType extends AbstractComponentType
 {
@@ -25,7 +22,6 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
         return array(
             'xls' => 'xls',
             'csv' => 'csv',
-            'json' => 'json',
         );
     }
 
@@ -37,7 +33,6 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
         return array(
             'xls' => 'fa-file-excel-o',
             'csv' => 'fa-file-text-o',
-            'json' => 'fa-file-code-o',
         );
     }
     //-----------------------------------------------------------------------------
@@ -170,7 +165,6 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                 'initial_page' => 1,
                 'items_per_page' => 32,
                 'max_paginator_links' => 5,
-                'show_row_number' => true,
             );
         }
 
@@ -256,7 +250,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         array('detail_id', 'choice', array(
                             "multiple" => false, "expanded" => false, "required" => true,
                             'choices' => $details_for_labels_choices, // TODO preguntar al component type si el data es numeric or date
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-3'),
+                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
                         )
                         ),
                         array('detail_label', 'choice', array(
@@ -273,7 +267,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         ),
                         array('text_with', 'text', array(
                             "required" => false,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-1'),
+                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
                             'attr' => array(
                                 'placeholder' => 'px',
                             )
@@ -301,7 +295,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         array('detail_id', 'choice', array(
                             "multiple" => false, "expanded" => false, "required" => true,
                             'choices' => $details_for_series_choices, // TODO preguntar al component type si el data es numeric or date
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-3'),
+                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
                         )
                         ),
                         array('detail_label', 'choice', array(
@@ -318,7 +312,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         ),
                         array('text_with', 'text', array(
                             "required" => false,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-1'),
+                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
                             'attr' => array(
                                 'placeholder' => 'px',
                                 //'style' => 'width: 70px;'
@@ -347,7 +341,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         array('detail_id', 'choice', array(
                             "multiple" => false, "expanded" => false, "required" => true,
                             'choices' => $details_for_datas_choices, // TODO preguntar al component type si el data es numeric or date
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-3'),
+                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
                         )
                         ),
                         array('detail_label', 'choice', array(
@@ -364,23 +358,11 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         ),
                         array('text_with', 'text', array(
                             "required" => false,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-1'),
+                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
                             'attr' => array(
                                 'placeholder' => 'px',
                                 //'style' => 'width: 70px;'
                             )
-                        )),
-                        array('summary_function', 'choice', array(
-                            'label' => 'Add Summary Column',
-                            "multiple" => false, "expanded" => false, "required" => false,
-                            'choices' => array(
-                                'SUM' => 'SUM',
-                                'AVG' => 'AVG',
-                                'COUNT' => 'COUNT',
-                                'MIN' => 'MIN',
-                                'MAX' => 'MAX',
-                            ),
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
                         )),
                         array('show_prefix', 'checkbox', array(
                             'required' => false,
@@ -663,14 +645,6 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-3'
                         ),
                     )),
-                    array('show_row_number', 'checkbox', array(
-                        'required' => false,
-                        "label_attr" => array(
-                            //'class' => 'pull-left',
-                            //'style' => 'margin-right:5px;',
-                            'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'
-                        ),
-                    )),
                 )
             ));
         }
@@ -928,7 +902,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
      * @return array
      * @throws \Exception
      */
-    public function getDataFromComponentExecution(Request $request = null, Component $component, array $parameters = array(), $full_exportable_data = false)
+    public function getRenderableData(Request $request = null, Component $component, array $parameters = array(), $full_exportable_data = false)
     {
         $filters_form = $this->createFiltersForm($request, $component, $parameters);
 
@@ -1066,27 +1040,68 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
             ->getDataModelManager()
             ->getEnabledDetailsDescriptionsFromDataModel($component->getDatamodel());
 
-        $datamodelDetails = array();
-        $datamodelDetailsDescriptions = array();
-
         switch ($this->getDataModelDatasetType()) {
             case 'multiple':
-                $details_for_datas = $all['settings']['dataset_multiple_details_for_datas'];
-                $datamodelDetails = $details_for_datas;
+                $datamodelDetails = $all['settings']['dataset_multiple_details_for_datas'];
+                $datamodelDetailsDescriptions = array();
+
+                foreach ($datamodelDetails as $detail) {
+                    $id = $detail['detail_id'];
+                    $datamodelDetailsDescriptions[$id] = array(
+                        'id' => $id,
+                        'alias' => $labelsDescriptions[$id]['alias'],
+                        'title' => $detail['detail_label'] == 'title' ? $labelsDescriptions[$id]['title'] : $labelsDescriptions[$id]['abbreviation'],
+                        'prefix' => $detail['show_prefix'] && !is_null($labelsDescriptions[$id]['prefix']) ? $labelsDescriptions[$id]['prefix'] : '',
+                        'suffix' => $detail['show_suffix'] && !is_null($labelsDescriptions[$id]['suffix']) ? $labelsDescriptions[$id]['suffix'] : '',
+                        'type' => $labelsDescriptions[$id]['type'],
+                        'format' => $labelsDescriptions[$id]['format'],
+                        'classification' => $labelsDescriptions[$id]['classification'],
+                        'text_align' => $detail['text_align'],
+                        'text_with' => $detail['text_with'],
+                    );
+                }
+
+                $all['settings']['_details_descriptions'] = $datamodelDetailsDescriptions;
+
+                $all['settings']['_labels'] = array(); // TODO
+                $all['settings']['_series'] = array(); // TODO
+                $all['settings']['_titles'] = array(); // TODO
+
+                $all['settings']['_datas_descriptions_type'] = 'label';
+                $all['settings']['_datas_descriptions_by_label'] = $datamodelDetailsDescriptions;
+                $all['settings']['_datas_descriptions_by_serie'] = array();
+                $all['settings']['_datas_descriptions_by_data'] = array();
+
                 break;
             case 'crossed':
+                //---------------------------------------------------------------------------------------
+
                 $detail_for_labels = $all['settings']['dataset_crossed_detail_for_labels'];
                 $detail_for_series = $all['settings']['dataset_crossed_detail_for_series'];
                 $detail_for_datas = $all['settings']['dataset_crossed_detail_for_datas'];
                 $datamodelDetails = array($detail_for_labels, $detail_for_series, $detail_for_datas);
+                $datamodelDetailsDescriptions = array();
 
-                $all['data']['_labels'] = array();
-                $all['data']['_series'] = array();
-                $all['data']['_datas'] = array();
+                foreach ($datamodelDetails as $detail) {
+                    $id = $detail['detail_id'];
+                    $datamodelDetailsDescriptions[$id] = array(
+                        'id' => $id,
+                        'alias' => $labelsDescriptions[$id]['alias'],
+                        'title' => $detail['detail_label'] == 'title' ? $labelsDescriptions[$id]['title'] : $labelsDescriptions[$id]['abbreviation'],
+                        'prefix' => $detail['show_prefix'] && !is_null($labelsDescriptions[$id]['prefix']) ? $labelsDescriptions[$id]['prefix'] : '',
+                        'suffix' => $detail['show_suffix'] && !is_null($labelsDescriptions[$id]['suffix']) ? $labelsDescriptions[$id]['suffix'] : '',
+                        'type' => $labelsDescriptions[$id]['type'],
+                        'format' => $labelsDescriptions[$id]['format'],
+                        'classification' => $labelsDescriptions[$id]['classification'],
+                        'text_align' => $detail['text_align'],
+                        'text_with' => $detail['text_with'],
+                    );
+                }
+
+                $all['settings']['_details_descriptions'] = $datamodelDetailsDescriptions;
 
                 $_crossed_labels = array();
                 $_crossed_series = array();
-                $_crossed_datas = array();
 
                 foreach ($all['data']['result'] as $row) {
 
@@ -1108,35 +1123,46 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             ->getComponentManager()
                             ->getDataModelManager()->getUtilDynamicQueryManager()->formatValue($col_series, $s_format)
                         . $s_suffix;
-                    $_crossed_series[$col_series_formatted] = $col_series_formatted;
-
-                    if (!isset($_crossed_datas[$col_series_formatted])) {
-                        $_crossed_datas[$col_series_formatted] = array();
+                    if (!isset($_crossed_series[$col_series_formatted])) {
+                        $_crossed_series[$col_series_formatted] = array();
                     }
 
                     $col_datas = $row[$labelsDescriptions[$detail_for_datas['detail_id']]['alias']];
-                    $_crossed_datas[$col_series_formatted][$col_label_formatted] = $col_datas;
+                    if (!isset($_crossed_series[$col_series_formatted][$col_label_formatted])) {
+                        $_crossed_series[$col_series_formatted][$col_label_formatted] = array();
+                    }
+                    $_crossed_series[$col_series_formatted][$col_label_formatted][] = $col_datas;
+
                 }
 
-                foreach ($_crossed_labels as $label) {
-                    $all['data']['_labels'][] = $label;
-                }
+                //-------------------------------------------------------------------------------------------------
 
-                foreach (array_keys($_crossed_datas) as $serie) {
-                    $all['data']['_series'][$serie] = array(
-                        'title' => $serie,
+                $all['settings']['_labels'] = array_values($_crossed_labels);
+                $all['settings']['_series'] = $_crossed_series;
+                $all['settings']['_titles'] = array(
+                    'labels' => $labelsDescriptions[$all['settings']['dataset_crossed_detail_for_labels']['detail_id']]['title'],
+                    'series' => $labelsDescriptions[$all['settings']['dataset_crossed_detail_for_series']['detail_id']]['title'],
+                    'datas' => $labelsDescriptions[$all['settings']['dataset_crossed_detail_for_datas']['detail_id']]['title'],
+
+                );
+
+                $all['settings']['_datas_descriptions_type'] = 'data';
+                $all['settings']['_datas_descriptions_by_label'] = array();
+                $all['settings']['_datas_descriptions_by_serie'] = array();
+                $all['settings']['_datas_descriptions_by_data'] = array(
+                    array(
+                        'id' => $detail_for_datas['detail_id'],
+                        'alias' => $labelsDescriptions[$detail_for_datas['detail_id']]['alias'],
+                        'title' => $labelsDescriptions[$detail_for_datas['detail_id']]['title'],
+                        'prefix' => $detail_for_datas['show_prefix'] ? $labelsDescriptions[$detail_for_datas['detail_id']]['prefix'] : '',
+                        'suffix' => $detail_for_datas['show_prefix'] ? $labelsDescriptions[$detail_for_datas['detail_id']]['suffix'] : '',
                         'type' => $labelsDescriptions[$detail_for_datas['detail_id']]['type'],
                         'format' => $labelsDescriptions[$detail_for_datas['detail_id']]['format'],
                         'classification' => $labelsDescriptions[$detail_for_datas['detail_id']]['classification'],
-                        'prefix' => $detail_for_datas['show_prefix'] ? $labelsDescriptions[$detail_for_datas['detail_id']]['prefix'] : '',
-                        'suffix' => $detail_for_datas['show_prefix'] ? $labelsDescriptions[$detail_for_datas['detail_id']]['suffix'] : '',
-                    );
-                    $all['data']['_datas'][$serie] = array();
-                    foreach ($_crossed_labels as $label) {
-                        $data_value = isset($_crossed_datas[$serie][$label]) ? $_crossed_datas[$serie][$label] : null;
-                        $all['data']['_datas'][$serie][] = $data_value;
-                    }
-                }
+                        'text_align' => isset($detail_for_datas['text_align']) ? $detail_for_datas['text_align'] : '',
+                        'text_with' => isset($detail_for_datas['text_with']) ? $detail_for_datas['text_with'] : '',
+                    )
+                );
 
                 break;
             case 'series_single':
@@ -1146,25 +1172,6 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
 
                 break;
         }
-
-        foreach ($datamodelDetails as $detail) {
-            $id = $detail['detail_id'];
-            $datamodelDetailsDescriptions[$id] = array(
-                'id' => $id,
-                'alias' => $labelsDescriptions[$id]['alias'],
-                'title' => $detail['detail_label'] == 'title' ? $labelsDescriptions[$id]['title'] : $labelsDescriptions[$id]['abbreviation'],
-                'prefix' => $detail['show_prefix'] && !is_null($labelsDescriptions[$id]['prefix']) ? $labelsDescriptions[$id]['prefix'] : '',
-                'suffix' => $detail['show_suffix'] && !is_null($labelsDescriptions[$id]['suffix']) ? $labelsDescriptions[$id]['suffix'] : '',
-                'type' => $labelsDescriptions[$id]['type'],
-                'format' => $labelsDescriptions[$id]['format'],
-                'classification' => $labelsDescriptions[$id]['classification'],
-                'text_align' => $detail['text_align'],
-                'text_with' => $detail['text_with'],
-            );
-        }
-
-        //$all['extras']['datamodel_details_labels_keys'] = array_keys($datamodelDetailsDescriptions);
-        $all['extras']['datamodel_details_descriptions'] = $datamodelDetailsDescriptions;
 
         //dump($all);
 
@@ -1186,60 +1193,123 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
 
         //----------------------------------------------------------
 
-        $exportableLabels = array();
-        $exportableSeries = array();
-        $exportableValues = array();
-        $exportableDescriptionType = '';
-        $exportableFieldsDescriptions = array();
+        $exportableData = array(
+            'title' => $component->getTitle(),
+            'has_series' => null,
+            'show_row_number' => null,
+            'datas_descriptions_by' => null,
+            'datas_descriptions' => null,
+            'labels' => array(),
+            'series' => array(),
+        );
 
         //----------------------------------------------------------
 
-        $has_series = false; // TODO averiguar si tiene o no tiene serie
+        $formatter_helper = $all['formatter_helper'];
 
-        $show_row_number = false;
-
-        $formatter_helper = $all['extras']['formatter_helper'];
-
-        $labelsDescriptions = $all['extras']['datamodel_details_descriptions']; // TODO
+        $datamodel_details_descriptions = $all['settings']['_details_descriptions']; // TODO
 
         switch ($this->getDataModelDatasetType()) {
             case 'multiple':
-                $exportableDescriptionType = 'labels';
-
-                $exportableFieldsDescriptions = array_values($labelsDescriptions);
-
-                $data_result = $all['data']['result'];
-
-                $labelsDescriptionsAlias = array(); // TODO
-                foreach (array_values($labelsDescriptions) as $i => $lb) {
-                    $alias = $lb['alias'];
-                    $labelsDescriptionsAlias[$alias] = $i;
-                    $exportableLabels[] = $lb['title'];
+                $exportableData['has_series'] = false;
+                $exportableData['has_summaries'] = false;
+                $exportableData['datas_descriptions_by'] = 'label';
+                $labels_alias_ids = array();
+                foreach ($datamodel_details_descriptions as $id => $lbd) {
+                    $labels_alias_ids[$lbd['alias']] = $id;
+                    $exportableData['labels'][] = $lbd['title'];
+                    $exportableData['datas_descriptions'][] = $lbd;
                 }
+                dump($datamodel_details_descriptions);
+                dump($labels_alias_ids);
 
-                foreach ($data_result as $i => $row) {
-
+                foreach ($all['data']['result'] as $i => $row) {
                     $serie_id = $i;
                     $serie_data = array();
-
-                    foreach ($row as $column => $value) {
-
-                        $alias = $column;
-
-                        $format = $exportableFieldsDescriptions[$labelsDescriptionsAlias[$alias]]['format'];
+                    foreach ($labels_alias_ids as $alias => $id) {
+                        $value = $row[$alias];
+                        $format = $datamodel_details_descriptions[$id]['format'];
                         //$prefix = $exportableLabels[$alias]['prefix'];
                         //$suffix = $exportableLabels[$alias]['suffix'];
                         $txt = $formatter_helper->formatValue($value, $format);
-
-                        $serie_data[] = htmlentities($txt);
+                        $serie_data[] = $txt;
                     }
-
-                    $exportableValues[$serie_id] = $serie_data;
+                    $exportableData['series'][$serie_id] = $serie_data;
                 }
                 break;
             case 'crossed':
-                $exportableDescriptionType = 'labels';
 
+                $exportableData['has_series'] = true;
+                $exportableData['series_title'] = $all['settings']['_titles']['labels'] . ' / ' . $all['settings']['_titles']['series'] . ' => ' . $all['settings']['_titles']['datas'];
+                if (!empty($all['settings']['_summary_function'])) {
+                    $exportableData['has_summaries'] = true;
+                    $exportableData['datas_summaries'] = array(
+                        'title' => $all['settings']['_summary_label'],
+                        'title_text_align' => $all['settings']['_datas_descriptions_by_data'][0]['text_align'],
+                        'title_prefix' => $all['settings']['_datas_descriptions_by_data'][0]['prefix'],
+                        'title_suffix' => $all['settings']['_datas_descriptions_by_data'][0]['suffix'],
+                        'for_label' => array(),
+                        'for_serie' => array(),
+                        'for_all' => null,
+                    );
+                } else {
+                    $exportableData['has_summaries'] = false;
+                }
+                $exportableData['datas_descriptions_by'] = 'data';
+
+                $exportableData['labels'] = $all['settings']['_labels'];
+                $exportableData['datas_descriptions'] = $all['settings']['_datas_descriptions_by_data'];
+
+                $summary_vertical_values = array();
+                $summary_final_values = array();
+
+                $format = $exportableData['datas_descriptions'][0]['format'];
+                //$prefix = $exportableLabels[$alias]['prefix'];
+                //$suffix = $exportableLabels[$alias]['suffix'];
+
+                foreach ($all['settings']['_series'] as $serie_id => $serie) {
+
+                    $serie_data = array();
+
+                    $summary_horizontal_values = array();
+
+                    foreach ($all['settings']['_labels'] as $label) {
+
+                        $values = isset($serie[$label]) ? $serie[$label] : array();
+
+                        $value = $formatter_helper->summarizeValues($all['settings']['_summary_function'], $values);
+
+                        $txt = $formatter_helper->formatValue($value, $format);
+                        $serie_data[] = $txt;
+
+                        $summary_horizontal_values = $formatter_helper->pushValuesToArray($summary_horizontal_values, $values);
+                        if (!isset($summary_vertical_values[$label])) {
+                            $summary_vertical_values[$label] = array();
+                        }
+                        $summary_vertical_values[$label] = $formatter_helper->pushValuesToArray($summary_vertical_values[$label], $values);
+                        $summary_final_values = $formatter_helper->pushValuesToArray($summary_final_values, $values);
+                    }
+                    $exportableData['series'][$serie_id] = $serie_data;
+
+                    $exportableData['datas_summaries']['for_serie'][$serie_id] = $formatter_helper->formatValue($formatter_helper
+                        ->summarizeValues(
+                            $all['settings']['_summary_function'],
+                            $summary_horizontal_values
+                        ), $format);
+                }
+
+                foreach ($all['settings']['_labels'] as $label) {
+                    $exportableData['datas_summaries']['for_label'][$label] = $formatter_helper->formatValue($formatter_helper
+                        ->summarizeValues(
+                            $all['settings']['_summary_function'],
+                            $summary_vertical_values[$label]
+                        ), $format);
+                }
+                $exportableData['datas_summaries']['for_all'] = $formatter_helper->formatValue($formatter_helper
+                    ->summarizeValues(
+                        $all['settings']['_summary_function'],
+                        $summary_final_values
+                    ), $format);
 
                 break;
             case 'series_single':
@@ -1251,17 +1321,6 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
 
                 break;
         }
-
-        $exportableData = array(
-            'title' => $component->getTitle(),
-            'has_series' => $has_series,
-            'show_row_number' => $show_row_number,
-            'descriptions_type' => $exportableDescriptionType,
-            'descriptions' => $exportableFieldsDescriptions,
-            'labels' => $exportableLabels,
-            'series' => $exportableSeries,
-            'datas' => $exportableValues,
-        );
 
         return $exportableData;
     }
@@ -1282,110 +1341,181 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
 
         $has_series = $exportableData['has_series'];
 
-        $descriptionsType = $exportableData['descriptions_type'];
+        $show_row_number = $exportableData['show_row_number'];
 
-        $descriptions = $exportableData['descriptions'];
+        $has_summaries = $exportableData['has_summaries'];
 
-        $descriptionsKeys = array_keys($descriptions);
+        $dataDescriptionsType = $exportableData['datas_descriptions_by'];
+
+        $dataDescriptions = $exportableData['datas_descriptions'];
 
         $labels = $exportableData['labels'];
 
         $series = $exportableData['series'];
 
-        $datas = $exportableData['datas'];
+        //dump($exportableData);
 
         switch ($format) {
             case 'xls':
                 $contentType = 'application/vnd.ms-excel';
 
-                $content = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name=ProgId content="Excel.Sheet"><meta name=Generator content=""></head><body>';
-                $content .= '<table border="1">';
-                $content .= '<tr><td colspan="' . (count($labels) + ($has_series ? 1 : 0)) . '">' . htmlentities($title) . '</td></tr>';
-                $content .= '<tr>' . ($has_series ? '<td></td>' : '');
+                $content = '<html>' . "\r\n";
+                $content .= '    <head>' . "\r\n";
+                $content .= '        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' . "\r\n";
+                $content .= '        <meta name=ProgId content="Excel.Sheet">' . "\r\n";
+                $content .= '        <meta name=Generator content="">' . "\r\n";
+                $content .= '    </head>' . "\r\n";
+                $content .= '    <body>' . "\r\n";
+                $content .= '        <table border="1">' . "\r\n";
+                $content .= '            <thead>' . "\r\n";
+                $content .= '                <tr><td colspan="' . (count($labels) + ($has_summaries ? 1 : 0) + ($show_row_number ? 1 : 0) + ($has_series ? 1 : 0)) . '">' . htmlentities($title) . '</td></tr>' . "\r\n";
+                $content .= '                <tr>';
+                if ($show_row_number) {
+                    $content .= '<td style="text-align: center;">#</td>';
+                }
+                if ($has_series) {
+                    $series_title = $exportableData['series_title'];
+                    $content .= '<td>' . htmlentities($series_title) . '</td>';
+                }
                 foreach ($labels as $label) {
                     $content .= '<td>' . htmlentities($label) . '</td>';
                 }
-                $content .= '</tr>';
-
-                foreach ($datas as $i => $row) {
-                    $content .= '<tr>' . ($has_series ? '<td>' . htmlentities($i) . '</td>' : '');
-                    foreach ($row as $col => $value) {
-                        if ($descriptionsType=='labels')
-                        {
-                            $idx = $col;
-                        }
-                        else{ // series
-                            $idx = $i;
-                        }
-                        $txt = $descriptions[$descriptionsKeys[$idx]]['prefix'] . $value . $descriptions[$descriptionsKeys[$idx]]['suffix'];
-                        $content .= '<td style="text-align: ' . $descriptions[$descriptionsKeys[$col]]['text_align'] . '">' . htmlentities($txt) . '</td>';
-                    }
-                    $content .= '</tr>';
+                if ($has_summaries) {
+                    $content .= '<td style="text-align: ' . $exportableData['datas_summaries']['title_text_align'] . '"> ( '
+                        . htmlentities($exportableData['datas_summaries']['title']) . ' ) </td>';
                 }
-                $content .= "</table>";
-                $content .= "</body></html>";
+                $content .= '                </tr>' . "\r\n";
+                $content .= '            </thead>' . "\r\n";
+                $content .= '            <tbody>' . "\r\n";
+
+                $row_number = 0;
+                foreach ($series as $serie_id => $row) {
+                    $row_number++;
+                    $content .= '                <tr>';
+                    $content .= $show_row_number ? '<td>' . $row_number . '</td>' : '';
+                    $content .= $has_series ? '<td>' . htmlentities($serie_id) . '</td>' : '';
+                    foreach ($row as $label => $value) {
+                        if ($dataDescriptionsType == 'label') {
+                            $idx = $label;
+                        } elseif ($dataDescriptionsType == 'serie') {
+                            $idx = $serie_id;
+                        } else { // data
+                            $idx = 0;
+                        }
+                        $txt = $dataDescriptions[$idx]['prefix'] . $value . $dataDescriptions[$idx]['suffix'];
+                        $content .= '<td style="text-align: ' . $dataDescriptions[$idx]['text_align'] . ';">' . htmlentities($txt) . '</td>';
+                    }
+                    if ($has_summaries && count($exportableData['datas_summaries']['for_serie']) > 0) {
+                        $content .= '<td style="text-align: ' . $exportableData['datas_summaries']['title_text_align'] . ';">'
+                            . htmlentities($exportableData['datas_summaries']['title_prefix'])
+                            . htmlentities($exportableData['datas_summaries']['for_serie'][$serie_id])
+                            . htmlentities($exportableData['datas_summaries']['title_suffix'])
+                            . '</td>';
+                    }
+                    $content .= '</tr>' . "\r\n";
+                }
+                if ($has_summaries && count($exportableData['datas_summaries']['for_label']) > 0) {
+                    $content .= '                <tr>';
+                    $content .= '<td style="text-align: right;" colspan="' . (($has_series ? 1 : 0) + ($show_row_number ? 1 : 0)) . '"> (' . htmlentities($exportableData['datas_summaries']['title']) . ')</td>';
+                    foreach ($labels as $i => $label) {
+                        $content .= '<td style="text-align: ' . $exportableData['datas_summaries']['title_text_align'] . ';">'
+                            . htmlentities($exportableData['datas_summaries']['title_prefix'])
+                            . htmlentities($exportableData['datas_summaries']['for_label'][$label])
+                            . htmlentities($exportableData['datas_summaries']['title_suffix'])
+                            . '</td>';
+                    }
+                    if (!is_null($exportableData['datas_summaries']['for_all'])) {
+                        $content .= '<td style="text-align: ' . $exportableData['datas_summaries']['title_text_align'] . ';">'
+                            . htmlentities($exportableData['datas_summaries']['title_prefix'])
+                            . htmlentities(htmlentities($exportableData['datas_summaries']['for_all']))
+                            . htmlentities($exportableData['datas_summaries']['title_suffix'])
+                            . '</td>';
+                    }
+
+                    $content .= '</tr>' . "\r\n";
+                }
+
+                $content .= "            </tbody>" . "\r\n";
+                $content .= "        </table>" . "\r\n";
+                $content .= "    </body>" . "\r\n";
+                $content .= "</html>";
                 break;
-            case 'csv':
+            case
+            'csv':
                 $contentType = 'text/csv';
+
                 $content = '"' . str_replace('"', '\"', $title) . '"' . "\r\n";
+
+                if ($show_row_number) {
+                    $content .= '' . ('#') . ';';
+                }
+                if ($has_series) {
+                    $series_title = $exportableData['series_title'];
+                    $content .= '' . (str_replace('"', '\"', $series_title)) . ';';
+                }
                 foreach ($labels as $i => $label) {
-                    $content .= '"' . str_replace('"', '\"', $label) . '"' . (($i < count($labels) - 1) ? ';' : "\r\n");
+                    $content .= '' . (str_replace('"', '\"', $label)) . (($i < count($labels) - 1) ? ';' : '');
                 }
-                foreach ($datas as $i => $row) {
-                    //$content .= '"' . str_replace('"', '\"', $i) . '";';
-                    foreach ($row as $col => $value) {
-                        if ($descriptionsType=='labels')
-                        {
-                            $idx = $col;
-                        }
-                        else{ // series
-                            $idx = $i;
-                        }
-                        $txt = $descriptions[$descriptionsKeys[$idx]]['prefix'] . $value . $descriptions[$descriptionsKeys[$idx]]['suffix'];
-                        $content .= '"' . str_replace('"', '\"', $txt) . '"' . (($col < count($row) - 1) ? ';' : '');
+                if ($has_summaries) {
+                    $content .= ';' . (str_replace('"', '\"', $exportableData['datas_summaries']['title'])) . '';
+                }
+                $content .= "\r\n";
+
+                $row_number = 0;
+                foreach ($series as $serie_id => $row) {
+                    $row_number++;
+                    if ($show_row_number) {
+                        $content .= '' . ($row_number) . ';';
                     }
-                    $content .= (($i < count($datas) - 1) ? "\r\n" : '');
+                    if ($has_series) {
+                        $content .= '' . (str_replace('"', '\"', $serie_id)) . ';';
+                    }
+                    $i = 0;
+                    foreach ($row as $label => $value) {
+                        if ($dataDescriptionsType == 'label') {
+                            $idx = $label;
+                        } elseif ($dataDescriptionsType == 'serie') {
+                            $idx = $serie_id;
+                        } else { // data
+                            $idx = 0;
+                        }
+                        $txt = $dataDescriptions[$idx]['prefix'] . $value . $dataDescriptions[$idx]['suffix'];
+                        $content .= '' . (str_replace('"', '\"', $txt)) . (($i < count($row) - 1) ? ';' : '');
+                        $i++;
+                    }
+                    if ($has_summaries && count($exportableData['datas_summaries']['for_serie']) > 0) {
+                        $content .= ';' . (str_replace('"', '\"',
+                                $exportableData['datas_summaries']['title_prefix']
+                                . $exportableData['datas_summaries']['for_serie'][$serie_id]
+                                . $exportableData['datas_summaries']['title_suffix']
+                            ));
+                    }
+                    $content .= "\r\n";
                 }
-                break;
-            case 'json':
-                $contentType = 'application/json';
-
-                $descriptions_to_json = array();
-                foreach ($descriptions as $i => $description) {
-                    $descriptions_to_json[] = array(
-                        'title' => $description['title'],
-                        'prefix' => $description['prefix'],
-                        'suffix' => $description['suffix'],
-                        'type' => $description['type'],
-                        'classification' => $description['classification'],
-                        'text_align' => $description['text_align'],
-                        'text_with' => $description['text_with'],
-                    );
+                if ($has_summaries && count($exportableData['datas_summaries']['for_label']) > 0) {
+                    if ($show_row_number) {
+                        $content .= ';';
+                    }
+                    if ($has_series) {
+                        $content .= '' . (str_replace('"', '\"', $exportableData['datas_summaries']['title'])) . ';';
+                    }
+                    foreach ($labels as $i => $label) {
+                        $content .= '' . (str_replace('"', '\"',
+                                $exportableData['datas_summaries']['title_prefix']
+                                . $exportableData['datas_summaries']['for_label'][$label]
+                                . $exportableData['datas_summaries']['title_suffix']
+                            )) . (($i < count($row) - 1) ? ';' : '');
+                    }
+                    if (!is_null($exportableData['datas_summaries']['for_all'])) {
+                        $content .= ';' . (str_replace('"', '\"',
+                                $exportableData['datas_summaries']['title_prefix']
+                                . $exportableData['datas_summaries']['for_all']
+                                . $exportableData['datas_summaries']['title_suffix']
+                            ));
+                    }
+                    $content .= "\r\n";
                 }
 
-                $labels_to_json = $labels;
-
-                $series_to_json = array();
-                foreach ($series as $i => $s) {
-                    $series_to_json[] = array(
-                        'title' => $s['title'],
-                    );
-                }
-
-                $datas_to_json = array();
-                foreach ($datas as $i => $d) {
-                    $datas_to_json[] = $d;
-                }
-                $content = json_encode(
-                    array(
-                        'title' => $title,
-                        'descriptions_type' => $descriptionsType,
-                        'descriptions' => $descriptions_to_json,
-                        'labels' => $labels_to_json,
-                        'series' => $series_to_json,
-                        'datas' => $datas_to_json,
-                    ), JSON_NUMERIC_CHECK | JSON_PRESERVE_ZERO_FRACTION | JSON_BIGINT_AS_STRING | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-                );
                 break;
             default:
                 throw new \RuntimeException('Invalid format');
@@ -1399,7 +1529,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
         ));
     }
 
-    //------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------
 
 
 }

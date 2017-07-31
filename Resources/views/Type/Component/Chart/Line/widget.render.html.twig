@@ -30,14 +30,14 @@
         $(this).attr('data-legend-offset', id);
                 $(this).attr('data-legend-show', "true");
                 /**/{%if (settings['chart_options']['series_datasets_type'] is defined and settings['chart_options']['series_datasets_type'] == 'crossed_datasets')%}
-                $(this).attr('data-legend-prefix', "{{settings['detail_for_crossed_datasets_datas']['show_prefix'] ? extras.datamodel_details_descriptions[settings['detail_for_crossed_datasets_datas']['detail_id']]['prefix'] : ''}}");
-                $(this).attr('data-legend-suffix', "{{settings['detail_for_crossed_datasets_datas']['show_suffix'] ? extras.datamodel_details_descriptions[settings['detail_for_crossed_datasets_datas']['detail_id']]['suffix'] : ''}}");
+                $(this).attr('data-legend-prefix', "{{settings['detail_for_crossed_datasets_datas']['show_prefix'] ? settings['_details_descriptions'][settings['detail_for_crossed_datasets_datas']['detail_id']]['prefix'] : ''}}");
+                $(this).attr('data-legend-suffix', "{{settings['detail_for_crossed_datasets_datas']['show_suffix'] ? settings['_details_descriptions'][settings['detail_for_crossed_datasets_datas']['detail_id']]['suffix'] : ''}}");
                 /**/{%endif%}
         });
                 /**/{%if (settings['chart_options']['series_datasets_type'] is defined and settings['chart_options']['series_datasets_type'] == 'multiple_datasets')%}
                 /**/{%for d in settings['details_for_multiple_datasets']%}
-                $($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li')[{{loop.index0}}]).attr('data-legend-prefix', '{{ d['show_prefix'] ? extras.datamodel_details_descriptions[d['detail_id']]['prefix'] : ''}}');
-                $($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li')[{{loop.index0}}]).attr('data-legend-suffix', '{{ d['show_suffix'] ? extras.datamodel_details_descriptions[d['detail_id']]['suffix'] : ''}}');
+                $($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li')[{{loop.index0}}]).attr('data-legend-prefix', '{{ d['show_prefix'] ? settings['_details_descriptions'][d['detail_id']]['prefix'] : ''}}');
+                $($('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li')[{{loop.index0}}]).attr('data-legend-suffix', '{{ d['show_suffix'] ? settings['_details_descriptions'][d['detail_id']]['suffix'] : ''}}');
                 /**/{%endfor%}
                 /**/{%endif%}/**/
                 console.log('TPX-Component-Chart-{{chart_type}}: ending rendering legend');

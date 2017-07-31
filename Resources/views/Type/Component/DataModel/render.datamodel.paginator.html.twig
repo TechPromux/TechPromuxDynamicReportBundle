@@ -1,5 +1,5 @@
 {% if (component_type.getDataModelDatasetResultPaginated()) %}
-    <div id="component-header-paginator-{{ component.id }}" class="paginator-container" style="text-align:right;">
+    <div id="component-header-paginator-{{ component.id }}" class="paginator-container" style="text-align:right; ">
         <div id="component-header-paginator-title-{{ component.id }}" class="col-md-3 col-sm-12"
              style="padding-top: 5px;font-size: 15px;">
             {% if ((data.paginator.currentPageResults|length)>0) %}
@@ -56,14 +56,16 @@
             $('#component-panel-header-custom-{{ component.id }}').html('');
             $('#component-panel-header-custom-{{ component.id }}').append(paginatorData);
             $('#component-header-paginator-{{ component.id }}').removeClass('hide');
+            $('#component-header-paginator-{{ component.id }}').parent().css({'min-width': '500px'});
         });
 
         // init custom stuffs
 
         $(document).ready(function () {
-            $('#component-panel-header-custom-{{ component.id }}').html('');
-            $('#component-panel-header-custom-{{ component.id }}').append($('#component-header-paginator-{{ component.id }}'));
-            $('#component-header-paginator-{{ component.id }}').removeClass('hide');
+            //$('#component-panel-header-custom-{{ component.id }}').html('');
+            //$('#component-panel-header-custom-{{ component.id }}').append($('#component-header-paginator-{{ component.id }}'));
+            //$('#component-header-paginator-{{ component.id }}').removeClass('hide');
+            $('#component-header-paginator-{{ component.id }}').parent().css({'min-width': '500px'});
         });
 
     </script>

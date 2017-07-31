@@ -15,13 +15,12 @@ class TemplateTypeCompilerPass implements CompilerPassInterface
             return;
         }
 
-        //$container->getDefinition('twig.loader')
-        //    ->addMethodCall('addPath',
-        //        array(__DIR__ . '/../Resources/views/' => 'TechPromuxDynamicReportBundle'));
-
         //------------------------
-        // adding templates
+        // adding templates folder path
 
+        $container->getDefinition('twig.loader.filesystem')
+            ->addMethodCall('addPath',
+                array(__DIR__ . '/../Resources/views/', 'TechPromuxDynamicReportBundle'));
     }
 
 }

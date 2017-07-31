@@ -1,6 +1,6 @@
 twig:
     paths:
-         '%kernel.root_dir%/../src/TechPromux/DynamicReportBundle/Resources/views': 'TechPromuxDynamicReportBundle'
+         '%kernel.root_dir%/../app/Resources/views': 'TechPromuxDynamicReportBundle'
 
 doctrine:
     orm:

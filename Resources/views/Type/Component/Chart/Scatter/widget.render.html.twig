@@ -29,8 +29,8 @@
                 /**/$('#component-chart-{{chart_type}}-legend-top-{{component.id}} ul.{{chart_legend_type}} li').each(function (id, el) {
         $(this).attr('data-legend-offset', id);
                 $(this).attr('data-legend-show', "true");
-                $(this).attr('data-legend-prefix', "{{settings['detail_for_data']['show_prefix'] ? extras.datamodel_details_descriptions[settings['detail_for_data']['detail_id']]['prefix'] : ''}}");
-                $(this).attr('data-legend-suffix', "{{settings['detail_for_data']['show_suffix'] ? extras.datamodel_details_descriptions[settings['detail_for_data']['detail_id']]['suffix'] : ''}}");
+                $(this).attr('data-legend-prefix', "{{settings['detail_for_data']['show_prefix'] ? settings['_details_descriptions'][settings['detail_for_data']['detail_id']]['prefix'] : ''}}");
+                $(this).attr('data-legend-suffix', "{{settings['detail_for_data']['show_suffix'] ? settings['_details_descriptions'][settings['detail_for_data']['detail_id']]['suffix'] : ''}}");
         });
                 console.log('TPX-Component-Chart-{{chart_type}}: ending rendering legend');
         }
@@ -294,15 +294,15 @@
                 pointHitDetectionRadius: 4,
                 // TEMPLATES
                 // Interpolated JS string - can access value
-                scaleLabel: "{{settings['detail_for_data']['show_prefix'] ? extras.datamodel_details_descriptions[settings['detail_for_data']['detail_id']]['prefix'] : ''}}<%=value%>{{settings['detail_for_data']['show_suffix'] ? extras.datamodel_details_descriptions[settings['detail_for_data']['detail_id']]['suffix'] : ''}}",
+                scaleLabel: "{{settings['detail_for_data']['show_prefix'] ? settings['_details_descriptions'][settings['detail_for_data']['detail_id']]['prefix'] : ''}}<%=value%>{{settings['detail_for_data']['show_suffix'] ? settings['_details_descriptions'][settings['detail_for_data']['detail_id']]['suffix'] : ''}}",
                 // Interpolated JS string - can access value
-                scaleArgLabel: "{{settings['detail_for_label']['show_prefix'] ? extras.datamodel_details_descriptions[settings['detail_for_label']['detail_id']]['prefix'] : ''}}<%=value%>{{settings['detail_for_label']['show_suffix'] ? extras.datamodel_details_descriptions[settings['detail_for_label']['detail_id']]['suffix'] : ''}}",
+                scaleArgLabel: "{{settings['detail_for_label']['show_prefix'] ? settings['_details_descriptions'][settings['detail_for_label']['detail_id']]['prefix'] : ''}}<%=value%>{{settings['detail_for_label']['show_suffix'] ? settings['_details_descriptions'][settings['detail_for_label']['detail_id']]['suffix'] : ''}}",
                 // Interpolated JS string - can access point fields: 
                 // argLabel, valueLabel, arg, value, datasetLabel, size
-                tooltipTemplate: {% raw %}"<%if (datasetLabel){%><%=datasetLabel%>: <%}%><%=argLabel%>; <%=valueLabel%>{%endraw%}{% if (settings['chart_options']['chart_type'] == 'ScatterBubble')%} ({{settings['detail_for_radius']['show_prefix'] ? extras.datamodel_details_descriptions[settings['detail_for_radius']['detail_id']]['prefix'] : ''}}<%=size*window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }}_reduceR%>{{settings['detail_for_radius']['show_suffix'] ? extras.datamodel_details_descriptions[settings['detail_for_radius']['detail_id']]['suffix'] : ''}}){%endif%}{%raw%}",{% endraw %}
+                tooltipTemplate: {% raw %}"<%if (datasetLabel){%><%=datasetLabel%>: <%}%><%=argLabel%>; <%=valueLabel%>{%endraw%}{% if (settings['chart_options']['chart_type'] == 'ScatterBubble')%} ({{settings['detail_for_radius']['show_prefix'] ? settings['_details_descriptions'][settings['detail_for_radius']['detail_id']]['prefix'] : ''}}<%=size*window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }}_reduceR%>{{settings['detail_for_radius']['show_suffix'] ? settings['_details_descriptions'][settings['detail_for_radius']['detail_id']]['suffix'] : ''}}){%endif%}{%raw%}",{% endraw %}
                 // Interpolated JS string - can access point fields: 
                 // argLabel, valueLabel, arg, value, datasetLabel, size
-                multiTooltipTemplate: {% raw %}"<%if (datasetLabel){%><%=datasetLabel%>: <%}%><%=argLabel%>; <%=valueLabel%>{%endraw%}{% if (settings['chart_options']['chart_type'] == 'ScatterBubble')%} ({{settings['detail_for_radius']['show_prefix'] ? extras.datamodel_details_descriptions[settings['detail_for_radius']['detail_id']]['prefix'] : ''}}<%=size*window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }}_reduceR%>{{settings['detail_for_radius']['show_suffix'] ? extras.datamodel_details_descriptions[settings['detail_for_radius']['detail_id']]['suffix'] : ''}}){%endif%}{%raw%}",{% endraw %}
+                multiTooltipTemplate: {% raw %}"<%if (datasetLabel){%><%=datasetLabel%>: <%}%><%=argLabel%>; <%=valueLabel%>{%endraw%}{% if (settings['chart_options']['chart_type'] == 'ScatterBubble')%} ({{settings['detail_for_radius']['show_prefix'] ? settings['_details_descriptions'][settings['detail_for_radius']['detail_id']]['prefix'] : ''}}<%=size*window.tpx_component_chart_{{chart_type}}_data_current_{{component.id | replace({'-':'_'}) }}_reduceR%>{{settings['detail_for_radius']['show_suffix'] ? settings['_details_descriptions'][settings['detail_for_radius']['detail_id']]['suffix'] : ''}}){%endif%}{%raw%}",{% endraw %}
                 // Interpolated JS string - can access all chart fields
                 legendTemplate: {% raw %}"<ul class=\"<%=name.toLowerCase()%>-legend list-unstyled nav navbar-top-links\"><% for (var i=0; i<datasets.length; i++){%><li style=\"margin:5px;cursor:pointer;opacity:1;\"><span style=\"background-color:<%=datasets[i].strokeColor%>;padding:0px 5px 0px 10px\"></span><span style=\"padding-left:7px;\"><strong><%if(datasets[i].label){%><%=datasets[i].label%><%}%></strong></span></li><%}%></ul>",{% endraw %}
         };
