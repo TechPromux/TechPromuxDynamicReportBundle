@@ -1,13 +1,12 @@
 <?php
 
-namespace  TechPromux\DynamicReportBundle\Controller;
+namespace TechPromux\DynamicReportBundle\Controller;
 
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\Request;
-use  TechPromux\BaseBundle\Manager\Adapter\Paginator\DoctrineDbalPaginatorAdapter;
-use  TechPromux\DynamicReportBundle\Entity\Component;
-use  TechPromux\DynamicReportBundle\Manager\ComponentManager;
-use  TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
+use TechPromux\DynamicReportBundle\Entity\Component;
+use TechPromux\DynamicReportBundle\Manager\ComponentManager;
+use TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
 
 class ComponentAdminController extends CRUDController
 {

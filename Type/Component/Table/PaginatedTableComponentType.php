@@ -3,9 +3,9 @@
 namespace TechPromux\DynamicReportBundle\Type\Component\Table;
 
 use Symfony\Component\HttpFoundation\Request;
-use  TechPromux\DynamicReportBundle\Entity\Component;
+use TechPromux\DynamicReportBundle\Entity\Component;
 use TechPromux\DynamicReportBundle\Type\Component\DataModel\AbstractDataModelComponentType;
-use  TechPromux\DynamicReportBundle\Type\Component\Response;
+use TechPromux\DynamicReportBundle\Type\Component\Response;
 
 class PaginatedTableComponentType extends AbstractDataModelComponentType
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace  TechPromux\DynamicReportBundle\Type\Template;
+namespace TechPromux\DynamicReportBundle\Type\Template;
 
 interface BaseTemplateType {
 

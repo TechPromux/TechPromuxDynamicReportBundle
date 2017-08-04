@@ -5,7 +5,7 @@ namespace TechPromux\DynamicReportBundle\Type\Component;
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use  TechPromux\DynamicReportBundle\Entity\Component;
+use TechPromux\DynamicReportBundle\Entity\Component;
 
 interface BaseComponentType
 {

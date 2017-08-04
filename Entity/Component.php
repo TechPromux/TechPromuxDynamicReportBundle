@@ -1,9 +1,9 @@
 <?php
 
-namespace  TechPromux\DynamicReportBundle\Entity;
+namespace TechPromux\DynamicReportBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use  TechPromux\BaseBundle\Entity\Resource\BaseResource;
+use TechPromux\BaseBundle\Entity\Resource\BaseResource;
 
 /**
  * Component
@@ -66,7 +66,7 @@ class Component extends BaseResource
 
     public function __toString()
     {
-        return $this->id ? $this->getName() : '';
+        return $this->getTitle() ? $this->getTitle() : '';
     }
 
     /**

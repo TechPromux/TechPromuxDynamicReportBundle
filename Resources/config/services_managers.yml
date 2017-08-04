@@ -19,6 +19,7 @@ services:
             - { name: techpromux.resource_manager}
         calls:
             #- [ setServiceContainer,['@service_container']]
+            - [ setResourceContextManager,['@techpromux.manager.default_resource_context']]
             - [ setUtilDynamicReportManager,['@techpromux_dynamic_report.manager.util_dynamic_report']]
 
     techpromux_dynamic_report.manager.component:

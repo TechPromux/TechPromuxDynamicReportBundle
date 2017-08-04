@@ -1,13 +1,13 @@
 <?php
 
-namespace  TechPromux\DynamicReportBundle\Controller;
+namespace TechPromux\DynamicReportBundle\Controller;
 
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\Request;
-use  TechPromux\DynamicReportBundle\Entity\Component;
-use  TechPromux\DynamicReportBundle\Entity\Report;
-use  TechPromux\DynamicReportBundle\Manager\ReportManager;
-use  TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
+use TechPromux\DynamicReportBundle\Entity\Component;
+use TechPromux\DynamicReportBundle\Entity\Report;
+use TechPromux\DynamicReportBundle\Manager\ReportManager;
+use TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
 
 class ReportAdminController extends CRUDController
 {

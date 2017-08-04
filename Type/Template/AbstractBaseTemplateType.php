@@ -6,7 +6,7 @@
  * Time: 15:05
  */
 
-namespace  TechPromux\DynamicReportBundle\Type\Template;
+namespace TechPromux\DynamicReportBundle\Type\Template;
 
 
 abstract class AbstractBaseTemplateType implements BaseTemplateType

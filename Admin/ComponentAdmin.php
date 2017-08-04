@@ -1,16 +1,16 @@
 <?php
 
-namespace  TechPromux\DynamicReportBundle\Admin;
+namespace TechPromux\DynamicReportBundle\Admin;
 
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
-use  TechPromux\BaseBundle\Admin\Resource\BaseResourceAdmin;
-use  TechPromux\DynamicReportBundle\Entity\Component;
-use  TechPromux\DynamicReportBundle\Manager\ComponentManager;
-use  TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
+use TechPromux\BaseBundle\Admin\Resource\BaseResourceAdmin;
+use TechPromux\DynamicReportBundle\Entity\Component;
+use TechPromux\DynamicReportBundle\Manager\ComponentManager;
+use TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
 
 class ComponentAdmin extends BaseResourceAdmin
 {

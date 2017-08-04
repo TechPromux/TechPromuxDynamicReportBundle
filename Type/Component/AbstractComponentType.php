@@ -9,10 +9,10 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Templating\EngineInterface;
-use  TechPromux\DynamicQueryBundle\Type\ConditionalOperator\BaseConditionalOperatorType;
-use  TechPromux\DynamicReportBundle\Entity\Component;
-use  TechPromux\DynamicReportBundle\Manager\ComponentManager;
-use  TechPromux\DynamicReportBundle\Manager\UtilDynamicReportManager;
+use TechPromux\DynamicQueryBundle\Type\ConditionalOperator\BaseConditionalOperatorType;
+use TechPromux\DynamicReportBundle\Entity\Component;
+use TechPromux\DynamicReportBundle\Manager\ComponentManager;
+use TechPromux\DynamicReportBundle\Manager\UtilDynamicReportManager;
 
 abstract class AbstractComponentType implements BaseComponentType
 {

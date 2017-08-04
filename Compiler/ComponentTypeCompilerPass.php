@@ -1,6 +1,6 @@
 <?php
 
-namespace  TechPromux\DynamicReportBundle\Compiler;
+namespace TechPromux\DynamicReportBundle\Compiler;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;

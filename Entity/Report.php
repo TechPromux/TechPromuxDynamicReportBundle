@@ -1,9 +1,11 @@
 <?php
 
-namespace  TechPromux\DynamicReportBundle\Entity;
+namespace TechPromux\DynamicReportBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use  TechPromux\BaseBundle\Entity\Resource\BaseResource;
+use TechPromux\BaseBundle\Entity\Context\BaseResourceContext;
+use TechPromux\BaseBundle\Entity\Context\HasResourceContext;
+use TechPromux\BaseBundle\Entity\Resource\BaseResource;
 
 /**
  * Report
@@ -11,7 +13,7 @@ use  TechPromux\BaseBundle\Entity\Resource\BaseResource;
  * @ORM\Table(name="techpromux_dynamic_report_report")
  * @ORM\Entity()
  */
-class Report extends BaseResource
+class Report extends BaseResource implements HasResourceContext
 {
     /**
      * @var string
@@ -27,6 +29,14 @@ class Report extends BaseResource
      * @ORM\OneToMany(targetEntity="Component", mappedBy="report", cascade={"all"}, orphanRemoval=true)
      */
     private $components;
+
+    /**
+     * @var BaseResourceContext
+     *
+     * @ORM\ManyToOne(targetEntity="TechPromux\BaseBundle\Entity\Context\BaseResourceContext")
+     * @ORM\JoinColumn(name="context_id", referencedColumnName="id", nullable=true)
+     */
+    protected $context;
 
     /**
      * Set templateName
@@ -54,7 +64,7 @@ class Report extends BaseResource
 
     public function __toString()
     {
-        return $this->id ? $this->getName() : '';
+        return $this->getTitle() ? $this->getTitle() : '';
     }
 
     /**
@@ -97,5 +107,30 @@ class Report extends BaseResource
     public function getComponents()
     {
         return $this->components;
+    }
+
+
+    /**
+     * Set owner
+     *
+     * @param BaseResourceContext $context
+     *
+     * @return DataSource
+     */
+    public function setContext(BaseResourceContext $context = null)
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
+    /**
+     * Get owner
+     *
+     * @return BaseResourceContext
+     */
+    public function getContext()
+    {
+        return $this->context;
     }
 }

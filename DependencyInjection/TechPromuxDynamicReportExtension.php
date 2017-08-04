@@ -1,6 +1,6 @@
 <?php
 
-namespace  TechPromux\DynamicReportBundle\DependencyInjection;
+namespace TechPromux\DynamicReportBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -35,33 +35,5 @@ class TechPromuxDynamicReportExtension extends Extension implements \Symfony\Com
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }
-
-
-    //-------------------------------------------------------------
-
-
-    /**
-     * Configure the report page templates.
-     *
-     * @param ContainerBuilder $container Container builder
-     * @param array            $config    Array of configuration
-     */
-    public function configureTemplates(ContainerBuilder $container, array $config) {
-
-        // adding automatically all component services definitions to report manager
-        if (false === $container->hasDefinition('tech_prommux_dynamic_report.manager.report')) {
-            return;
-        }
-
-        $report_manager_definition = $container->getDefinition('tech_prommux_dynamic_report.manager.report');
-
-        // add all templates to manager
-
-        $report_manager_definition->addMethodCall('setTemplates', array($config['templates']));
-
-        // set default template
-        $report_manager_definition->addMethodCall('setDefaultTemplateCode', array($config['default_template']));
-    }
-
 
 }

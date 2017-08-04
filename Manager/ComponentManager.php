@@ -1,11 +1,11 @@
 <?php
 
-namespace  TechPromux\DynamicReportBundle\Manager;
+namespace TechPromux\DynamicReportBundle\Manager;
 
-use  TechPromux\BaseBundle\Manager\Resource\BaseResourceManager;
-use  TechPromux\DynamicQueryBundle\Manager\DataModelManager;
-use  TechPromux\DynamicReportBundle\Entity\Component;
-use  TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
+use TechPromux\BaseBundle\Manager\Resource\BaseResourceManager;
+use TechPromux\DynamicQueryBundle\Manager\DataModelManager;
+use TechPromux\DynamicReportBundle\Entity\Component;
+use TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
 
 /**
  * ComponentRepository

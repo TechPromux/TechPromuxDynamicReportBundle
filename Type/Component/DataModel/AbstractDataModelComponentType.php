@@ -4,8 +4,8 @@ namespace TechPromux\DynamicReportBundle\Type\Component\DataModel;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use  TechPromux\DynamicQueryBundle\Type\ConditionalOperator\BaseConditionalOperatorType;
-use  TechPromux\DynamicReportBundle\Entity\Component;
+use TechPromux\DynamicQueryBundle\Type\ConditionalOperator\BaseConditionalOperatorType;
+use TechPromux\DynamicReportBundle\Entity\Component;
 use TechPromux\DynamicReportBundle\Type\Component\AbstractComponentType;
 
 abstract class AbstractDataModelComponentType extends AbstractComponentType

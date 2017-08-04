@@ -6,16 +6,16 @@
  * Time: 14:13
  */
 
-namespace  TechPromux\DynamicReportBundle\Manager;
+namespace TechPromux\DynamicReportBundle\Manager;
 
 
-use  TechPromux\BaseBundle\Manager\BaseManager;
-use  TechPromux\BaseBundle\Manager\Security\BaseSecurityManager;
-use  TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
-use  TechPromux\DynamicReportBundle\Type\Component\Table\PaginatedTableComponentType;
-use  TechPromux\DynamicReportBundle\Type\Template\BaseTemplateType;
-use  TechPromux\DynamicReportBundle\Type\Template\DefaultTemplateType;
-use  TechPromux\DynamicReportBundle\Type\Template\TwoColumnsTemplateType;
+use TechPromux\BaseBundle\Manager\BaseManager;
+use TechPromux\BaseBundle\Manager\Security\BaseSecurityManager;
+use TechPromux\DynamicReportBundle\Type\Component\BaseComponentType;
+use TechPromux\DynamicReportBundle\Type\Component\Table\PaginatedTableComponentType;
+use TechPromux\DynamicReportBundle\Type\Template\BaseTemplateType;
+use TechPromux\DynamicReportBundle\Type\Template\DefaultTemplateType;
+use TechPromux\DynamicReportBundle\Type\Template\TwoColumnsTemplateType;
 
 class UtilDynamicReportManager extends BaseManager
 {
@@ -236,7 +236,7 @@ class UtilDynamicReportManager extends BaseManager
 
         // queries, relacionadas al reporte????? y al tipo de reporte (si es no hybrid debe ser la consulta del reporte)
 
-        $user = $this->getCurrentEntityOwner();
+        $user = $this->getCurrentEntityContext();
 
         $queries = $this->getDataModelManager()->getEnabledQueriesFromUser($user);
 
