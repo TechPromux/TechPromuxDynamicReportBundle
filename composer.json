@@ -19,7 +19,7 @@
     ],
     "require": {
         "php": "^7.0",
-        "techpromux/base-bundle": "^1.0.3",
+        "techpromux/base-bundle": "^1.0.3"
         "techpromux/dynamic-query-bundle": "^1.0.4"
     },
     "autoload": {
