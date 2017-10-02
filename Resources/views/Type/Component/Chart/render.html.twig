@@ -1,0 +1,298 @@
+{% extends '@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.html.twig' %}
+
+{% block component_content %}
+    {{ parent() }}
+    <div id="component-chart-{{ component.id }}" style="text-align: center;">
+
+        <div id="component-chart-legend-top-{{ component.id }}"
+             style="text-align:center;padding: 15px;">
+        </div>
+
+        <div id="component-chart-canvas-container-{{ component.id }}"
+             class="component-chart-canvas-container-{{ component.id }}" style="text-align:center;padding: 5px;">
+            <canvas id="component-chart-canvas-{{ component.id }}" style="margin: 0 auto;"
+                    width="{% if (settings['chart_options']['width'] is defined) %}{{ settings['chart_options']['width'] }}{% else %}700{% endif %}"
+                    height="{% if (settings['chart_options']['width'] is defined) %}{{ settings['chart_options']['height'] }}{% else %}400{% endif %}"></canvas>
+        </div>
+
+        <div id="component-chart-legend-bottom-{{ component.id }}"
+             style="text-align:center;padding: 15px;" class="col-md-12">
+            <ul class="component-chart-legend-bottom list-unstyled nav navbar-top-links"></ul>
+        </div>
+    </div>
+{% endblock component_content %}
+
+{% block component_stylesheets %}
+    {{ parent() }}
+    <style>
+        #component-chart-tooltip-{{component.id}} {
+            opacity: 1;
+            position: absolute;
+            background: rgba(0, 0, 0, .8);
+            color: white;
+            /*padding: 5px;*/
+            border-radius: 3px;
+            -webkit-transition: all .1s ease;
+            transition: all .1s ease;
+            pointer-events: none;
+            -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+            text-align: left;
+        }
+
+        #component-chart-tooltip-{{component.id}} .chartjs-tooltip-key {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin-right: 5px;
+        }
+
+        #component-chart-legend-top-{{component.id}} ul li,
+        #component-chart-legend-bottom-{{component.id}} ul li {
+            cursor: not-allowed;
+        }
+
+        #component-chart-legend-top-{{component.id}} ul li span,
+        #component-chart-legend-bottom-{{component.id}} ul li span {
+            padding: 0px;
+            padding-left: 15px;
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+    </style>
+{% endblock component_stylesheets %}
+
+{% block component_javascripts %}
+    {{ parent() }}
+
+    <script>
+        // configure full screen button events
+
+        $(document).on('fullscreen-off', '#component-{{ component.id }}', function (event) {
+            window.component_chart_custom_chartjs_options_{{ component.id }}.maintainAspectRatio = true;
+            $('#component-chart-canvas-container-{{ component.id }}').attr('style', '');
+            $('#component-{{ component.id }}').attr('style', '');
+            $('#component-chart-legend-top-{{ component.id }}').removeClass('pull-left').removeClass('col-md-3').css({'text-align': 'center'});
+            $('#component-chart-legend-bottom-{{ component.id }}').removeClass('pull-left').removeClass('col-md-3').css({'text-align': 'center'});
+            $('#component-chart-canvas-container-{{ component.id }}').removeClass('pull-right').removeClass('col-md-9');
+
+            $('#component-chart-canvas-container-{{ component.id }}').html('');
+            $('#component-chart-canvas-container-{{ component.id }}').append('<canvas id="component-chart-canvas-{{ component.id }}" style="margin: 0 auto;"></canvas>');
+
+            $('#component-chart-canvas-{{ component.id }}').attr('width', '{% if (settings['chart_options']['width'] is defined) %}{{ settings['chart_options']['width'] }}{% else %}700{% endif %}');
+            $('#component-chart-canvas-{{ component.id }}').attr('height', '{% if (settings['chart_options']['height'] is defined) %}{{ settings['chart_options']['height'] }}{% else %}400{% endif %}');
+
+            component_render_chart_{{ component.id }}_(false);
+        });
+
+        $(document).on('fullscreen-on', '#component-{{ component.id }}', function (event) {
+            window.component_chart_custom_chartjs_options_{{ component.id }}.maintainAspectRatio = false;
+            $('#component-panel-{{ component.id }}').addClass('component-chart-windows-fullscreen-{{ component.id }}');
+            $('#component-chart-legend-top-{{ component.id }}').addClass('pull-left').addClass('col-md-3').css({'text-align': 'left'});
+            $('#component-chart-legend-bottom-{{ component.id }}').addClass('pull-left').addClass('col-md-3').css({'text-align': 'left'});
+            $('#component-chart-canvas-container-{{ component.id }}').addClass('pull-right').addClass('col-md-9');
+            var chart_height = 0;
+            var chart_width = 0;
+
+            if ($('#component-chart-legend-top-{{ component.id }}').innerWidth() + $('#component-chart-canvas-container-{{ component.id }}').innerWidth()
+                <= $('#component-panel-{{ component.id }}').innerWidth()) {
+                chart_height = $('#component-panel-{{ component.id }}').innerHeight()
+                    - $('#component-panel-heading-{{ component.id }}').innerHeight() - 20;
+                chart_width = $('#component-chart-canvas-container-{{ component.id }}').innerWidth();
+            }
+            else {
+                $('#component-chart-legend-top-{{ component.id }}').removeClass('col-md-3').removeClass('pull-left').css({'text-align': 'center'});
+                $('#component-chart-legend-bottom-{{ component.id }}').removeClass('col-md-3').removeClass('pull-left').css({'text-align': 'center'});
+                $('#component-chart-canvas-container-{{ component.id }}').removeClass('col-md-9').removeClass('pull-right');
+
+                chart_height = $('#component-panel-{{ component.id }}').innerHeight()
+                    - $('#component-panel-heading-{{ component.id }}').innerHeight()
+                    - $('#component-chart-legend-top-{{ component.id }}').innerHeight()
+                    - $('#component-chart-legend-bottom-{{ component.id }}').innerHeight() + 30;
+
+                chart_width = (chart_height * 2 < $('#component-panel-{{ component.id }}').innerWidth()) ? chart_height * 2 : $('#component-panel-{{ component.id }}').innerWidth();
+            }
+
+            $('#component-chart-canvas-container-{{ component.id }}').css({
+                //width: '' + chart_width + 'px;',
+                height: '' + (chart_height - 50) + 'px',
+                margin: 'auto',
+                padding: '15px'
+            });
+
+            $('#component-chart-canvas-container-{{ component.id }}').html('');
+            $('#component-chart-canvas-container-{{ component.id }}').append('<canvas id="component-chart-canvas-{{ component.id }}"></canvas>');
+
+            $('#component-chart-canvas-{{ component.id }}').attr('width', '' + (chart_width - 50) + 'px');
+            $('#component-chart-canvas-{{ component.id }}').attr('height', '' + (chart_height - 50) + 'px');
+
+            component_render_chart_{{ component.id }}_(false);
+        });
+
+    </script>
+    <script>
+        // save as png options
+        $(document).ready(function () {
+            $('a.component-toolbox-export-link-default-{{ component.id }}[data-format="png"]')
+                .removeClass('component-toolbox-export-link-default-{{ component.id }}')
+                .addClass('component-chart-toolbox-export-png-{{ component.id }}')
+                .attr('href', 'javascript:void(0)');
+        });
+
+        $(document).on('click', '#component-toolbox-export-button-{{ component.id }}', function (event) {
+            $('a.component-chart-toolbox-export-png-{{ component.id }}').attr('href', 'javascript:void(0)');
+        });
+
+        $(document).on('click', 'a.component-chart-toolbox-export-png-{{ component.id }}', function (event) {
+            var image_data = window.component_chart_object_{{ component.id }}.toBase64Image();
+            var time = new Date();
+            var filename = "{{ component.title | lower }}" + (time.getFullYear() + "_" + time.getMonth() + "_" + time.getDate() + "_" + time.getHours() + "_" + time.getMinutes() + "_" + time.getSeconds()) + ".png";
+            $(this).attr('download', filename).attr("href", image_data);
+            //$(this).attr("href", $("#component-chart-canvas-{{ component.id }}").get(0).toDataURL('image/png'));
+        });
+    </script>
+    {% block component_javascripts_legend_events %}
+        <script>
+            // configure legend options from chart
+            $(document).on('click', '#component-chart-legend-top-{{ component.id }} ul li, #component-chart-legend-bottom-{{ component.id }} ul li', function () {
+
+                var show = $(this).attr('data-legend-show');
+                if (show == "true")
+                    $(this).css({
+                        opacity: 0.3,
+                        cursor: 'pointer'
+                    });
+                else
+                    $(this).css({
+                        opacity: 1,
+                        //cursor: 'not-allowed'
+                    });
+                $(this).attr('data-legend-show', show == "true" ? "false" : "true");
+                var default_datasets = window.component_chart_data_default_{{ component.id }}.datasets;
+                var new_datasets = [];
+                var new_labels = [];
+                var pos = 0;
+                var legends = $('#component-chart-legend-top-{{ component.id }} ul li, #component-chart-legend-bottom-{{ component.id }} ul li');
+                for (var i = 0; i < legends.length; i++) {
+                    if ($(legends[i]).attr('data-legend-show') == "true") {
+                        new_datasets[pos] = {
+                            label: default_datasets[i].label,
+                            type: default_datasets[i].type,
+                            fill: default_datasets[i].fill,
+                            backgroundColor: default_datasets[i].backgroundColor,
+                            borderColor: default_datasets[i].borderColor,
+                            borderDash: default_datasets[i].borderDash,
+                            pointRadius: default_datasets[i].pointRadius,
+                            pointHoverRadius: default_datasets[i].pointHoverRadius,
+                            data: default_datasets[i].data
+                        };
+                        pos++;
+                    }
+                }
+
+                window.component_chart_data_current_{{ component.id }}.datasets = new_datasets;
+                component_render_chart_{{ component.id }}_(false);
+            });
+            /**/
+
+        </script>
+    {% endblock component_javascripts_legend_events %}
+    <script>
+        // configure tooltips options from chart
+        $(document).on('mouseout', '#component-chart-canvas-{{ component.id }}', function (event) {
+            $('#component-chart-tooltip-{{ component.id }}').css({opacity: 0});
+        });
+    </script>
+
+    <script>
+        // loading data from ajax
+        $('#component-{{ component.id }}').on('data-loaded', function (event) {
+
+            var data = $('#component-{{ component.id }}').attr('data-loaded');
+
+            if (data != null && data != '') {
+                window.component_chart_data_default_{{ component.id }} = JSON.parse(data);
+                window.component_chart_data_current_{{ component.id }} = JSON.parse(data);
+            }
+
+            component_render_chart_{{ component.id }}_(true);
+        });
+    </script>
+    <script>
+        // function for rendering custom chart
+
+        function component_render_chart_legend_{{ component.id }}_(update_legend = false) {
+            // creating chart legend
+            if (update_legend == false)
+                return;
+            var legend_{{ component.id }} = window.component_chart_object_{{ component.id }}.generateLegend();
+
+            $('#component-chart-legend-top-{{ component.id }}').html('');
+            $('#component-chart-legend-top-{{ component.id }}').append(legend_{{ component.id }});
+            $('#component-chart-legend-top-{{ component.id }}').find('ul').addClass('list-unstyled');
+            $('#component-chart-legend-top-{{ component.id }}').find('ul').addClass('nav');
+            $('#component-chart-legend-top-{{ component.id }}').find('ul').addClass('navbar-top-links');
+            $('#component-chart-legend-bottom-{{ component.id }} ul').html('');
+
+            var items = $('#component-chart-legend-top-{{ component.id }} ul li, #component-chart-legend-bottom-{{ component.id }} ul li');
+
+            $(items).each(function (id, el) {
+                $(el).attr('data-legend-offset', id);
+                $(el).attr('data-legend-show', "true");
+            });
+
+            {% if (series_datasets_type == 'crossed') %}
+            $(items).each(function (id, el) {
+                $(el).attr('data-legend-prefix', "{{ settings['dataset_detail_for_datas']['show_prefix'] ? settings['_details_descriptions'][settings['dataset_detail_for_datas']['detail_id']]['prefix'] : '' }}");
+                $(el).attr('data-legend-suffix', "{{ settings['dataset_detail_for_datas']['show_suffix'] ? settings['_details_descriptions'][settings['dataset_detail_for_datas']['detail_id']]['suffix'] : '' }}");
+            });
+            {% endif %}
+
+            {% if (series_datasets_type == 'multiple') %}
+            {% for d in settings['dataset_details_for_datas'] %}
+            $($('#component-chart-legend-top-{{ component.id }} ul li')[{{ loop.index0 }}]).attr('data-legend-prefix', '{{ d['show_prefix'] ? settings['_details_descriptions'][d['detail_id']]['prefix'] : '' }}');
+            $($('#component-chart-legend-top-{{ component.id }} ul li')[{{ loop.index0 }}]).attr('data-legend-suffix', '{{ d['show_suffix'] ? settings['_details_descriptions'][d['detail_id']]['suffix'] : '' }}');
+            {% endfor %}
+            {% endif %}
+
+            $('#component-chart-legend-top-{{ component.id }}').trigger('updated');
+        }
+    </script>
+    {% block component_javascripts_render_chart %}
+        <script>
+
+            // function for rendering custom chart
+
+            window.component_chart_data_default_{{ component.id }} = null;
+            window.component_chart_data_current_{{ component.id }} = null;
+            window.component_chart_custom_chartjs_options_{{ component.id }} = null;
+
+            window.component_chart_canvas_ctx_{{ component.id }} = null;
+            window.component_chart_factory_{{ component.id }} = null;
+            window.component_chart_object_{{ component.id }} = null;
+
+            function component_render_chart_{{ component.id }}_(update_legend = false) {
+                // creating chart
+                if (window.component_chart_object_{{ component.id }} != null) {
+                    window.component_chart_object_{{ component.id }}.destroy();
+                }
+
+                window.component_chart_canvas_ctx_{{ component.id }} = document.getElementById("component-chart-canvas-{{ component.id }}").getContext("2d");
+
+                window.component_chart_custom_chartjs_config_{{ component.id }} = {
+                    type: '{{ chart_type }}',
+                    data: window.component_chart_data_current_{{ component.id }},
+                    options: window.component_chart_custom_chartjs_options_{{ component.id }},
+                };
+
+                window.component_chart_object_{{ component.id }} = new Chart(
+                    window.component_chart_canvas_ctx_{{ component.id }},
+                    window.component_chart_custom_chartjs_config_{{ component.id }}
+                );
+
+                component_render_chart_legend_{{ component.id }}_(update_legend);
+            }
+        </script>
+    {% endblock component_javascripts_render_chart %}
+
+{% endblock component_javascripts %}

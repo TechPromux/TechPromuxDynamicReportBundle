@@ -99,12 +99,7 @@ class UtilDynamicReportManager extends BaseManager
      */
     public function getRegisteredTemplatesTypes()
     {
-        $this->report_templates_types = array(
-            'techpromux.template.default' => new DefaultTemplateType(),
-            'techpromux.template.2columns' => new TwoColumnsTemplateType(),
-        );
-
-        return $this->report_templates_types;
+         return $this->report_templates_types;
     }
 
     /**

@@ -1,6 +1,6 @@
 {% extends app.request.isXmlHttpRequest?
-'@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.datamodel.ajax.html.twig'
-:'@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.datamodel.html.twig' %}
+'@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.ajax.html.twig'
+:'@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.html.twig' %}
 
 {% block component_content %}
     {{ parent() }}
@@ -17,7 +17,7 @@
                 </span>
                 </th>
             {% endif %}
-            {% for d in settings['dataset_multiple_details_for_datas'] %}
+            {% for d in settings['dataset_details_for_datas'] %}
                 {% if (settings['_details_descriptions'][d['detail_id']] is defined) %} {# asking if is public #}
                     {% if (settings['_details_descriptions'][d['detail_id']].classification == 'number') %}
                         {% set sort_icon_class = 'numeric' %}
@@ -74,7 +74,7 @@
                 {% if (settings['basic_options']['show_row_number'] == true) %}
                     <td style="text-align:center;">{{ (data.paginator.currentPage-1)*data.paginator.maxPerPage + loop.index }}</td>
                 {% endif %}
-                {% for d in settings['dataset_multiple_details_for_datas'] %}
+                {% for d in settings['dataset_details_for_datas'] %}
                     {% if (settings['_details_descriptions'][d['detail_id']] is defined) %} {# asking if detail selected is public #}
                         {% set format = settings['_details_descriptions'][d['detail_id']]['format'] %}
                         {% set prefix = settings['_details_descriptions'][d['detail_id']]['prefix'] %}
@@ -111,6 +111,7 @@
         {% endfor %}
         </tbody>
     </table>
+
 {% endblock component_content %}
 
 {% block component_javascripts %}
@@ -131,9 +132,9 @@
 
         // when filter form indicates that ajax data was loaded, update view
 
-        $(document).on('data-loaded', '#component-panel-content-{{ component.id }}', function (event) {
+        $(document).on('data-loaded', '#component-{{ component.id }}', function (event) {
 
-            var data = $('#component-panel-content-{{ component.id }}').attr('data-loaded');
+            var data = $('#component-{{ component.id }}').attr('data-loaded');
 
             var tableData = $('<div>').append(data).find('#component-table-paginated-data-{{ component.id }}');
 

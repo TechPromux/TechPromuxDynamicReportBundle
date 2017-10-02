@@ -9,7 +9,7 @@ services:
         calls:
             #- [ setServiceContainer,['@service_container']]
             - [ setComponentManager,['@techpromux_dynamic_report.manager.component']]
-            - [ setSecurityManager,['@techpromux.manager.default_security']]
+            - [ setSecurityManager,['@techpromux_base.manager.default_security']]
 
     techpromux_dynamic_report.manager.report:
         class:  TechPromux\DynamicReportBundle\Manager\ReportManager
@@ -19,7 +19,7 @@ services:
             - { name: techpromux.resource_manager}
         calls:
             #- [ setServiceContainer,['@service_container']]
-            - [ setResourceContextManager,['@techpromux.manager.default_resource_context']]
+            - [ setResourceContextManager,['@techpromux_base.manager.resource_context']]
             - [ setUtilDynamicReportManager,['@techpromux_dynamic_report.manager.util_dynamic_report']]
 
     techpromux_dynamic_report.manager.component:

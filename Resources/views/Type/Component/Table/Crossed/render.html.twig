@@ -1,6 +1,6 @@
 {% extends app.request.isXmlHttpRequest?
-'@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.datamodel.ajax.html.twig'
-:'@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.datamodel.html.twig' %}
+'@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.ajax.html.twig'
+:'@TechPromuxDynamicReportBundle/Type/Component/DataModel/render.html.twig' %}
 
 {% block component_content %}
     {{ parent() }}
@@ -16,17 +16,16 @@
             {% endif %}
             <th style="text-align:center;padding-left: 20px;"
                 width="{{ settings['basic_options']['header_first_column_text_with'] }}">
-                <strong>{{ settings['_titles']['labels'] }} / {{ settings['_titles']['series'] }}
-                    => {{ settings['_titles']['datas'] }}
+                <strong>{{ settings['_titles']['labels'] }} / {{ settings['_titles']['series'] }} {#{ settings['_titles']['datas'] }#}
                 </strong>
             </th>
             {% for label in settings['_labels'] %}
                 <th title="{{ label }}"
-                    style="text-align:{{ settings['dataset_crossed_detail_for_labels']['text_align'] }};"> {{ label }} </th>
+                    style="text-align:{{ settings['dataset_detail_for_labels']['text_align'] }};"> {{ label }} </th>
             {% endfor %}
-            {% if (settings['_summary_function']!=null and settings['_summary_function']!='') %}
-                <th style="text-align:{{ settings['dataset_crossed_detail_for_labels']['text_align'] }};border-left: 2px solid #c9cad7;">
-                    ( {{ settings['_summary_label'] | trans ({},'TechPromuxDynamicReportBundle') }} )
+            {% if (settings['_data_summary_function']!=null and settings['_data_summary_function']!='') %}
+                <th style="text-align:{{ settings['dataset_detail_for_labels']['text_align'] }};border-left: 2px solid #c9cad7;">
+                    {{ settings['_data_summary_label'] | trans ({},'TechPromuxDynamicReportBundle') }}
                 </th>
             {% endif %}
         </tr>
@@ -40,16 +39,16 @@
                 {% if (settings['basic_options']['show_row_number'] == true) %}
                     <td style="text-align:center;">{{ loop.index }}</td>
                 {% endif %}
-                <td style="text-align:{{ settings['dataset_crossed_detail_for_series']['text_align'] }};">
+                <td style="text-align:{{ settings['dataset_detail_for_series']['text_align'] }};">
                     <b>{{ serie }}</b></td>
                 {% set summary_horizontal_values = [] %}
                 {% for label in settings['_labels'] %}
 
                     {% set col =  serie_datas[label] is defined ?  serie_datas[label] : null %}
 
-                    {% set summary_horizontal_values = formatter_helper.pushValuesToArray(summary_horizontal_values, col) %}
+                    {% set summary_col = formatter_helper.summarizeValues(settings['_data_crossed_function'],col ) %}
 
-                    {% set summary_col = formatter_helper.summarizeValues(settings['_summary_function'],col ) %}
+                    {% set summary_horizontal_values = formatter_helper.pushValuesToArray(summary_horizontal_values, col) %}
 
                     {% set text_color = '' %}
                     {% set text_title = '' %}
@@ -67,11 +66,11 @@
 
                     {% endif %}
 
-                    <td style="text-align:{{ settings['dataset_crossed_detail_for_datas']['text_align'] }};">
+                    <td style="text-align:{{ settings['dataset_detail_for_datas']['text_align'] }};">
                         {% if (text_color!='') %} <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
                                                      data-placement="top" data-toggle="tooltip"> {% endif %}
 
-                            {% if (settings['_summary_function'] == 'COUNT') %}
+                            {% if (settings['_data_crossed_function'] == 'COUNT') %}
                                 {{ summary_col }}
                             {% else %}
                                 {{ prefix~formatter_helper.formatValue(summary_col,format)~suffix }}
@@ -80,12 +79,12 @@
                             {% if (text_color!='') %}</b> {% endif %}
                     </td>
                 {% endfor %}
-                {% if (settings['_summary_function']!=null and settings['_summary_function']!='') %}
+                {% if (settings['_data_summary_function']!=null and settings['_data_summary_function']!='') %}
 
                     {% set text_color = '' %}
                     {% set text_title = '' %}
 
-                    {% set summary_horizontal = formatter_helper.summarizeValues(settings['_summary_function'],summary_horizontal_values ) %}
+                    {% set summary_horizontal = formatter_helper.summarizeValues(settings['_data_summary_function'],summary_horizontal_values ) %}
 
                     {% if (settings['_limit_indicators'] is defined) %}
 
@@ -100,12 +99,12 @@
 
                     {% endif %}
 
-                    <td style="text-align:{{ settings['dataset_crossed_detail_for_datas']['text_align'] }};border-left: 2px solid #c9cad7;">
+                    <td style="text-align:{{ settings['dataset_detail_for_datas']['text_align'] }};border-left: 2px solid #c9cad7;">
 
                         {% if (text_color!='') %} <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
                                                      data-placement="top" data-toggle="tooltip"> {% endif %}
 
-                            {% if (settings['_summary_function'] == 'COUNT') %}
+                            {% if (settings['_data_summary_function'] == 'COUNT') %}
                                 {{ summary_horizontal }}
                             {% else %}
                                 {{ prefix~formatter_helper.formatValue(summary_horizontal,format)~suffix }}
@@ -117,11 +116,11 @@
             </tr>
         {% endfor %}
         <!-- -->
-        {% if (settings['_summary_function']!=null and settings['_summary_function']!='') %}
+        {% if (settings['_data_summary_function']!=null and settings['_data_summary_function']!='') %}
             <tr style="border-top: 2px solid #c9cad7;">
                 <td style="text-align:right;padding-left: 20px;"
                     colspan="{% if (settings['basic_options']['show_row_number'] == true) %}2{% else %}1{% endif %}">
-                    <b>( {{ settings['_summary_label'] | trans ({},'TechPromuxDynamicReportBundle') }} )</b>
+                    <b>{{ settings['_data_summary_label'] | trans ({},'TechPromuxDynamicReportBundle') }}</b>
                 </td>
                 {% set summary_final_values = [] %}
                 {% for label in settings['_labels'] %}
@@ -135,7 +134,7 @@
                     {% set text_color = '' %}
                     {% set text_title = '' %}
 
-                    {% set summary_vertical = formatter_helper.summarizeValues(settings['_summary_function'],summary_vertical_values ) %}
+                    {% set summary_vertical = formatter_helper.summarizeValues(settings['_data_summary_function'],summary_vertical_values ) %}
 
                     {% if (settings['_limit_indicators'] is defined) %}
 
@@ -150,11 +149,11 @@
 
                     {% endif %}
 
-                    <td style="text-align:{{ settings['dataset_crossed_detail_for_datas']['text_align'] }};">
+                    <td style="text-align:{{ settings['dataset_detail_for_datas']['text_align'] }};">
                         {% if (text_color!='') %} <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
                                                      data-placement="top" data-toggle="tooltip"> {% endif %}
 
-                            {% if (settings['_summary_function'] == 'COUNT') %}
+                            {% if (settings['_data_summary_function'] == 'COUNT') %}
                                 {{ summary_vertical }}
                             {% else %}
                                 {{ prefix~formatter_helper.formatValue(summary_vertical,format)~suffix }}
@@ -167,7 +166,7 @@
                 {% set text_color = '' %}
                 {% set text_title = '' %}
 
-                {% set summary_final = formatter_helper.summarizeValues(settings['_summary_function'],summary_final_values ) %}
+                {% set summary_final = formatter_helper.summarizeValues(settings['_data_summary_function'],summary_final_values ) %}
 
                 {% if (settings['_limit_indicators'] is defined) %}
 
@@ -182,11 +181,11 @@
 
                 {% endif %}
 
-                <td style="text-align:{{ settings['dataset_crossed_detail_for_datas']['text_align'] }};">
+                <td style="text-align:{{ settings['dataset_detail_for_datas']['text_align'] }};">
                     {% if (text_color!='') %} <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
                                                  data-placement="top" data-toggle="tooltip"> {% endif %}
 
-                        {% if (settings['_summary_function'] == 'COUNT') %}
+                        {% if (settings['_data_summary_function'] == 'COUNT') %}
                             {{ summary_final }}
                         {% else %}
                             {{ prefix~formatter_helper.formatValue(summary_final,format)~suffix }}
@@ -198,6 +197,9 @@
         {% endif %}
         </tbody>
     </table>
+
+
+
 
 
 {% endblock component_content %}
@@ -213,9 +215,9 @@
     {{ parent() }}
     <script>
 
-        $(document).on('data-loaded', '#component-panel-content-{{ component.id }}', function (event) {
+        $(document).on('data-loaded', '#component-{{ component.id }}', function (event) {
 
-            var data = $('#component-panel-content-{{ component.id }}').attr('data-loaded');
+            var data = $('#component-{{ component.id }}').attr('data-loaded');
 
             var tableData = $('<div>').append(data).find('#component-table-paginated-data-{{ component.id }}');
 

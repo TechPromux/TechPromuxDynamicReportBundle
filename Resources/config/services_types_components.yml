@@ -18,3 +18,52 @@ services:
             - { name: techpromux_dynamic_report.type.component }
         calls:
             #- [ setComponentManager, [@techprommux_dynamic_report.manager.reportcomponent] ]
+
+    techprommux_dynamic_report.type.component.line_chart_series_crossed_dataset:
+        class:  TechPromux\DynamicReportBundle\Type\Component\Chart\LineChartSeriesCrossedDatasetComponentType
+        tags:
+            - { name: techpromux_dynamic_report.type.component }
+        calls:
+            #- [ setComponentManager, [@techprommux_dynamic_report.manager.reportcomponent] ]
+
+    techprommux_dynamic_report.type.component.line_chart_series_multiple_dataset:
+        class:  TechPromux\DynamicReportBundle\Type\Component\Chart\LineChartSeriesMultipleDatasetComponentType
+        tags:
+            - { name: techpromux_dynamic_report.type.component }
+        calls:
+            #- [ setComponentManager, [@techprommux_dynamic_report.manager.reportcomponent] ]
+
+    techprommux_dynamic_report.type.component.bar_chart_series_crossed_dataset:
+        class:  TechPromux\DynamicReportBundle\Type\Component\Chart\BarChartSeriesCrossedDatasetComponentType
+        tags:
+            - { name: techpromux_dynamic_report.type.component }
+        calls:
+            #- [ setComponentManager, [@techprommux_dynamic_report.manager.reportcomponent] ]
+
+    techprommux_dynamic_report.type.component.bar_chart_series_multiple_dataset:
+        class:  TechPromux\DynamicReportBundle\Type\Component\Chart\BarChartSeriesMultipleDatasetComponentType
+        tags:
+            - { name: techpromux_dynamic_report.type.component }
+        calls:
+            #- [ setComponentManager, [@techprommux_dynamic_report.manager.reportcomponent] ]
+
+    techprommux_dynamic_report.type.component.radar_chart_series_crossed_dataset:
+        class:  TechPromux\DynamicReportBundle\Type\Component\Chart\RadarChartSeriesCrossedDatasetComponentType
+        tags:
+            - { name: techpromux_dynamic_report.type.component }
+        calls:
+            #- [ setComponentManager, [@techprommux_dynamic_report.manager.reportcomponent] ]
+
+    techprommux_dynamic_report.type.component.radar_chart_series_multiple_dataset:
+        class:  TechPromux\DynamicReportBundle\Type\Component\Chart\RadarChartSeriesMultipleDatasetComponentType
+        tags:
+            - { name: techpromux_dynamic_report.type.component }
+        calls:
+            #- [ setComponentManager, [@techprommux_dynamic_report.manager.reportcomponent] ]
+
+    techprommux_dynamic_report.type.component.rounded_chart_series_single_dataset:
+        class:  TechPromux\DynamicReportBundle\Type\Component\Chart\RoundedChartDatasetComponentType
+        tags:
+            - { name: techpromux_dynamic_report.type.component }
+        calls:
+            #- [ setComponentManager, [@techprommux_dynamic_report.manager.reportcomponent] ]

@@ -189,19 +189,53 @@ class ComponentManager extends BaseResourceManager
 
     }
 
+    protected function updatePositionForComponentsInSameReport($object)
+    {
+        $all = $this->findBy([
+            'report' => $object->getReport()->getId()
+        ],
+            [
+                'templateContainer' => 'ASC',
+                'position' => 'ASC',
+                'updatedAt' => 'DESC'
+            ]
+        );
+        $pos = 1;
+        $templateContainer = '';
+        foreach ($all as $item) {
+            /* @var $item Component */
+            if ($item->getTemplateContainer() != $templateContainer) {
+                $pos = 1;
+                $templateContainer = $item->getTemplateContainer();
+            }
+            $item->setPosition($pos);
+            $this->persistWithoutPreAndPostPersist($item);
+            $pos++;
+        }
+    }
+
+    /**
+     * @param Component $object
+     */
     public function postPersist($object)
     {
+        parent::postPersist($object);
 
+        $this->updatePositionForComponentsInSameReport($object);
     }
 
     public function postUpdate($object)
     {
+        parent::postUpdate($object);
+        $this->updatePositionForComponentsInSameReport($object);
 
     }
 
     public function postRemove($object)
     {
+        parent::postRemove($object);
 
+        $this->updatePositionForComponentsInSameReport($object);
     }
 
     //-------------------------------------------------------------------------
@@ -257,13 +291,12 @@ class ComponentManager extends BaseResourceManager
             return array(
                 'details' => $details,
                 'details_for_labels_choices' => $details_for_labels_choices,
-                'details_for_data_choices' => $details_for_datas_choices,
+                'details_for_datas_choices' => $details_for_datas_choices,
                 'details_for_series_choices' => $details_for_series_choices,
             );
         }
         return array();
     }
-
 
 
     //-------------------------------------------------------------------------

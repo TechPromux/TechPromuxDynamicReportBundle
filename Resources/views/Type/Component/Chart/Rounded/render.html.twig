@@ -1,0 +1,252 @@
+{% extends '@TechPromuxDynamicReportBundle/Type/Component/Chart/render.html.twig' %}
+
+{% set chart_type = settings['_chart_type'] %}
+{% set chart_data = ( settings['_chart_data'] | json_encode ) %}
+{% set chart_legend_type = 'line-legend' %}
+{% set series_datasets_type = settings['_chart_dataset_type'] %}
+
+{% block component_content %}
+    {{ parent() }}
+    <div id="component-chart-tooltip-{{ component.id }}" style="">
+        <table></table>
+    </div>
+{% endblock component_content %}
+
+
+{% block component_stylesheets %}
+    {{ parent() }}
+    <style>
+        #component-chart-tooltip-{{ component.id }} {
+            opacity: 1;
+            position: absolute;
+            background: rgba(0, 0, 0, .7);
+            color: white;
+            border-radius: 3px;
+            -webkit-transition: all .1s ease;
+            transition: all .1s ease;
+            pointer-events: none;
+            -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+        }
+
+        #component-{{ component.id }} .chartjs-tooltip-key {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin-right: 10px;
+        }
+    </style>
+{% endblock %}
+{% block component_javascripts %}
+    {{ parent() }}
+    <script>
+
+        // initial options and executing rendering chart
+
+        $(document).ready(function () {
+
+            window.component_chart_data_default_{{ component.id }} = {{ chart_data | raw }};
+
+            window.component_chart_data_current_{{ component.id }} = {{ chart_data | raw }};
+
+            window.component_chart_custom_chartjs_options_{{ component.id }} = {
+                responsive: {% if (settings['chart_options']['width'] is defined and settings['chart_options']['width']!='') %}false{% else %}true{% endif %},
+                title: {
+                    display: false,
+                    //text:'Chart.js Line Chart'
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    enabled: false,
+                    custom: function (tooltip) {
+                        // Tooltip Element
+                        var tooltipEl = document.getElementById('component-chart-tooltip-{{ component.id }}');
+
+                        // Hide if no tooltip
+                        if (tooltip.opacity === 0) {
+                            tooltipEl.style.opacity = 0;
+                            return;
+                        }
+
+                        // Set caret Position
+                        tooltipEl.classList.remove('above', 'below', 'no-transform');
+                        if (tooltip.yAlign) {
+                            tooltipEl.classList.add(tooltip.yAlign);
+                        } else {
+                            tooltipEl.classList.add('no-transform');
+                        }
+
+                        function getBody(bodyItem) {
+                            return bodyItem.lines;
+                        }
+
+                        // Set Text
+                        if (tooltip.body) {
+                            var titleLines = tooltip.title || [];
+                            var bodyLines = tooltip.body.map(getBody);
+
+                            var innerHtml = '<thead>';
+
+                            titleLines.forEach(function (title) {
+                                innerHtml += '<tr><th>' + title + '</th></tr>';
+                            });
+                            innerHtml += '</thead><tbody>';
+
+                            bodyLines.forEach(function (body, i) {
+                                var colors = tooltip.labelColors[i];
+                                var style = 'background:' + colors.backgroundColor;
+                                style += '; border-color:' + colors.borderColor;
+                                style += '; border-width: 2px';
+                                var span = '<span class="chartjs-tooltip-key" style="' + style + '"></span>';
+                                innerHtml += '<tr><td>' + span + body + '</td></tr>';
+                            });
+                            innerHtml += '</tbody>';
+
+                            var tableRoot = tooltipEl.querySelector('table');
+                            tableRoot.innerHTML = innerHtml;
+                        }
+
+                        var positionY = this._chart.canvas.offsetTop;
+                        var positionX = this._chart.canvas.offsetLeft;
+
+                        // Display, position, and set styles for font
+                        tooltipEl.style.opacity = 1;
+                        tooltipEl.style.left = positionX + tooltip.caretX + 'px';
+                        tooltipEl.style.top = positionY + tooltip.caretY + 'px';
+                        tooltipEl.style.fontFamily = tooltip._fontFamily;
+                        tooltipEl.style.fontSize = tooltip.fontSize;
+                        tooltipEl.style.fontStyle = tooltip._fontStyle;
+                        tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
+                    },
+                    callbacks: {
+                        // Use the footer callback to display the sum of the items showing in the tooltip
+                        /*
+                        footer: function(tooltipItems, data) {
+                            var sum = 0;
+                            tooltipItems.forEach(function(tooltipItem) {
+                                sum += data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            });
+                            return 'Sum: ' + sum;
+                        },
+                        */
+                    },
+                },
+                {% if (chart_type=='PolarArea') %}
+                scale: {
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    reverse: false
+                },
+                {% endif %}
+                animation: {
+                    animateRotate: false,
+                    animateScale: true
+                }
+            };
+
+            $('#component-{{ component.id }}').trigger('data-loaded');
+        });
+    </script>
+{% endblock component_javascripts %}
+
+{% block component_javascripts_legend_events %}
+    <script>
+        // configure legend options from chart
+        $(document).on('click', '#component-chart-legend-top-{{ component.id }} ul li, #component-chart-legend-bottom-{{ component.id }} ul li', function () {
+
+            var show = $(this).attr('data-legend-show');
+            if (show == "true")
+                $(this).css({
+                    opacity: 0.3,
+                    cursor: 'pointer'
+                });
+            else
+                $(this).css({
+                    opacity: 1,
+                    //cursor: 'not-allowed'
+                });
+            $(this).attr('data-legend-show', show == "true" ? "false" : "true");
+            var default_datasets = window.component_chart_data_default_{{ component.id }};
+            var new_datasets = {
+                'labels': Array(),
+                'datasets': Array(
+                    {
+                        'data': Array(),
+                        'backgroundColor': Array(),
+                        'label': 'Dataset'
+                    }
+                ),
+            };
+            var pos = 0;
+            var legends = $('#component-chart-legend-top-{{ component.id }} ul li, #component-chart-legend-bottom-{{ component.id }} ul li');
+            for (var i = 0; i < legends.length; i++) {
+                if ($(legends[i]).attr('data-legend-show') == "true") {
+                    new_datasets['labels'][pos] = default_datasets['labels'][i];
+                    new_datasets['datasets'][0]['data'][pos] = default_datasets['datasets'][0]['data'][i];
+                    new_datasets['datasets'][0]['backgroundColor'][pos] = default_datasets['datasets'][0]['backgroundColor'][i];
+                    pos++;
+                }
+            }
+
+            window.component_chart_data_current_{{ component.id }} = new_datasets;
+            component_render_chart_{{ component.id }}_(false);
+        });
+        /**/
+
+    </script>
+{% endblock component_javascripts_legend_events %}
+
+{% block component_javascripts_render_chart %}
+    {% if (chart_type=='PolarArea') %}
+        <script>
+
+            // function for rendering custom chart
+
+            window.component_chart_data_default_{{ component.id }} = null;
+            window.component_chart_data_current_{{ component.id }} = null;
+            window.component_chart_custom_chartjs_options_{{ component.id }} = null;
+
+            window.component_chart_canvas_ctx_{{ component.id }} = null;
+            window.component_chart_factory_{{ component.id }} = null;
+            window.component_chart_object_{{ component.id }} = null;
+
+            function component_render_chart_{{ component.id }}_(update_legend = false) {
+                // creating chart
+                if (window.component_chart_object_{{ component.id }} != null) {
+                    window.component_chart_object_{{ component.id }}.destroy();
+                }
+
+                window.component_chart_canvas_ctx_{{ component.id }} = document.getElementById("component-chart-canvas-{{ component.id }}").getContext("2d");
+
+                // color transparents
+
+                for (var i = 0; i < window.component_chart_data_current_{{ component.id }}.datasets[0].backgroundColor.length; i++) {
+                    window.component_chart_data_current_{{ component.id }}.datasets[0].backgroundColor[i] =
+                        Chart.helpers.color(window.component_chart_data_current_{{ component.id }}.datasets[0].backgroundColor[i]).alpha(0.5).rgbString();
+                }
+
+                window.component_chart_custom_chartjs_config_{{ component.id }} = {
+                    data: window.component_chart_data_current_{{ component.id }},
+                    options: window.component_chart_custom_chartjs_options_{{ component.id }},
+                };
+
+                window.component_chart_object_{{ component.id }} = Chart.PolarArea(
+                    window.component_chart_canvas_ctx_{{ component.id }},
+                    window.component_chart_custom_chartjs_config_{{ component.id }}
+                );
+
+                component_render_chart_legend_{{ component.id }}_(update_legend);
+            }
+        </script>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock component_javascripts_render_chart %}
+

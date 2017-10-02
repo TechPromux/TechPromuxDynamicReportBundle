@@ -1,0 +1,16 @@
+services:
+#    tech_prommux_dynamic_report.example:
+#        class:  TechPromux\DynamicReportBundle\Example
+#        arguments: ["@service_id", "plain_value", %parameter%]
+
+    # Template Services
+
+    techprommux_dynamic_report.type.template.default:
+        class:  TechPromux\DynamicReportBundle\Type\Template\DefaultTemplateType
+        tags:
+            - { name: techpromux_dynamic_report.type.template }
+
+    techprommux_dynamic_report.type.template.two_columns:
+        class:  TechPromux\DynamicReportBundle\Type\Template\TwoColumnsTemplateType
+        tags:
+            - { name: techpromux_dynamic_report.type.template }

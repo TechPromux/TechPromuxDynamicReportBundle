@@ -15,12 +15,35 @@ class TemplateTypeCompilerPass implements CompilerPassInterface
             return;
         }
 
+        $managerDefinitionId = 'techpromux_dynamic_report.manager.util_dynamic_report';
+
+        $managerDefinition = $container->getDefinition(
+            $managerDefinitionId
+        );
+
+        $taggedServicesIds = $container->findTaggedServiceIds(
+            'techpromux_dynamic_report.type.template'
+        );
+
+        foreach ($taggedServicesIds as $id => $tags) {
+
+            //$templateTypeDefinition = $container->getDefinition($id);
+
+            $managerDefinition->addMethodCall(
+                'addTemplateType',
+                array(new \Symfony\Component\DependencyInjection\Reference($id))
+            );
+        }
+
         //------------------------
         // adding templates folder path
 
         $container->getDefinition('twig.loader.filesystem')
             ->addMethodCall('addPath',
                 array(__DIR__ . '/../Resources/views/', 'TechPromuxDynamicReportBundle'));
+
+        //-----------------------------
+
     }
 
 }

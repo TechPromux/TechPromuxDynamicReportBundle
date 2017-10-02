@@ -27,7 +27,7 @@ sonata_admin:
 
         groups:
             techpromux_dynamic_reports_admin:
-                label: Dynamic Reports
+                label: techpromux_dynamic_reports_group_label
                 label_catalogue: TechPromuxDynamicReportBundle
                 icon: '<i class="glyphicon glyphicon-cog"></i>'
                 items:

@@ -52,13 +52,12 @@ class ReportAdmin extends BaseResourceAdmin
     //----------------------------------------------------------------------------------
 
     protected $accessMapping = array(
-        'execute' => 'EXECUTE',
+        'execute' => 'VIEW',
     );
 
     protected function configureRoutes(\Sonata\AdminBundle\Route\RouteCollection $collection)
     {
         parent::configureRoutes($collection);
-        //$collection->add('compose', $this->getRouterIdParameter() . '/compose');
         $collection->add('execute', $this->getRouterIdParameter() . '/execute');
     }
 
@@ -71,9 +70,8 @@ class ReportAdmin extends BaseResourceAdmin
         parent::configureDatagridFilters($datagridMapper);
 
         $datagridMapper
-            ->add('title', null, array(
-                'global_search' => false
-            ))
+            ->add('name')
+            ->add('title')
             //->add('description')
             //->add('template')
             //->add('position')
@@ -90,9 +88,9 @@ class ReportAdmin extends BaseResourceAdmin
         parent::configureListFields($listMapper);
 
         $listMapper
-            ->addIdentifier('name')
-            ->add('title')
-            ->add('description');
+            ->add('name')
+            ->add('title')//->add('description')
+        ;
 
 
         $listMapper->add('components', null, array(
@@ -108,7 +106,7 @@ class ReportAdmin extends BaseResourceAdmin
             ));
 
         $listMapper->add('_action', 'actions', array(
-            'label' => 'Actions',
+            //'label' => 'Actions',
             'row_align' => 'right',
             'header_style' => 'width: 150px',
             'actions' => array(

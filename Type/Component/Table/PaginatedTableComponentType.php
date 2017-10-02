@@ -64,14 +64,29 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
         return true;
     }
 
+
     /**
-     * 'multiple', 'crossed', 'series_single', 'series_multiple'
-     *
-     * @return string
+     * @return boolean
      */
-    public function getDataModelDatasetType()
+    public function getHasDataModelDatasetLabel()
     {
-        return 'multiple';
+       return false;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getHasDataModelDatasetSeries()
+    {
+        return false;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getHasDataModelDatasetMultipleDatas()
+    {
+        return true;
     }
 
     /**

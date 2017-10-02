@@ -1,0 +1,171 @@
+{% if (filters_form._filters_count.vars.attr.value>0) %}
+    <a data-toggle="modal" class="pull-right" href="#component-filters-form-modal-{{ component.id }}">
+        <button type="button" class="btn btn-default" title="{{ 'filter'|trans({},'TechPromuxDynamicReportBundle') }}">
+            <i class="glyphicon glyphicon-filter"></i>
+        </button>
+    </a>
+{% endif %}
+<div id="component-filters-form-modal-{{ component.id }}" style="display: none;"
+     class="modal fade modal-overflow" tabindex="-1" role="dialog"
+     aria-labelledby="component-filters-form-modal-title-{{ component.id }}" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg" style="z-index: 1500; min-width:1000px;">
+
+        <div class="modal-content" style="border-radius: 0px; height: 100%; padding: 0px;"
+             data-spy="scroll" data-target="#component-filters-form-modal-body-{{ component.id }}">
+
+            <div id="component-filters-form-modal-header-{{ component.id }}" class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="component-filters-form-modal-title-{{ component.id }}">
+                    {{ 'filter.results.from' | trans({},'TechPromuxDynamicReportBundle') }} "{{ component.title }}"
+                </h4>
+            </div>
+
+            <div id="component-filters-form-modal-body-{{ component.id }}" class="modal-body"
+                 style="min-height: 350px; max-height: 500px; overflow: auto !important;">
+                <form id="component-filters-form-{{ component.id }}" method="post"
+                      action="{{ path(component_type.getRenderActionPathName(),{'id': component.report.id, 'childId': component.id }) }}"
+                      autocomplete="off">
+                    {% block component_filter_form_fieldsets %}
+                        <fieldset>
+                            {% if (filters_form._filters_count.vars.attr.value>0) %}
+                                {% for d in 0..(filters_form._filters_count.vars.attr.value-1) %}
+                                    <div class="form-group row">
+                                        {{ form_label(filters_form['id_'~loop.index0],null, {'class':'col-md-3', 'style':'text-align:right;'}) }}
+                                        <div class="col-md-9">
+                                            <div class="col-md-5">
+                                                {{ form_widget(filters_form['id_'~loop.index0]) }}
+                                                {{ form_widget(filters_form['operator_'~loop.index0]) }}
+                                            </div>
+                                            <div class="col-md-7">
+                                                {{ form_widget(filters_form['value_'~loop.index0]) }}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            {{ form_rest(filters_form) }}
+                        </fieldset>
+                    {% endblock component_filter_form_fieldsets %}
+                </form>
+            </div>
+
+            {% block component_filter_form_footer %}
+                <div id="component-filters-form-modal-footer-{{ component.id }}" class="modal-footer">
+                        <span class="hide error-message">
+                            <b class="error danger" style="color:red;">
+                                {{ 'ERROR!!!. Filter data isn´t valid. Please, verify inserted values.' | trans({},'TechPromuxDynamicReportBundle') }}
+                            </b>
+                        </span>
+                    <button type="submit" class="btn btn-primary" form="component-filters-form-{{ component.id }}">
+                        {{ 'filter' | trans({},'TechPromuxDynamicReportBundle') }}
+                    </button>
+                    <button type="reset" class="btn btn-info" form="component-filters-form-{{ component.id }}">
+                        {{ 'reset' | trans({},'TechPromuxDynamicReportBundle') }}
+                    </button>
+                </div>
+            {% endblock component_filter_form_footer %}
+        </div>
+
+    </div>
+</div>
+<style>
+    #component-ajax-loader-{{component.id}} {
+        background: url("{{asset('bundles/techpromuxbase/img/ajax-loader-bg.png')}}") repeat scroll 0 0 transparent;
+        height: 100%;
+        left: 0;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 9999;
+        display: none;
+    }
+</style>
+<div id="component-ajax-loader-{{ component.id }}" class="hide">
+    <div style="width:300px; height: 70px; margin-top: 275px; margin-left: auto; margin-right:auto">
+        <p style="text-align: center; color: white; font-size: larger">
+            <img src="{{ asset('bundles/techpromuxbase/img/ajax-wait.gif') }}"
+                 style="width: 20px;margin-top: 5px;">
+            <strong>&nbsp;&nbsp;{{ 'Loading data ...' | trans({},'TechPromuxDynamicReportBundle') }}</strong>
+        </p>
+    </div>
+</div>
+<script>
+    // on submit and reset actions for filter, including order and pagination
+    $(document).on('submit', '#component-filters-form-{{ component.id }}', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        $('#component-filters-form-{{ component.id }}-modal .modal-footer span.error-message').addClass('hide');
+        $('#component-ajax-loader-{{ component.id }}').removeClass('hide').show();
+        $('#component-{{ component.id }}').attr('data-loaded', '');
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            async: true,
+            data: $(this).serialize()
+        }).done(function (data, status, jqXHR) {
+            $('#component-ajax-loader-{{ component.id }}').addClass('hide').hide();
+            $('#component-filters-form-modal-{{ component.id }}').modal('hide');
+            var data = (jqXHR.responseJSON != null) ? JSON.stringify(jqXHR.responseJSON) : jqXHR.responseText;
+            $('#component-{{ component.id }}').attr('data-loaded', data);
+            $('#component-{{ component.id }}').trigger('data-loaded');
+        }).fail(function (error) {
+            $('#component-{{ component.id }}').attr('data-loaded', error);
+            $('#component-{{ component.id }}').trigger('data-loaded-error');
+            $('#component-ajax-loader-{{ component.id }}').addClass('hide').hide();
+            $('#component-filters-form-{{ component.id }}-modal .modal-footer span.error-message').removeClass('hide');
+        });
+    });
+
+    $(document).on('reset', '#component-filters-form-{{ component.id }}', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        $(this).find('input[type="hidden"], input[type="text"], input[type="number"], input[type="password"], input[type="file"], input[type="date"], input[type="datetime"], input[type="time"], textarea').val('').trigger('change');
+        $(this).find('select').select2('data', null).trigger('change');
+        $(this).find('input[type="radio"], input[type="checkbox"]').removeAttr('checked').removeAttr('selected').trigger('change');
+        $(this).attr('action', '{{ path(component_type.getRenderActionPathName(),{'id': component.report.id, 'childId': component.id }) }}');
+        $(this).trigger('submit');
+    });
+</script>
+<script>
+    // customizing filter form
+
+    $(document).on('ready', function () {
+
+        // customize filter form fields
+
+        $('#component-filters-form-{{ component.id }} fieldset > div.form-group > label').css({'text-align': 'right'});
+        $('#component-filters-form-{{ component.id }} fieldset > div.form-group > label.col-sm-3').removeClass('col-sm-3').addClass('col-md-3').css({'text-align': 'right'});
+        $('#component-filters-form-{{ component.id }} fieldset > div.form-group > div.col-md-9 > div.select2-container').addClass('col-md-5').css({width: '40%'});
+        $('#component-filters-form-{{ component.id }} fieldset > div.form-group > div.col-md-9 > input.form-control').addClass('col-md-6').css({width: '50%'});
+
+        $('#component-filters-form-{{ component.id }} fieldset > div.form-group input.date').datetimepicker({
+            useSeconds: true,
+            pickDate: true,
+            pickTime: false,
+            format: 'YYYY-MM-DD',
+            locale: '{{ (locale is defined)?locale:'en' }}'
+        });
+        $('#component-filters-form-{{ component.id }} fieldset > div.form-group input.time').datetimepicker({
+            useSeconds: true,
+            pickDate: false,
+            pickTime: true,
+            format: 'HH:mm:ss',
+            locale: '{{ (locale is defined)?locale:'en' }}'
+        });
+        $('#component-filters-form-{{ component.id }} fieldset > div.form-group input.datetime').datetimepicker({
+            useSeconds: true,
+            pickDate: true,
+            pickTime: true,
+            format: 'YYYY-MM-DD HH:mm:ss',
+            locale: '{{ (locale is defined)?locale:'en' }}'
+        });
+        $('#component-filters-form-{{ component.id }} fieldset > div.form-group > div.col-md-9 > div.col-md-6 input').first().focus();
+
+        // init ajax-wait
+        $('#component-ajax-loader-{{ component.id }}').removeClass('hide').show();
+        $('#component-ajax-loader-{{ component.id }}').addClass('hide').hide();
+    });
+
+</script>

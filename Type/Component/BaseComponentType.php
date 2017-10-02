@@ -9,7 +9,6 @@ use TechPromux\DynamicReportBundle\Entity\Component;
 
 interface BaseComponentType
 {
-
     /**
      * @return string
      */
@@ -51,26 +50,6 @@ interface BaseComponentType
      * @return boolean
      */
     public function getHasDataModelDataset();
-
-    /**
-     * 'multiple', 'crossed', 'series_single', 'series_multiple'
-     *
-     * @return string
-     */
-    public function getDataModelDatasetType();
-
-    /**
-     *
-     * @return boolean
-     */
-    public function getDataModelDatasetResultPaginated();
-
-    /**
-     * 'all', 'number', 'datetime', 'number_datetime'
-     *
-     * @return string
-     */
-    public function getSupportedDataTypeFromDataModelDetails();
 
     /**
      * @return array

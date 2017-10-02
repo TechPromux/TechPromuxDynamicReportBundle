@@ -68,13 +68,27 @@ class CrossedTableComponentType extends AbstractDataModelComponentType
     }
 
     /**
-     * 'multiple', 'crossed', 'series_single', 'series_multiple'
-     *
-     * @return string
+     * @return boolean
      */
-    public function getDataModelDatasetType()
+    public function getHasDataModelDatasetLabel()
     {
-        return 'crossed';
+        return true;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getHasDataModelDatasetSeries()
+    {
+        return true;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getHasDataModelDatasetMultipleDatas()
+    {
+        return false;
     }
 
     /**
@@ -253,8 +267,8 @@ class CrossedTableComponentType extends AbstractDataModelComponentType
 
         $all['settings']['_limit_indicators'] = $limit_indicators_options;
 
-        $all['settings']['_summary_function'] = $all['settings']['basic_options']['data_summary_function'];
-        $all['settings']['_summary_label'] = $all['settings']['basic_options']['data_summary_label'];
+        $all['settings']['_data_summary_function'] = $all['settings']['basic_options']['data_summary_function'];
+        $all['settings']['_data_summary_label'] = $all['settings']['basic_options']['data_summary_label'];
 
         return $all;
     }

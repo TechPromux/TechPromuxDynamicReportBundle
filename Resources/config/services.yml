@@ -1,6 +1,7 @@
 imports:
     - { resource: 'services_admins.yml'}
     - { resource: 'services_managers.yml'}
+    - { resource: 'services_types_templates.yml'}
     - { resource: 'services_types_components.yml'}
 
 services:

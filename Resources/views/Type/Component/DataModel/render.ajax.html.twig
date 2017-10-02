@@ -1,0 +1,14 @@
+{% extends '@TechPromuxDynamicReport/Type/Component/render.ajax.html.twig' %}
+
+{% block component_header_custom %}
+    {% if (component_type.getDataModelDatasetResultPaginated()) %}
+        {{ include ('@TechPromuxDynamicReportBundle/Type/Component/DataModel/_paginator_links.html.twig') }}
+    {% endif %}
+{% endblock component_header_custom %}
+
+{% block component_content %}
+{% endblock component_content %}
+
+{% block component_javascripts %}
+
+{% endblock component_javascripts %}

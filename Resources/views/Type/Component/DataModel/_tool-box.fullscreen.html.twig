@@ -1,0 +1,54 @@
+<div id="component-panel-header-toolbox-fullscreen-{{ component.id }}"
+     class="fullscreen-options pull-right" style="margin-left: 5px;">
+
+    <a type="button"
+       class="btn btn-default component-panel-header-toolbox-fullscreen-{{ component.id }}-button component-panel-header-toolbox-fullscreen-{{ component.id }}-button-fullscreen-on"
+       title="{{ 'full_screen' | trans({},'TechPromuxDynamicReportBundle') }}" data-fullscreen-function="on">
+        <i class="glyphicon glyphicon-resize-full"></i>
+    </a>
+    <a type="button"
+       class="btn btn-default hide component-panel-header-toolbox-fullscreen-{{ component.id }}-button component-panel-header-toolbox-fullscreen-{{ component.id }}-button-fullscreen-off"
+       title="{{ 'adjust_screen' | trans({},'TechPromuxDynamicReportBundle') }}" data-fullscreen-function="off">
+        <i class="glyphicon glyphicon-resize-small"></i>
+    </a>
+
+</div>
+<script>
+    // configure full screen button events
+    $(document).on('click', 'a.component-panel-header-toolbox-fullscreen-{{ component.id }}-button', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        $('a.component-panel-header-toolbox-fullscreen-{{ component.id }}-button').show().removeClass('hide').css({'display': 'block'});
+        $(this).hide().addClass('hide');
+
+        var fullscreen_function = $(this).attr('data-fullscreen-function');
+
+        console.log(fullscreen_function);
+
+        $(this).parent().children().removeClass('hide');
+        $(this).addClass('hide');
+
+        if (fullscreen_function == "on") {
+            $('#component-{{ component.id }}').attr('style', 'position:fixed;top:0;left:0px;bottom:0px;right:0px;background-color:#ecf0f5;z-index:1200');
+
+            $('#component-panel-{{ component.id }}').addClass('component-{{ component.id }}-fullscreen-resized');
+
+            $('#component-panel-content-{{ component.id }}').innerHeight($('#component-panel-{{ component.id }}').innerHeight() - $('#component-panel-heading-{{ component.id }}').innerHeight());
+
+            $('#component-{{ component.id }}').trigger('fullscreen-on');
+        }
+        else {
+            $('#component-{{ component.id }}').attr('style', '');
+
+            $('#component-panel-{{ component.id }}').removeClass('component-{{ component.id }}-fullscreen-resized');
+
+            $('#component-panel-content-{{ component.id }}').innerHeight('100%');
+
+            $('#component-{{ component.id }}').trigger('fullscreen-off');
+        }
+
+        $('#component-{{ component.id }}').trigger('fullscreen-toogled');
+    });
+    /**/
+</script>

@@ -1,0 +1,168 @@
+{% extends '@TechPromuxDynamicReportBundle/Type/Component/Chart/render.html.twig' %}
+
+{% set chart_type = settings['_chart_type'] %}
+{% set chart_data = ( settings['_chart_data'] | json_encode ) %}
+{% set chart_legend_type = 'line-legend' %}
+{% set series_datasets_type = settings['_chart_dataset_type'] %}
+
+{% block component_javascripts %}
+    {{ parent() }}
+    <script>
+        // loading data from ajax
+        $('#component-chart-legend-top-{{ component.id }}').on('updated', function (event) {
+
+            {% if (settings['chart_options']['limit_max'] is defined and settings['chart_options']['limit_max']!='' and settings['chart_options']['limit_max']!=null) %}
+            $('#component-chart-legend-bottom-{{ component.id }} ul').append($('#component-chart-legend-top-{{ component.id }} ul li:visible:last')); //.addClass('hide');
+            {% endif %}
+            {% if (settings['chart_options']['limit_min'] is defined and settings['chart_options']['limit_min']!='' and settings['chart_options']['limit_min']!=null) %}
+            $('#component-chart-legend-bottom-{{ component.id }} ul').append($('#component-chart-legend-top-{{ component.id }} ul li:visible:last')); //.addClass('hide');
+            $('#component-chart-legend-bottom-{{ component.id }} ul li:last').insertBefore($('#component-chart-legend-bottom-{{ component.id }} ul li:first')); //.addClass('hide');
+            {% endif %}
+        });
+    </script>
+    <script>
+
+        // initial options and executing rendering chart
+
+        $(document).ready(function () {
+
+            window.component_chart_data_default_{{ component.id }} = {{ chart_data | raw }};
+
+            window.component_chart_data_current_{{ component.id }} = {{ chart_data | raw }};
+
+            window.component_chart_custom_chartjs_options_{{ component.id }} = {
+                responsive: {% if (settings['chart_options']['width'] is defined and settings['chart_options']['width']!='') %}false{% else %}true{% endif %},
+                title: {
+                    display: false,
+                    //text:'Chart.js Line Chart'
+                },
+                tooltips: {
+                    enabled: false,
+                    position: 'nearest',
+                    mode: 'index',
+                    intersect: false,
+                    custom: function (tooltip) {
+                        // Tooltip Element
+                        var tooltipEl = document.getElementById('component-chart-tooltip-{{ component.id }}');
+
+                        if (!tooltipEl) {
+                            tooltipEl = document.createElement('div');
+                            tooltipEl.id = 'component-chart-tooltip-{{ component.id }}';
+                            tooltipEl.innerHTML = "<table></table>";
+                            this._chart.canvas.parentNode.appendChild(tooltipEl);
+                        }
+
+                        // Hide if no tooltip
+                        if (tooltip.opacity === 0) {
+                            tooltipEl.style.opacity = 0;
+                            return;
+                        }
+
+                        // Set caret Position
+                        tooltipEl.classList.remove('above', 'below', 'no-transform');
+                        if (tooltip.yAlign) {
+                            tooltipEl.classList.add(tooltip.yAlign);
+                        } else {
+                            tooltipEl.classList.add('no-transform');
+                        }
+
+                        function getBody(bodyItem) {
+                            return bodyItem.lines;
+                        }
+
+                        // Set Text
+                        if (tooltip.body) {
+                            var titleLines = tooltip.title || [];
+                            var bodyLines = tooltip.body.map(getBody);
+
+                            var innerHtml = '<thead>';
+
+                            titleLines.forEach(function (title) {
+                                innerHtml += [
+                                    '<tr><th style="white-space: nowrap;" colspan="2">',
+                                    '	<span class="chartjs-tooltip-value">' + title + '</span>',
+                                    '	<hr style="margin-top:5px;margin-bottom:5px;"></hr>',
+                                    '</th></tr>'
+                                ].join('');
+                            });
+
+                            innerHtml += '</thead><tbody>';
+
+                            bodyLines.forEach(function (body, i) {
+                                if (i < $('#component-chart-legend-top-{{ component.id }} ul li[data-legend-show="true"]').length) {
+                                    var colors = tooltip.labelColors[i];
+                                    var style = 'background:' + colors.backgroundColor;
+                                    style += '; border-color:' + colors.borderColor;
+                                    style += '; border-width: 2px';
+
+                                    var legend = $($('#component-chart-legend-top-{{ component.id }} ul li[data-legend-show="true"]')[i]);
+                                    var prefix = $(legend).attr('data-legend-prefix');
+                                    var suffix = $(legend).attr('data-legend-suffix');
+                                    var label = body[0];
+                                    var value = label.substring(label.lastIndexOf(':') + 2, label.length + 1);
+                                    if (value.lastIndexOf('.') != -1) {
+                                        value = Number(value).toFixed(2);
+                                    }
+                                    var line_label = label.substring(0, label.lastIndexOf(': ')) + ' :';
+                                    var line_value = prefix + value + suffix;
+
+                                    var span = '<span class="chartjs-tooltip-key" style="' + style + '">' + '</span>';
+                                    innerHtml += '<tr><td style="white-space: nowrap;">' + span + line_label + '</td><td style="white-space: nowrap; padding-left: 5px; text-align: right">' + line_value + '</td></tr>';
+
+                                }
+
+                            });
+                            innerHtml += '</tbody>';
+
+                            var tableRoot = tooltipEl.querySelector('table');
+                            tableRoot.innerHTML = innerHtml;
+                        }
+
+                        var positionY = this._chart.canvas.offsetTop;
+                        var positionX = this._chart.canvas.offsetLeft;
+
+                        // Display, position, and set styles for font
+                        tooltipEl.style.opacity = 1;
+                        tooltipEl.style.left = positionX + tooltip.caretX + 'px';
+                        tooltipEl.style.top = positionY + tooltip.caretY + 'px';
+                        tooltipEl.style.fontFamily = tooltip._fontFamily;
+                        tooltipEl.style.fontSize = tooltip.fontSize;
+                        tooltipEl.style.fontStyle = tooltip._fontStyle;
+                        tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
+                    },
+                    callbacks: {
+                        // Use the footer callback to display the sum of the items showing in the tooltip
+                        /*
+                        footer: function(tooltipItems, data) {
+                            var sum = 0;
+                            tooltipItems.forEach(function(tooltipItem) {
+                                sum += data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            });
+                            return 'Sum: ' + sum;
+                        },
+                        */
+                    },
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                legend: {
+                    display: false
+                },
+                elements: {
+                    point: {
+                        pointStyle: 'circle', //'triangle', 'rect', 'rectRounded', 'rectRot', 'cross', 'crossRot', 'star', 'line', 'dash'
+                    }
+                },
+                scales: {
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }
+            };
+
+            $('#component-{{ component.id }}').trigger('data-loaded');
+        });
+    </script>
+{% endblock component_javascripts %}

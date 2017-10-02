@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="TechPromuxDynamicReportBundle.en.xliff">
+        <body>
+            <trans-unit id="techpromux_dynamic_reports_group_label">
+                <source>techpromux_dynamic_reports_group_label</source>
+                <target><![CDATA[Dynamic Reports]]></target>
+            </trans-unit>
+            <trans-unit id="sidebar.link_report_list">
+                <source>sidebar.link_report_list</source>
+                <target><![CDATA[Reports]]></target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_report_list">
+                <source>breadcrumb.link_report_list</source>
+                <target><![CDATA[Reports]]></target>
+            </trans-unit>
+            <trans-unit id="list.label_name">
+                <source>list.label_name</source>
+                <target><![CDATA[Name]]></target>
+            </trans-unit>
+            <trans-unit id="list.label_title">
+                <source>list.label_title</source>
+                <target><![CDATA[Title]]></target>
+            </trans-unit>
+            <trans-unit id="list.label_components">
+                <source>list.label_components</source>
+                <target><![CDATA[Components]]></target>
+            </trans-unit>
+            <trans-unit id="list.label_enabled">
+                <source>list.label_enabled</source>
+                <target><![CDATA[Enabled]]></target>
+            </trans-unit>
+            <trans-unit id="list.label__action">
+                <source>list.label__action</source>
+                <target><![CDATA[Actions]]></target>
+            </trans-unit>
+            <trans-unit id="link_action_report_component_list">
+                <source>link_action_report_component_list</source>
+                <target><![CDATA[Components]]></target>
+            </trans-unit>
+            <trans-unit id="filter.label_name">
+                <source>filter.label_name</source>
+                <target><![CDATA[Name]]></target>
+            </trans-unit>
+            <trans-unit id="filter.label_title">
+                <source>filter.label_title</source>
+                <target><![CDATA[Title]]></target>
+            </trans-unit>
+            <trans-unit id="">
+                <source></source>
+                <target><![CDATA[]]></target>
+            </trans-unit>
+
+            <!--
+                <trans-unit id="">
+                    <source></source>
+                    <target><![CDATA[]]></target>
+                </trans-unit>
+            -->
+        </body>
+    </file>
+</xliff>

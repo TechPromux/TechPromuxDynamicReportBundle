@@ -111,14 +111,6 @@ abstract class AbstractComponentType implements BaseComponentType
         return array();
     }
 
-    /**
-     * @return bool
-     */
-    public function getDataModelDatasetResultPaginated()
-    {
-        return false;
-    }
-
     //---------------------------------------------------------------------------------------------
 
     /**
@@ -310,7 +302,6 @@ abstract class AbstractComponentType implements BaseComponentType
      */
     protected function getMergedDataParametersAndSettings(Request $request = null, Component $component, array $parameters = array(), $full_exportable_data = false)
     {
-
         $data = $this->getRenderableData($request, $component, $parameters, $full_exportable_data);
 
         $settings = array_merge(is_array($component->getDataOptions()) ? $component->getDataOptions() : array(),
@@ -439,7 +430,6 @@ abstract class AbstractComponentType implements BaseComponentType
         return 'fa-cubes';
     }
 
-
     /**
      *
      * @return array
@@ -499,6 +489,5 @@ abstract class AbstractComponentType implements BaseComponentType
     {
         return 'admin_techpromux_dynamicreport_report_component_exportTo';
     }
-
 
 }

@@ -12,6 +12,36 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
 {
 
     /**
+     * @return boolean
+     */
+    abstract public function getHasDataModelDatasetLabel();
+
+    /**
+     * @return boolean
+     */
+    abstract public function getHasDataModelDatasetSeries();
+
+    /**
+     * @return boolean
+     */
+    abstract public function getHasDataModelDatasetMultipleDatas();
+
+    /**
+     * 'all', 'number', 'datetime', 'number_datetime'
+     *
+     * @return string
+     */
+    abstract public function getSupportedDataTypeFromDataModelDetails();
+
+    /**
+     * @return bool
+     */
+    public function getDataModelDatasetResultPaginated()
+    {
+        return false;
+    }
+
+    /**
      * @return array
      */
     /**
@@ -37,15 +67,12 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
     }
     //-----------------------------------------------------------------------------
 
-
     /**
      * @return array
      */
     public function getDefaultDataSettings(Component $component)
     {
         $default_settings = parent::getDefaultDataSettings($component);
-
-        $default_settings['dataset_type'] = $this->getDataModelDatasetType();
 
         $details = $this->getUtilDynamicReportManager()->getComponentManager()->getDataModelDetailsChoices($component);
 
@@ -54,98 +81,51 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
         //$details_for_series_choices = $details['details_for_series_choices'];
         $details_for_datas_choices = $details['details_for_datas_choices'];
 
-        switch ($this->getDataModelDatasetType()) {
-            case 'multiple':
+        if ($this->getHasDataModelDatasetLabel()) {
+            $default_settings['dataset_detail_for_labels'] = array(
+                'detail_id' => null,
+                'detail_label' => 'title',
+                'text_align' => 'left',
+                'text_with' => '',
+                'show_prefix' => true,
+                'show_suffix' => true,
+            );
+        }
+        if ($this->getHasDataModelDatasetSeries()) {
+            $default_settings['dataset_detail_for_series'] = array(
+                'detail_id' => null,
+                'detail_label' => 'title',
+                'text_align' => 'center',
+                'text_with' => '',
+                'show_prefix' => true,
+                'show_suffix' => true,
+            );
+        }
 
-                $default_settings['dataset_multiple_details_for_datas'] = array();
+        if (!$this->getHasDataModelDatasetMultipleDatas()) {
+            $default_settings['dataset_detail_for_datas'] = array(
+                'detail_id' => null,
+                'detail_label' => 'title',
+                'crossed_function' => null,
+                'text_align' => 'center',
+                'text_with' => '',
+                'show_prefix' => true,
+                'show_suffix' => true,
+            );
+        }
+        if ($this->getHasDataModelDatasetMultipleDatas()) {
+            $default_settings['dataset_details_for_datas'] = array();
+            foreach ($details_for_datas_choices as $dt) {
 
-                foreach ($details_for_datas_choices as $dt) {
-                    $default_settings['dataset_multiple_details_for_datas'][] = array(
-                        'detail_id' => $dt['id'],
-                        'detail_label' => 'title',
-                        'text_align' => ($dt['classification'] == 'number' ? 'right' : ($dt['classification'] == 'datetime' ? 'center' : 'left')),
-                        'text_with' => '',
-                        'show_prefix' => true,
-                        'show_suffix' => true,
-                    );
-                }
-
-                break;
-
-            case 'crossed':
-
-                $default_settings['dataset_crossed_detail_for_labels'] = array(
-                    'detail_id' => null,
+                $default_settings['dataset_details_for_datas'][] = array(
+                    'detail_id' => $details_for_alls[$dt]['id'],
                     'detail_label' => 'title',
-                    'text_align' => 'left',
+                    'text_align' => ($details_for_alls[$dt]['classification'] == 'number' ? 'right' : ($details_for_alls[$dt]['classification'] == 'datetime' ? 'center' : 'left')),
                     'text_with' => '',
                     'show_prefix' => true,
                     'show_suffix' => true,
                 );
-                $default_settings['dataset_crossed_detail_for_series'] = array(
-                    'detail_id' => null,
-                    'detail_label' => 'title',
-                    'text_align' => 'center',
-                    'text_with' => '',
-                    'show_prefix' => true,
-                    'show_suffix' => true,
-                );
-                $default_settings['dataset_crossed_detail_for_datas'] = array(
-                    'detail_id' => null,
-                    'detail_label' => 'title',
-                    'text_align' => 'center',
-                    'text_with' => '',
-                    'show_prefix' => true,
-                    'show_suffix' => true,
-                    'summary_function' => null
-                );
-
-                break;
-            case 'series_single':
-
-                $default_settings['dataset_series_single_detail_for_label'] = array(
-                    'detail_id' => null,
-                    'detail_label' => 'title',
-                    'text_align' => 'left',
-                    'text_with' => '',
-                    'show_prefix' => true,
-                    'show_suffix' => true,
-                );
-                $default_settings['dataset_series_single_detail_for_data'] = array(
-                    'detail_id' => null,
-                    'detail_label' => 'title',
-                    'text_align' => 'center',
-                    'text_with' => '',
-                    'show_prefix' => true,
-                    'show_suffix' => true,
-                );
-
-            case 'series_multiple':
-
-                $default_settings['dataset_series_multiple_detail_for_label'] = array(
-                    'detail_id' => null,
-                    'show_prefix' => true,
-                    'show_suffix' => true,
-                    'show_filter' => true,
-                );
-
-                $default_settings['dataset_series_multiple_details_for_data'] = array();
-
-                foreach ($details_for_datas_choices as $dt) {
-                    $default_settings['dataset_series_multiple_details_for_data'][] = array(
-                        'detail_id' => $dt['id'],
-                        'detail_label' => 'title',
-                        'text_align' => ($dt['classification'] == 'number' ? 'right' : ($dt['classification'] == 'datetime' ? 'center' : 'left')),
-                        'text_with' => '',
-                        'show_prefix' => true,
-                        'show_suffix' => true,
-                    );
-                }
-
-                break;
-
-
-                break;
+            }
         }
 
         $default_settings['dataset_filter_options'] = array();
@@ -181,162 +161,168 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
 
         $details = $this->getUtilDynamicReportManager()->getComponentManager()->getDataModelDetailsChoices($component);
 
-        $details_for_alls = $details['details'];
+        //$details_for_alls = $details['details'];
         $details_for_labels_choices = $details['details_for_labels_choices'];
         $details_for_series_choices = $details['details_for_series_choices'];
-        $details_for_datas_choices = $details['details_for_data_choices'];
+        $details_for_datas_choices = $details['details_for_datas_choices'];
 
-        $default_settings['dataset_type'] = $this->getDataModelDatasetType();
-
-        switch ($this->getDataModelDatasetType()) {
-            case 'multiple':
-
-                $keys[] = array('dataset_multiple_details_for_datas', 'sonata_type_native_collection', array(
-                    'entry_type' => 'sonata_type_immutable_array',
-                    'allow_add' => true,
-                    'allow_delete' => true,
-                    'entry_options' => array(
-                        'keys' => array(
-                            array('detail_id', 'choice', array(
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => $details_for_datas_choices, // TODO preguntar al component type si el data es numeric or date
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                            )
-                            ),
-                            array('detail_label', 'choice', array(
-                                'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            )),
-                            array('text_align', 'choice', array(
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                ),
-                            )
-                            ),
-                            array('text_with', 'text', array(
-                                "required" => false,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                                'attr' => array(
-                                    'placeholder' => 'px',
-                                    //'style' => 'width: 70px;'
-                                )
-                            )),
-                            array('show_prefix', 'checkbox', array(
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                            array('show_suffix', 'checkbox', array(
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                        )
+        if ($this->getHasDataModelDatasetLabel()) {
+            $keys[] = array('dataset_detail_for_labels', 'sonata_type_immutable_array', array(
+                //'label' => false,
+                'keys' => array(
+                    array('detail_id', 'choice', array(
+                        "multiple" => false, "expanded" => false, "required" => true,
+                        'choices' => $details_for_labels_choices, // TODO preguntar al component type si el data es numeric or date
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
                     )
-                ));
-
-                break;
-            case 'crossed':
-
-                $keys[] = array('dataset_crossed_detail_for_labels', 'sonata_type_immutable_array', array(
-                    //'label' => false,
-                    'keys' => array(
-                        array('detail_id', 'choice', array(
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => $details_for_labels_choices, // TODO preguntar al component type si el data es numeric or date
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                        )
+                    ),
+                    array('detail_label', 'choice', array(
+                        'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
+                        "multiple" => false, "expanded" => false, "required" => true,
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
+                    )),
+                    array('text_align', 'choice', array(
+                        "multiple" => false, "expanded" => false, "required" => true,
+                        'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
                         ),
-                        array('detail_label', 'choice', array(
-                            'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                        )),
-                        array('text_align', 'choice', array(
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                            ),
-                        )
-                        ),
-                        array('text_with', 'text', array(
-                            "required" => false,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            'attr' => array(
-                                'placeholder' => 'px',
-                            )
-                        )),
-                        array('show_prefix', 'checkbox', array(
-                            //'label' => 'Prefix',
-                            'required' => false,
-                            "label_attr" => array(
-                                'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                'style' => 'width: 170px;max-width: 200%;'
-                            ),
-                        )),
-                        array('show_suffix', 'checkbox', array(
-                            'required' => false,
-                            "label_attr" => array(
-                                'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                'style' => 'width: 170px;max-width: 200%;'
-                            ),
-                        )),
                     )
-                ));
-
-                $keys[] = array('dataset_crossed_detail_for_series', 'sonata_type_immutable_array', array(
-                    'keys' => array(
-                        array('detail_id', 'choice', array(
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => $details_for_series_choices, // TODO preguntar al component type si el data es numeric or date
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
+                    ),
+                    array('text_with', 'text', array(
+                        "required" => false,
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
+                        'attr' => array(
+                            'placeholder' => 'px',
+                            //'style' => 'width: 70px;'
                         )
+                    )),
+                    array('show_prefix', 'checkbox', array(
+                        'required' => false,
+                        "label_attr" => array(
+                            'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
+                            'style' => 'width: 170px;max-width: 200%;'
                         ),
-                        array('detail_label', 'choice', array(
-                            'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                        )),
-                        array('text_align', 'choice', array(
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                            ),
-                        )
+                    )),
+                    array('show_suffix', 'checkbox', array(
+                        'required' => false,
+                        "label_attr" => array(
+                            'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
+                            'style' => 'width: 170px;max-width: 200%;'
                         ),
-                        array('text_with', 'text', array(
-                            "required" => false,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            'attr' => array(
-                                'placeholder' => 'px',
-                                //'style' => 'width: 70px;'
-                            )
-                        )),
-                        array('show_prefix', 'checkbox', array(
-                            'required' => false,
-                            "label_attr" => array(
-                                'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                'style' => 'width: 170px;max-width: 200%;'
-                            ),
-                        )),
-                        array('show_suffix', 'checkbox', array(
-                            'required' => false,
-                            "label_attr" => array(
-                                'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                'style' => 'width: 170px;max-width: 200%;'
-                            ),
-                        )),
+                    )),
+                )
+            ));
+        }
+        if ($this->getHasDataModelDatasetSeries()) {
+            $keys[] = array('dataset_detail_for_series', 'sonata_type_immutable_array', array(
+                'keys' => array(
+                    array('detail_id', 'choice', array(
+                        "multiple" => false, "expanded" => false, "required" => true,
+                        'choices' => $details_for_series_choices, // TODO preguntar al component type si el data es numeric or date
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
                     )
-                ));
-
-                $keys[] = array('dataset_crossed_detail_for_datas', 'sonata_type_immutable_array', array(
-                    // 'label' => false,
+                    ),
+                    array('detail_label', 'choice', array(
+                        'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
+                        "multiple" => false, "expanded" => false, "required" => true,
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
+                    )),
+                    array('text_align', 'choice', array(
+                        "multiple" => false, "expanded" => false, "required" => true,
+                        'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
+                        ),
+                    )
+                    ),
+                    array('text_with', 'text', array(
+                        "required" => false,
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
+                        'attr' => array(
+                            'placeholder' => 'px',
+                            //'style' => 'width: 70px;'
+                        )
+                    )),
+                    array('show_prefix', 'checkbox', array(
+                        'required' => false,
+                        "label_attr" => array(
+                            'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
+                            'style' => 'width: 170px;max-width: 200%;'
+                        ),
+                    )),
+                    array('show_suffix', 'checkbox', array(
+                        'required' => false,
+                        "label_attr" => array(
+                            'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
+                            'style' => 'width: 170px;max-width: 200%;'
+                        ),
+                    )),
+                )
+            ));
+        }
+        if (!$this->getHasDataModelDatasetMultipleDatas()) {
+            $keys[] = array('dataset_detail_for_datas', 'sonata_type_immutable_array', array(
+                // 'label' => false,
+                'keys' => array(
+                    array('detail_id', 'choice', array(
+                        "multiple" => false, "expanded" => false, "required" => true,
+                        'choices' => $details_for_datas_choices, // TODO preguntar al component type si el data es numeric or date
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
+                    )
+                    ),
+                    array('detail_label', 'choice', array(
+                        'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
+                        "multiple" => false, "expanded" => false, "required" => true,
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
+                    )),
+                    array('crossed_function', 'choice', array(
+                        "multiple" => false, "expanded" => false, "required" => false,
+                        'choices' => array(
+                            'SUM' => 'SUM',
+                            'AVG' => 'AVG',
+                            'COUNT' => 'COUNT',
+                            'MIN' => 'MIN',
+                            'MAX' => 'MAX',
+                        ),
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
+                    )),
+                    array('text_align', 'choice', array(
+                        "multiple" => false, "expanded" => false, "required" => true,
+                        'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-1',
+                        ),
+                    )
+                    ),
+                    array('text_with', 'text', array(
+                        "required" => false,
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-1'),
+                        'attr' => array(
+                            'placeholder' => 'px',
+                            //'style' => 'width: 70px;'
+                        )
+                    )),
+                    array('show_prefix', 'checkbox', array(
+                        'required' => false,
+                        "label_attr" => array(
+                            'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
+                            'style' => 'width: 170px;max-width: 200%;'
+                        ),
+                    )),
+                    array('show_suffix', 'checkbox', array(
+                        'required' => false,
+                        "label_attr" => array(
+                            'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
+                            'style' => 'width: 170px;max-width: 200%;'
+                        ),
+                    )),
+                )
+            ));
+        }
+        if ($this->getHasDataModelDatasetMultipleDatas()) {
+            $keys[] = array('dataset_details_for_datas', 'sonata_type_native_collection', array(
+                'entry_type' => 'sonata_type_immutable_array',
+                'allow_add' => true,
+                'allow_delete' => true,
+                'entry_options' => array(
                     'keys' => array(
                         array('detail_id', 'choice', array(
                             "multiple" => false, "expanded" => false, "required" => true,
@@ -379,201 +365,8 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             ),
                         )),
                     )
-                ));
-
-                break;
-            case 'series_single':
-
-                $keys[] = array('dataset_series_single_detail_for_label', 'sonata_type_immutable_array', array(
-                    //'label' => false,
-                    'keys' => array(
-                        array('detail_id', 'choice', array(
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => $details_for_labels_choices, // TODO preguntar al component type si el data es numeric or date
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                        )
-                        ),
-                        array('detail_label', 'choice', array(
-                            'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                        )),
-                        array('text_align', 'choice', array(
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                            ),
-                        )
-                        ),
-                        array('text_with', 'text', array(
-                            "required" => false,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            'attr' => array(
-                                'placeholder' => 'px',
-                                //'style' => 'width: 70px;'
-                            )
-                        )),
-                        array('show_prefix', 'checkbox', array(
-                            'required' => false,
-                            "label_attr" => array(
-                                'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                'style' => 'width: 170px;max-width: 200%;'
-                            ),
-                        )),
-                        array('show_suffix', 'checkbox', array(
-                            'required' => false,
-                            "label_attr" => array(
-                                'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                'style' => 'width: 170px;max-width: 200%;'
-                            ),
-                        )),
-                    )
-                ));
-
-                $keys[] = array('dataset_series_single_detail_for_data', 'sonata_type_immutable_array', array(
-                    // 'label' => false,
-                    'keys' => array(
-                        array('detail_id', 'choice', array(
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => $details_for_data_choices, // TODO preguntar al component type si el data es numeric or date
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                        )
-                        ),
-                        array('detail_label', 'choice', array(
-                            'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                        )),
-                        array('text_align', 'choice', array(
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                            ),
-                        )
-                        ),
-                        array('text_with', 'text', array(
-                            "required" => false,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            'attr' => array(
-                                'placeholder' => 'px',
-                                //'style' => 'width: 70px;'
-                            )
-                        )),
-                        array('show_prefix', 'checkbox', array(
-                            'required' => false,
-                            "label_attr" => array(
-                                'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                'style' => 'width: 170px;max-width: 200%;'
-                            ),
-                        )),
-                        array('show_suffix', 'checkbox', array(
-                            'required' => false,
-                            "label_attr" => array(
-                                'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                'style' => 'width: 170px;max-width: 200%;'
-                            ),
-                        )),
-                    )
-                ));
-
-                break;
-            case 'series_multiple':
-
-                $keys[] = array('dataset_series_multiple_detail_for_label', 'sonata_type_immutable_array', array(
-                    //'label' => false,
-                    'keys' => array(
-                        array('detail_id', 'choice', array(
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => $details_for_labels_choices, // TODO preguntar al component type si el data es numeric or date
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                        )
-                        ),
-                        array('detail_label', 'choice', array(
-                            'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                        )),
-                        array('text_align', 'choice', array(
-                            "multiple" => false, "expanded" => false, "required" => true,
-                            'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                            ),
-                        )
-                        ),
-                        array('text_with', 'text', array(
-                            "required" => false,
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            'attr' => array(
-                                'placeholder' => 'px',
-                                //'style' => 'width: 70px;'
-                            )
-                        )),
-                        array('show_prefix', 'checkbox', array(
-                            'required' => false,
-                            "label_attr" => array(
-                                'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                'style' => 'width: 170px;max-width: 200%;'
-                            ),
-                        )),
-                        array('show_suffix', 'checkbox', array(
-                            'required' => false,
-                            "label_attr" => array(
-                                'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                'style' => 'width: 170px;max-width: 200%;'
-                            ),
-                        )),
-                    )
-                ));
-
-                $keys[] = array('dataset_series_multiple_details_for_data', 'sonata_type_native_collection', array(
-                    'entry_type' => 'sonata_type_immutable_array',
-                    'allow_add' => true,
-                    'allow_delete' => true,
-                    'entry_options' => array(
-                        'keys' => array(
-                            array('detail_id', 'choice', array(
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => $details_for_data_choices, // TODO preguntar al component type si el data es numeric or date
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                            )
-                            ),
-                            array('detail_label', 'choice', array(
-                                'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                            )),
-                            array('text_align', 'choice', array(
-                                "multiple" => false, "expanded" => false, "required" => true,
-                                'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                ),
-                            )
-                            ),
-                            array('text_with', 'text', array(
-                                "required" => false,
-                                "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
-                                'attr' => array(
-                                    'placeholder' => 'px',
-                                    //'style' => 'width: 70px;'
-                                )
-                            )),
-                            array('show_prefix', 'checkbox', array(
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                            array('show_suffix', 'checkbox', array(
-                                'required' => false,
-                                "label_attr" => array(
-                                    'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                                    'style' => 'width: 170px;max-width: 200%;'
-                                ),
-                            )),
-                        )
-                    )
-                ));
+                )
+            ));
         }
 
         $keys[] = array('dataset_filter_options', 'sonata_type_native_collection', array(
@@ -648,6 +441,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                 )
             ));
         }
+
         $parent_keys = parent::getDefaultDataSettingsForEditForm($component);
 
         foreach ($parent_keys as $key) {
@@ -1040,140 +834,216 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
             ->getDataModelManager()
             ->getEnabledDetailsDescriptionsFromDataModel($component->getDatamodel());
 
-        switch ($this->getDataModelDatasetType()) {
-            case 'multiple':
-                $datamodelDetails = $all['settings']['dataset_multiple_details_for_datas'];
-                $datamodelDetailsDescriptions = array();
+        $datamodelDetails = array();
 
-                foreach ($datamodelDetails as $detail) {
-                    $id = $detail['detail_id'];
-                    $datamodelDetailsDescriptions[$id] = array(
-                        'id' => $id,
-                        'alias' => $labelsDescriptions[$id]['alias'],
-                        'title' => $detail['detail_label'] == 'title' ? $labelsDescriptions[$id]['title'] : $labelsDescriptions[$id]['abbreviation'],
-                        'prefix' => $detail['show_prefix'] && !is_null($labelsDescriptions[$id]['prefix']) ? $labelsDescriptions[$id]['prefix'] : '',
-                        'suffix' => $detail['show_suffix'] && !is_null($labelsDescriptions[$id]['suffix']) ? $labelsDescriptions[$id]['suffix'] : '',
-                        'type' => $labelsDescriptions[$id]['type'],
-                        'format' => $labelsDescriptions[$id]['format'],
-                        'classification' => $labelsDescriptions[$id]['classification'],
-                        'text_align' => $detail['text_align'],
-                        'text_with' => $detail['text_with'],
-                    );
-                }
+        if ($this->getHasDataModelDatasetLabel()) {
+            $datamodelDetails = array_merge($datamodelDetails, array($all['settings']['dataset_detail_for_labels']));
+        }
+        if ($this->getHasDataModelDatasetSeries()) {
+            $datamodelDetails = array_merge($datamodelDetails, array($all['settings']['dataset_detail_for_series']));
+        }
+        if (!$this->getHasDataModelDatasetMultipleDatas()) {
+            $datamodelDetails = array_merge($datamodelDetails, array($all['settings']['dataset_detail_for_datas']));
+            $all['settings']['_data_crossed_function'] = $all['settings']['dataset_detail_for_datas']['crossed_function'];
+        }
+        if ($this->getHasDataModelDatasetMultipleDatas()) {
+            $datamodelDetails = array_merge($datamodelDetails, $all['settings']['dataset_details_for_datas']);
+        }
 
-                $all['settings']['_details_descriptions'] = $datamodelDetailsDescriptions;
+        $datamodelDetailsDescriptions = array();
 
-                $all['settings']['_labels'] = array(); // TODO
-                $all['settings']['_series'] = array(); // TODO
-                $all['settings']['_titles'] = array(); // TODO
+        foreach ($datamodelDetails as $detail) {
+            $id = $detail['detail_id'];
+
+            $datamodelDetailsDescriptions[$id] = array(
+                'id' => $id,
+                'alias' => $labelsDescriptions[$id]['alias'],
+                'title' => $detail['detail_label'] == 'title' ? $labelsDescriptions[$id]['title'] : $labelsDescriptions[$id]['abbreviation'],
+                'prefix' => $detail['show_prefix'] && !is_null($labelsDescriptions[$id]['prefix']) ? $labelsDescriptions[$id]['prefix'] : '',
+                'suffix' => $detail['show_suffix'] && !is_null($labelsDescriptions[$id]['suffix']) ? $labelsDescriptions[$id]['suffix'] : '',
+                'type' => $labelsDescriptions[$id]['type'],
+                'format' => $labelsDescriptions[$id]['format'],
+                'classification' => $labelsDescriptions[$id]['classification'],
+                'text_align' => $detail['text_align'],
+                'text_with' => $detail['text_with'],
+            );
+        }
+
+        $all['settings']['_details_descriptions'] = $datamodelDetailsDescriptions;
+
+        //--------------------------------
+
+        $all['settings']['_labels'] = array(); // TODO
+        $all['settings']['_series'] = array(); // TODO
+        $all['settings']['_titles'] = array(); // TODO
+
+        //--------------------------------
+
+        if ($this->getHasDataModelDatasetLabel()) {
+
+            if ($this->getHasDataModelDatasetMultipleDatas()) {
 
                 $all['settings']['_datas_descriptions_type'] = 'label';
                 $all['settings']['_datas_descriptions_by_label'] = $datamodelDetailsDescriptions;
                 $all['settings']['_datas_descriptions_by_serie'] = array();
                 $all['settings']['_datas_descriptions_by_data'] = array();
 
-                break;
-            case 'crossed':
-                //---------------------------------------------------------------------------------------
+                $all['settings']['_labels'] = array(); // result[dataset_detail_for_labels]
+                $all['settings']['_series'] = array(); // result[dataset_details_for_datas]
+                $all['settings']['_titles'] = array(); // $datamodelDetailsDescriptions
 
-                $detail_for_labels = $all['settings']['dataset_crossed_detail_for_labels'];
-                $detail_for_series = $all['settings']['dataset_crossed_detail_for_series'];
-                $detail_for_datas = $all['settings']['dataset_crossed_detail_for_datas'];
-                $datamodelDetails = array($detail_for_labels, $detail_for_series, $detail_for_datas);
-                $datamodelDetailsDescriptions = array();
-
-                foreach ($datamodelDetails as $detail) {
-                    $id = $detail['detail_id'];
-                    $datamodelDetailsDescriptions[$id] = array(
-                        'id' => $id,
-                        'alias' => $labelsDescriptions[$id]['alias'],
-                        'title' => $detail['detail_label'] == 'title' ? $labelsDescriptions[$id]['title'] : $labelsDescriptions[$id]['abbreviation'],
-                        'prefix' => $detail['show_prefix'] && !is_null($labelsDescriptions[$id]['prefix']) ? $labelsDescriptions[$id]['prefix'] : '',
-                        'suffix' => $detail['show_suffix'] && !is_null($labelsDescriptions[$id]['suffix']) ? $labelsDescriptions[$id]['suffix'] : '',
-                        'type' => $labelsDescriptions[$id]['type'],
-                        'format' => $labelsDescriptions[$id]['format'],
-                        'classification' => $labelsDescriptions[$id]['classification'],
-                        'text_align' => $detail['text_align'],
-                        'text_with' => $detail['text_with'],
-                    );
+                foreach ($all['settings']['dataset_details_for_datas'] as $col) {
+                    $serie_detail_id = $col['detail_id'];
+                    $serie_name = $datamodelDetailsDescriptions[$serie_detail_id]['title'];
+                    $all['settings']['_series'][$serie_name] = array();
                 }
-
-                $all['settings']['_details_descriptions'] = $datamodelDetailsDescriptions;
-
-                $_crossed_labels = array();
-                $_crossed_series = array();
 
                 foreach ($all['data']['result'] as $row) {
 
-                    $col_label = $row[$labelsDescriptions[$detail_for_labels['detail_id']]['alias']];
-                    $l_format = $labelsDescriptions[$detail_for_labels['detail_id']]['format'];
-                    $l_prefix = $detail_for_labels['show_prefix'] ? $labelsDescriptions[$detail_for_labels['detail_id']]['prefix'] : '';
-                    $l_suffix = $detail_for_labels['show_suffix'] ? $labelsDescriptions[$detail_for_labels['detail_id']]['suffix'] : '';
-                    $col_label_formatted = $l_prefix . $this->getUtilDynamicReportManager()
-                            ->getComponentManager()
-                            ->getDataModelManager()->getUtilDynamicQueryManager()->formatValue($col_label, $l_format)
-                        . $l_suffix;
-                    $_crossed_labels[$col_label_formatted] = $col_label_formatted;
+                    $label_detail_id = $all['settings']['dataset_detail_for_labels']['detail_id'];
 
-                    $col_series = $row[$labelsDescriptions[$detail_for_series['detail_id']]['alias']];
-                    $s_format = $labelsDescriptions[$detail_for_series['detail_id']]['format'];
-                    $s_prefix = $detail_for_series['show_prefix'] ? $labelsDescriptions[$detail_for_series['detail_id']]['prefix'] : '';
-                    $s_suffix = $detail_for_series['show_suffix'] ? $labelsDescriptions[$detail_for_series['detail_id']]['suffix'] : '';
-                    $col_series_formatted = $s_prefix . $this->getUtilDynamicReportManager()
-                            ->getComponentManager()
-                            ->getDataModelManager()->getUtilDynamicQueryManager()->formatValue($col_series, $s_format)
-                        . $s_suffix;
-                    if (!isset($_crossed_series[$col_series_formatted])) {
-                        $_crossed_series[$col_series_formatted] = array();
-                    }
+                    $all['settings']['_labels'][] = $datamodelDetailsDescriptions[$label_detail_id]['prefix'] .
+                        $row[$datamodelDetailsDescriptions[$label_detail_id]['alias']] . $datamodelDetailsDescriptions[$label_detail_id]['suffix'];
 
-                    $col_datas = $row[$labelsDescriptions[$detail_for_datas['detail_id']]['alias']];
-                    if (!isset($_crossed_series[$col_series_formatted][$col_label_formatted])) {
-                        $_crossed_series[$col_series_formatted][$col_label_formatted] = array();
+                    foreach ($all['settings']['dataset_details_for_datas'] as $col) {
+                        $serie_detail_id = $col['detail_id'];
+                        $serie_name = $datamodelDetailsDescriptions[$serie_detail_id]['title'];
+                        $all['settings']['_series'][$serie_name][] = $row[$datamodelDetailsDescriptions[$serie_detail_id]['alias']];
                     }
-                    $_crossed_series[$col_series_formatted][$col_label_formatted][] = $col_datas;
 
                 }
+            } /*else*/
+            else { // !$this->getHasDataModelDatasetMultipleDatas()
+                if ($this->getHasDataModelDatasetSeries()) {
 
-                //-------------------------------------------------------------------------------------------------
+                    $detail_for_labels = $all['settings']['dataset_detail_for_labels'];
+                    $detail_for_series = $all['settings']['dataset_detail_for_series'];
+                    $detail_for_datas = $all['settings']['dataset_detail_for_datas'];
 
-                $all['settings']['_labels'] = array_values($_crossed_labels);
-                $all['settings']['_series'] = $_crossed_series;
-                $all['settings']['_titles'] = array(
-                    'labels' => $labelsDescriptions[$all['settings']['dataset_crossed_detail_for_labels']['detail_id']]['title'],
-                    'series' => $labelsDescriptions[$all['settings']['dataset_crossed_detail_for_series']['detail_id']]['title'],
-                    'datas' => $labelsDescriptions[$all['settings']['dataset_crossed_detail_for_datas']['detail_id']]['title'],
+                    $_crossed_labels = array();
+                    $_crossed_series = array();
 
-                );
+                    foreach ($all['data']['result'] as $row) {
 
-                $all['settings']['_datas_descriptions_type'] = 'data';
-                $all['settings']['_datas_descriptions_by_label'] = array();
-                $all['settings']['_datas_descriptions_by_serie'] = array();
-                $all['settings']['_datas_descriptions_by_data'] = array(
-                    array(
-                        'id' => $detail_for_datas['detail_id'],
-                        'alias' => $labelsDescriptions[$detail_for_datas['detail_id']]['alias'],
-                        'title' => $labelsDescriptions[$detail_for_datas['detail_id']]['title'],
-                        'prefix' => $detail_for_datas['show_prefix'] ? $labelsDescriptions[$detail_for_datas['detail_id']]['prefix'] : '',
-                        'suffix' => $detail_for_datas['show_prefix'] ? $labelsDescriptions[$detail_for_datas['detail_id']]['suffix'] : '',
-                        'type' => $labelsDescriptions[$detail_for_datas['detail_id']]['type'],
-                        'format' => $labelsDescriptions[$detail_for_datas['detail_id']]['format'],
-                        'classification' => $labelsDescriptions[$detail_for_datas['detail_id']]['classification'],
-                        'text_align' => isset($detail_for_datas['text_align']) ? $detail_for_datas['text_align'] : '',
-                        'text_with' => isset($detail_for_datas['text_with']) ? $detail_for_datas['text_with'] : '',
-                    )
-                );
+                        $col_label = $row[$labelsDescriptions[$detail_for_labels['detail_id']]['alias']];
+                        $l_format = $labelsDescriptions[$detail_for_labels['detail_id']]['format'];
+                        $l_prefix = $detail_for_labels['show_prefix'] ? $labelsDescriptions[$detail_for_labels['detail_id']]['prefix'] : '';
+                        $l_suffix = $detail_for_labels['show_suffix'] ? $labelsDescriptions[$detail_for_labels['detail_id']]['suffix'] : '';
+                        $col_label_formatted = $l_prefix . $this->getUtilDynamicReportManager()
+                                ->getComponentManager()
+                                ->getDataModelManager()->getUtilDynamicQueryManager()->formatValue($col_label, $l_format)
+                            . $l_suffix;
+                        $_crossed_labels[$col_label_formatted] = $col_label_formatted;
 
-                break;
-            case 'series_single':
+                        $col_series = $row[$labelsDescriptions[$detail_for_series['detail_id']]['alias']];
+                        $s_format = $labelsDescriptions[$detail_for_series['detail_id']]['format'];
+                        $s_prefix = $detail_for_series['show_prefix'] ? $labelsDescriptions[$detail_for_series['detail_id']]['prefix'] : '';
+                        $s_suffix = $detail_for_series['show_suffix'] ? $labelsDescriptions[$detail_for_series['detail_id']]['suffix'] : '';
+                        $col_series_formatted = $s_prefix . $this->getUtilDynamicReportManager()
+                                ->getComponentManager()
+                                ->getDataModelManager()->getUtilDynamicQueryManager()->formatValue($col_series, $s_format)
+                            . $s_suffix;
+                        if (!isset($_crossed_series[$col_series_formatted])) {
+                            $_crossed_series[$col_series_formatted] = array();
+                        }
 
-                break;
-            case 'series_multiple':
+                        $col_datas = $row[$labelsDescriptions[$detail_for_datas['detail_id']]['alias']];
+                        if (!isset($_crossed_series[$col_series_formatted][$col_label_formatted])) {
+                            $_crossed_series[$col_series_formatted][$col_label_formatted] = array();
+                        }
+                        $_crossed_series[$col_series_formatted][$col_label_formatted][] = $col_datas;
 
-                break;
+                    }
+
+                    //-------------------------------------------------------------------------------------------------
+
+                    $all['settings']['_labels'] = array_values($_crossed_labels);
+                    $all['settings']['_series'] = $_crossed_series;
+                    $all['settings']['_titles'] = array(
+                        'labels' => $labelsDescriptions[$all['settings']['dataset_detail_for_labels']['detail_id']]['title'],
+                        'series' => $labelsDescriptions[$all['settings']['dataset_detail_for_series']['detail_id']]['title'],
+                        'datas' => $labelsDescriptions[$all['settings']['dataset_detail_for_datas']['detail_id']]['title'],
+
+                    );
+
+                    $all['settings']['_datas_descriptions_type'] = 'data';
+                    $all['settings']['_datas_descriptions_by_label'] = array();
+                    $all['settings']['_datas_descriptions_by_serie'] = array();
+                    $all['settings']['_datas_descriptions_by_data'] = array(
+                        array(
+                            'id' => $detail_for_datas['detail_id'],
+                            'alias' => $labelsDescriptions[$detail_for_datas['detail_id']]['alias'],
+                            'title' => $labelsDescriptions[$detail_for_datas['detail_id']]['title'],
+                            'prefix' => $detail_for_datas['show_prefix'] ? $labelsDescriptions[$detail_for_datas['detail_id']]['prefix'] : '',
+                            'suffix' => $detail_for_datas['show_prefix'] ? $labelsDescriptions[$detail_for_datas['detail_id']]['suffix'] : '',
+                            'type' => $labelsDescriptions[$detail_for_datas['detail_id']]['type'],
+                            'format' => $labelsDescriptions[$detail_for_datas['detail_id']]['format'],
+                            'classification' => $labelsDescriptions[$detail_for_datas['detail_id']]['classification'],
+                            'text_align' => isset($detail_for_datas['text_align']) ? $detail_for_datas['text_align'] : '',
+                            'text_with' => isset($detail_for_datas['text_with']) ? $detail_for_datas['text_with'] : '',
+                        )
+                    );
+                }
+                else{
+                    // TODO single detail
+
+                    $detail_for_labels = $all['settings']['dataset_detail_for_labels'];
+                    $detail_for_datas = $all['settings']['dataset_detail_for_datas'];
+
+                    $_crossed_labels = array();
+                    $_crossed_series = array();
+
+                    foreach ($all['data']['result'] as $row) {
+
+                        $col_label = $row[$labelsDescriptions[$detail_for_labels['detail_id']]['alias']];
+                        $l_format = $labelsDescriptions[$detail_for_labels['detail_id']]['format'];
+                        $l_prefix = $detail_for_labels['show_prefix'] ? $labelsDescriptions[$detail_for_labels['detail_id']]['prefix'] : '';
+                        $l_suffix = $detail_for_labels['show_suffix'] ? $labelsDescriptions[$detail_for_labels['detail_id']]['suffix'] : '';
+                        $col_label_formatted = $l_prefix . $this->getUtilDynamicReportManager()
+                                ->getComponentManager()
+                                ->getDataModelManager()->getUtilDynamicQueryManager()->formatValue($col_label, $l_format)
+                            . $l_suffix;
+                        $_crossed_labels[$col_label_formatted] = $col_label_formatted;
+
+                        $col_datas = $row[$labelsDescriptions[$detail_for_datas['detail_id']]['alias']];
+                        if (!isset($_crossed_series[$col_label_formatted])) {
+                            $_crossed_series[$col_label_formatted] = array();
+                        }
+                        $_crossed_series[$col_label_formatted][] = $col_datas;
+
+                    }
+
+                    //-------------------------------------------------------------------------------------------------
+
+                    $all['settings']['_labels'] = array_values($_crossed_labels);
+                    $all['settings']['_series'] = $_crossed_series;
+                    $all['settings']['_titles'] = array(
+                        'labels' => $labelsDescriptions[$all['settings']['dataset_detail_for_labels']['detail_id']]['title'],
+                        'series' => [],
+                        'datas' => $labelsDescriptions[$all['settings']['dataset_detail_for_datas']['detail_id']]['title'],
+                    );
+
+                    $all['settings']['_datas_descriptions_type'] = 'data';
+                    $all['settings']['_datas_descriptions_by_label'] = array();
+                    $all['settings']['_datas_descriptions_by_serie'] = array();
+                    $all['settings']['_datas_descriptions_by_data'] = array(
+                        array(
+                            'id' => $detail_for_datas['detail_id'],
+                            'alias' => $labelsDescriptions[$detail_for_datas['detail_id']]['alias'],
+                            'title' => $labelsDescriptions[$detail_for_datas['detail_id']]['title'],
+                            'prefix' => $detail_for_datas['show_prefix'] ? $labelsDescriptions[$detail_for_datas['detail_id']]['prefix'] : '',
+                            'suffix' => $detail_for_datas['show_prefix'] ? $labelsDescriptions[$detail_for_datas['detail_id']]['suffix'] : '',
+                            'type' => $labelsDescriptions[$detail_for_datas['detail_id']]['type'],
+                            'format' => $labelsDescriptions[$detail_for_datas['detail_id']]['format'],
+                            'classification' => $labelsDescriptions[$detail_for_datas['detail_id']]['classification'],
+                            'text_align' => isset($detail_for_datas['text_align']) ? $detail_for_datas['text_align'] : '',
+                            'text_with' => isset($detail_for_datas['text_with']) ? $detail_for_datas['text_with'] : '',
+                        )
+                    );
+                }
+            }
+
         }
-
-        //dump($all);
 
         return $all;
     }
@@ -1209,8 +1079,11 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
 
         $datamodel_details_descriptions = $all['settings']['_details_descriptions']; // TODO
 
-        switch ($this->getDataModelDatasetType()) {
-            case 'multiple':
+        // TODO
+
+        if ($this->getHasDataModelDatasetLabel()) {
+            if ($this->getHasDataModelDatasetMultipleDatas())
+            {
                 $exportableData['has_series'] = false;
                 $exportableData['has_summaries'] = false;
                 $exportableData['datas_descriptions_by'] = 'label';
@@ -1220,8 +1093,6 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                     $exportableData['labels'][] = $lbd['title'];
                     $exportableData['datas_descriptions'][] = $lbd;
                 }
-                dump($datamodel_details_descriptions);
-                dump($labels_alias_ids);
 
                 foreach ($all['data']['result'] as $i => $row) {
                     $serie_id = $i;
@@ -1236,90 +1107,156 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                     }
                     $exportableData['series'][$serie_id] = $serie_data;
                 }
-                break;
-            case 'crossed':
+            }
+            else {
+                if ($this->getHasDataModelDatasetSeries()) {
+                    $exportableData['has_series'] = true;
+                    $exportableData['series_title'] = $all['settings']['_titles']['labels'] . ' / ' . $all['settings']['_titles']['series'] . ' => ' . $all['settings']['_titles']['datas'];
+                    if (!empty($all['settings']['_summary_function'])) {
+                        $exportableData['has_summaries'] = true;
+                        $exportableData['datas_summaries'] = array(
+                            'title' => $all['settings']['_summary_label'],
+                            'title_text_align' => $all['settings']['_datas_descriptions_by_data'][0]['text_align'],
+                            'title_prefix' => $all['settings']['_datas_descriptions_by_data'][0]['prefix'],
+                            'title_suffix' => $all['settings']['_datas_descriptions_by_data'][0]['suffix'],
+                            'for_label' => array(),
+                            'for_serie' => array(),
+                            'for_all' => null,
+                        );
+                    } else {
+                        $exportableData['has_summaries'] = false;
+                    }
+                    $exportableData['datas_descriptions_by'] = 'data';
 
-                $exportableData['has_series'] = true;
-                $exportableData['series_title'] = $all['settings']['_titles']['labels'] . ' / ' . $all['settings']['_titles']['series'] . ' => ' . $all['settings']['_titles']['datas'];
-                if (!empty($all['settings']['_summary_function'])) {
-                    $exportableData['has_summaries'] = true;
-                    $exportableData['datas_summaries'] = array(
-                        'title' => $all['settings']['_summary_label'],
-                        'title_text_align' => $all['settings']['_datas_descriptions_by_data'][0]['text_align'],
-                        'title_prefix' => $all['settings']['_datas_descriptions_by_data'][0]['prefix'],
-                        'title_suffix' => $all['settings']['_datas_descriptions_by_data'][0]['suffix'],
-                        'for_label' => array(),
-                        'for_serie' => array(),
-                        'for_all' => null,
-                    );
-                } else {
-                    $exportableData['has_summaries'] = false;
-                }
-                $exportableData['datas_descriptions_by'] = 'data';
+                    $exportableData['labels'] = $all['settings']['_labels'];
+                    $exportableData['datas_descriptions'] = $all['settings']['_datas_descriptions_by_data'];
 
-                $exportableData['labels'] = $all['settings']['_labels'];
-                $exportableData['datas_descriptions'] = $all['settings']['_datas_descriptions_by_data'];
+                    $summary_vertical_values = array();
+                    $summary_final_values = array();
 
-                $summary_vertical_values = array();
-                $summary_final_values = array();
+                    $format = $exportableData['datas_descriptions'][0]['format'];
+                    //$prefix = $exportableLabels[$alias]['prefix'];
+                    //$suffix = $exportableLabels[$alias]['suffix'];
 
-                $format = $exportableData['datas_descriptions'][0]['format'];
-                //$prefix = $exportableLabels[$alias]['prefix'];
-                //$suffix = $exportableLabels[$alias]['suffix'];
+                    foreach ($all['settings']['_series'] as $serie_id => $serie) {
 
-                foreach ($all['settings']['_series'] as $serie_id => $serie) {
+                        $serie_data = array();
 
-                    $serie_data = array();
+                        $summary_horizontal_values = array();
 
-                    $summary_horizontal_values = array();
+                        foreach ($all['settings']['_labels'] as $label) {
+
+                            $values = isset($serie[$label]) ? $serie[$label] : array();
+
+                            $value = $formatter_helper->summarizeValues($all['settings']['_summary_function'], $values);
+
+                            $txt = $formatter_helper->formatValue($value, $format);
+                            $serie_data[] = $txt;
+
+                            $summary_horizontal_values = $formatter_helper->pushValuesToArray($summary_horizontal_values, $values);
+                            if (!isset($summary_vertical_values[$label])) {
+                                $summary_vertical_values[$label] = array();
+                            }
+                            $summary_vertical_values[$label] = $formatter_helper->pushValuesToArray($summary_vertical_values[$label], $values);
+                            $summary_final_values = $formatter_helper->pushValuesToArray($summary_final_values, $values);
+                        }
+                        $exportableData['series'][$serie_id] = $serie_data;
+
+                        $exportableData['datas_summaries']['for_serie'][$serie_id] = $formatter_helper->formatValue($formatter_helper
+                            ->summarizeValues(
+                                $all['settings']['_summary_function'],
+                                $summary_horizontal_values
+                            ), $format);
+                    }
 
                     foreach ($all['settings']['_labels'] as $label) {
-
-                        $values = isset($serie[$label]) ? $serie[$label] : array();
-
-                        $value = $formatter_helper->summarizeValues($all['settings']['_summary_function'], $values);
-
-                        $txt = $formatter_helper->formatValue($value, $format);
-                        $serie_data[] = $txt;
-
-                        $summary_horizontal_values = $formatter_helper->pushValuesToArray($summary_horizontal_values, $values);
-                        if (!isset($summary_vertical_values[$label])) {
-                            $summary_vertical_values[$label] = array();
-                        }
-                        $summary_vertical_values[$label] = $formatter_helper->pushValuesToArray($summary_vertical_values[$label], $values);
-                        $summary_final_values = $formatter_helper->pushValuesToArray($summary_final_values, $values);
+                        $exportableData['datas_summaries']['for_label'][$label] = $formatter_helper->formatValue($formatter_helper
+                            ->summarizeValues(
+                                $all['settings']['_summary_function'],
+                                $summary_vertical_values[$label]
+                            ), $format);
                     }
-                    $exportableData['series'][$serie_id] = $serie_data;
-
-                    $exportableData['datas_summaries']['for_serie'][$serie_id] = $formatter_helper->formatValue($formatter_helper
+                    $exportableData['datas_summaries']['for_all'] = $formatter_helper->formatValue($formatter_helper
                         ->summarizeValues(
                             $all['settings']['_summary_function'],
-                            $summary_horizontal_values
+                            $summary_final_values
                         ), $format);
                 }
+                else{
+                    // TODO
+                    $exportableData['has_series'] = true;
+                    $exportableData['series_title'] = '';
+                    if (!empty($all['settings']['_summary_function'])) {
+                        $exportableData['has_summaries'] = true;
+                        $exportableData['datas_summaries'] = array(
+                            'title' => $all['settings']['_summary_label'],
+                            'title_text_align' => $all['settings']['_datas_descriptions_by_data'][0]['text_align'],
+                            'title_prefix' => $all['settings']['_datas_descriptions_by_data'][0]['prefix'],
+                            'title_suffix' => $all['settings']['_datas_descriptions_by_data'][0]['suffix'],
+                            'for_label' => array(),
+                            'for_serie' => array(),
+                            'for_all' => null,
+                        );
+                    } else {
+                        $exportableData['has_summaries'] = false;
+                    }
+                    $exportableData['datas_descriptions_by'] = 'data';
 
-                foreach ($all['settings']['_labels'] as $label) {
-                    $exportableData['datas_summaries']['for_label'][$label] = $formatter_helper->formatValue($formatter_helper
+                    $exportableData['labels'] = $all['settings']['_labels'];
+                    $exportableData['datas_descriptions'] = $all['settings']['_datas_descriptions_by_data'];
+
+                    $summary_vertical_values = array();
+                    $summary_final_values = array();
+
+                    $format = $exportableData['datas_descriptions'][0]['format'];
+                    //$prefix = $exportableLabels[$alias]['prefix'];
+                    //$suffix = $exportableLabels[$alias]['suffix'];
+
+                    foreach ($all['settings']['_series'] as $serie_id => $serie) {
+
+                        $serie_data = array();
+
+                        $summary_horizontal_values = array();
+
+                        foreach ($all['settings']['_labels'] as $label) {
+
+                            $values = isset($serie[$label]) ? $serie[$label] : array();
+
+                            $value = $formatter_helper->summarizeValues($all['settings']['_summary_function'], $values);
+
+                            $txt = $formatter_helper->formatValue($value, $format);
+                            $serie_data[] = $txt;
+
+                            $summary_horizontal_values = $formatter_helper->pushValuesToArray($summary_horizontal_values, $values);
+                            if (!isset($summary_vertical_values[$label])) {
+                                $summary_vertical_values[$label] = array();
+                            }
+                            $summary_vertical_values[$label] = $formatter_helper->pushValuesToArray($summary_vertical_values[$label], $values);
+                            $summary_final_values = $formatter_helper->pushValuesToArray($summary_final_values, $values);
+                        }
+                        $exportableData['series'][$serie_id] = $serie_data;
+
+                        $exportableData['datas_summaries']['for_serie'][$serie_id] = $formatter_helper->formatValue($formatter_helper
+                            ->summarizeValues(
+                                $all['settings']['_summary_function'],
+                                $summary_horizontal_values
+                            ), $format);
+                    }
+
+                    foreach ($all['settings']['_labels'] as $label) {
+                        $exportableData['datas_summaries']['for_label'][$label] = $formatter_helper->formatValue($formatter_helper
+                            ->summarizeValues(
+                                $all['settings']['_summary_function'],
+                                $summary_vertical_values[$label]
+                            ), $format);
+                    }
+                    $exportableData['datas_summaries']['for_all'] = $formatter_helper->formatValue($formatter_helper
                         ->summarizeValues(
                             $all['settings']['_summary_function'],
-                            $summary_vertical_values[$label]
+                            $summary_final_values
                         ), $format);
                 }
-                $exportableData['datas_summaries']['for_all'] = $formatter_helper->formatValue($formatter_helper
-                    ->summarizeValues(
-                        $all['settings']['_summary_function'],
-                        $summary_final_values
-                    ), $format);
-
-                break;
-            case 'series_single':
-
-                break;
-            case 'series_multiple':
-                $exportableDescriptionType = 'series';
-
-
-                break;
+            }
         }
 
         return $exportableData;
@@ -1352,8 +1289,6 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
         $labels = $exportableData['labels'];
 
         $series = $exportableData['series'];
-
-        //dump($exportableData);
 
         switch ($format) {
             case 'xls':
@@ -1529,7 +1464,6 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
         ));
     }
 
-//------------------------------------------------------------------------------------------------------
-
+    //------------------------------------------------------------------------------------------------------
 
 }

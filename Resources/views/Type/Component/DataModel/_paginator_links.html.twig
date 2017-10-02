@@ -1,0 +1,206 @@
+{% import _self as _paginator_links %}
+
+{% macro print_paginator_links_buttons(config) %}
+
+    {% set route = config.route %}
+    {% set sonata_component = config.sonata_component %}
+    {% set routeParams = config.routeParams %}
+    {% set paginator = config.paginator %}
+    {% set maxPaginatorLinks = config.maxPaginatorLinks %}
+    {% set paginator_container_class = config.paginator_container_class %}
+    {% set currentClass = config.currentClass %}
+    {% set firstPageText = config.firstPageText %}
+    {% set firstEnabledClass = config.firstEnabledClass %}
+    {% set firstDisabledClass = config.firstDisabledClass %}
+    {% set previousPageText = config.previousPageText %}
+    {% set previousEnabledClass = config.previousEnabledClass %}
+    {% set previousDisabledClass = config.previousDisabledClass %}
+    {% set nextPageText = config.nextPageText %}
+    {% set nextEnabledClass = config.nextEnabledClass %}
+    {% set nextDisabledClass = config.nextDisabledClass %}
+    {% set lastPageText = config.lastPageText %}
+    {% set lastEnabledClass = config.lastEnabledClass %}
+    {% set lastDisabledClass  = config.lastDisabledClass %}
+
+    {% if paginator is not null and paginator.haveToPaginate %}
+
+        {% set firstPage = 1 %}
+        {% set lastPage = paginator.nbPages %}
+        {% set currentPage = paginator.currentPage %}
+        {% set previousPage = paginator.hasPreviousPage?paginator.previousPage:1 %}
+        {% set nextPage = paginator.hasNextPage?paginator.nextPage:lastPage %}
+
+        {% set semiMaxPaginatorLinks = maxPaginatorLinks%2==0?maxPaginatorLinks/2:(maxPaginatorLinks-1)/2 %}
+
+        {% set minPage = paginator.currentPage-semiMaxPaginatorLinks>=1?paginator.currentPage-semiMaxPaginatorLinks:1 %}
+        {% set maxPage = minPage+maxPaginatorLinks<=lastPage?minPage+maxPaginatorLinks-1:lastPage %}
+
+        {% if (minPage+maxPaginatorLinks>lastPage) %}
+            {% set minPage = lastPage-maxPaginatorLinks+1>=1?lastPage-maxPaginatorLinks+1:1 %}
+        {% endif %}
+
+        <ul class="{{ paginator_container_class }}">
+
+            <!-- FIRST -->
+            {% if currentPage > 1 %}
+                {% set rParams =  {'_page': firstPage} | merge(routeParams) %}
+                <li class="{{ firstEnabledClass }}"
+                    title="{{ 'Go to first page' | trans({},'TechPromuxDynamicReportBundle') }}" data-placement="top"
+                    data-toggle="tooltip">
+                    <a href="{{ path(route,rParams) }}">{{ firstPageText }}</a>
+                </li>
+            {% else %}
+                <li class="{{ firstDisabledClass }}"
+                    title="{{ 'Go to first page' | trans({},'TechPromuxDynamicReportBundle') }}" data-placement="top"
+                    data-toggle="tooltip">
+                    <span>{{ firstPageText }}</span>
+                </li>
+            {% endif %}
+
+            <!-- PREVIOUS -->
+            {% if currentPage > 1 %}
+                {% set rParams =  {'_page': previousPage} | merge(routeParams) %}
+                <li class="{{ previousEnabledClass }}"
+                    title="{{ 'Go to previous page' | trans({},'TechPromuxDynamicReportBundle') }}" data-placement="top"
+                    data-toggle="tooltip">
+                    <a href="{{ path(route,rParams) }}">{{ previousPageText }}</a>
+                </li>
+            {% else %}
+                <li class="{{ previousDisabledClass }}"
+                    title="{{ 'Go to previous page' | trans({},'TechPromuxDynamicReportBundle') }}" data-placement="top"
+                    data-toggle="tooltip">
+                    <span>{{ previousPageText }}</span>
+                </li>
+            {% endif %}
+
+            <!-- NUMBERS -->
+            {% for page in minPage..maxPage %}
+                {% if ((page>currentPage and maxPage*2-currentPage<lastPage) or (page<currentPage and minPage*2-currentPage>1)) %}
+                    {% set _page = page*2-currentPage %}
+                {% else %}
+                    {% set _page = page %}
+                {% endif %}
+                {% if page == currentPage %}
+                    <li class="{{ currentClass }}"
+                        title="{{ 'Go to page' | trans({},'TechPromuxDynamicReportBundle') }} {{ page }}"
+                        data-placement="top" data-toggle="tooltip">
+                        <span>{{ page }}</span>
+                    </li>
+                {% else %}
+                    {% set rParams =  {'_page': _page} | merge(routeParams) %}
+                    <li title="{{ 'Go to page' | trans({},'TechPromuxDynamicReportBundle') }} {{ _page }}"
+                        data-placement="top" data-toggle="tooltip">
+                        <a href="{{ path(route,rParams) }}">{{ _page }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            <!-- NEXT -->
+            {% if currentPage < lastPage %}
+                {% set rParams =  {'_page': nextPage} | merge(routeParams) %}
+                <li class="{{ nextEnabledClass }}"
+                    title="{{ 'Go to next page' | trans({},'TechPromuxDynamicReportBundle') }}" data-placement="top"
+                    data-toggle="tooltip">
+                    <a href="{{ path(route,rParams) }}">{{ nextPageText }}</a>
+                </li>
+            {% else %}
+                <li class="{{ nextDisabledClass }}"
+                    title="{{ 'Go to next page' | trans({},'TechPromuxDynamicReportBundle') }}" data-placement="top"
+                    data-toggle="tooltip">
+                    <span>{{ nextPageText }}</span>
+                </li>
+            {% endif %}
+
+            <!-- LAST -->
+            {% if currentPage < lastPage %}
+                {% set rParams =  {'_page': lastPage} | merge(routeParams) %}
+                <li class="{{ lastEnabledClass }}"
+                    title="{{ 'Go to last page' | trans({},'TechPromuxDynamicReportBundle') }}" data-placement="top"
+                    data-toggle="tooltip">
+                    <a href="{{ path(route,rParams) }}">{{ lastPageText }}</a>
+                </li>
+            {% else %}
+                <li class="{{ lastDisabledClass }}"
+                    title="{{ 'Go to last page' | trans({},'TechPromuxDynamicReportBundle') }}" data-placement="top"
+                    data-toggle="tooltip">
+                    <span>{{ lastPageText }}</span>
+                </li>
+            {% endif %}
+        </ul>
+    {% endif %}
+
+{% endmacro %}
+
+{% if (component_type.getDataModelDatasetResultPaginated()) %}
+    <div id="component-header-paginator-{{ component.id }}" class="paginator-container" style="text-align:right; ">
+        <div id="component-header-paginator-title-{{ component.id }}" class="col-md-3 col-sm-12"
+             style="padding-top: 5px; padding-left: 0px; padding-right: 0px; font-size: 15px;">
+            {% if ((data.paginator.currentPageResults|length)>0) %}
+                <span><strong>{{ (data.paginator.currentPage-1)*data.paginator.maxPerPage+1 }}</strong> {{ 'to' | trans({},'TechPromuxDynamicReportBundle') }}
+                    <strong>{{ (data.paginator.currentPage-1)*data.paginator.maxPerPage+(data.paginator.currentPageResults|length) }}</strong> {{ 'of' | trans({},'TechPromuxDynamicReportBundle') }}
+                    <strong>{{ data.paginator.nbResults }}</strong></span>
+            {% else %}
+                <span>No results found</span>
+            {% endif %}
+        </div>
+        <div id="component-header-paginator-links-{{ component.id }}" class="col-md-9 col-sm-12"
+             style="text-align:right;font-size: 14px;padding-left: 5px; padding-right: 5px;">
+            <style>
+                .component-header-paginator-links-pager-{{component.id}} {
+                    margin: 0px 0 !important;
+                }
+            </style>
+            {{ _paginator_links.print_paginator_links_buttons(
+            {
+                'route': component_type.getRenderActionPathName(),
+                'sonata_component': component,
+                'routeParams':{'id': component.report.id, 'childId': component.id },
+                'paginator': data.paginator,
+                'maxPaginatorLinks': settings['dataset_paginator_options']['max_paginator_links'],
+                'paginator_container_class':'component-header-paginator-links-pager-'~component.id~' pager pull-right',
+                'currentClass':'active disabled',
+                'firstPageText':'««',
+                'firstEnabledClass':'first',
+                'firstDisabledClass':'disabled',
+                'previousPageText':'«',
+                'previousEnabledClass':'left',
+                'previousDisabledClass':'disabled',
+                'nextPageText':'»',
+                'nextEnabledClass':'right',
+                'nextDisabledClass':'disabled',
+                'lastPageText':'»»',
+                'lastEnabledClass':'last',
+                'lastDisabledClass':'disabled'
+            }) }}
+        </div>
+    </div>
+    <script>
+        // linking paginator links with filters form submit action
+
+        $(document).on('click', '#component-header-paginator-{{ component.id }} .pager a', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            $("#component-filters-form-{{ component.id }}").attr("action", $(this).attr("href"));
+            $("#component-filters-form-{{ component.id }}").trigger('submit');
+        });
+
+        $(document).on('data-loaded', '#component-{{ component.id }}', function (event) {
+            var data = $('#component-{{ component.id }}').attr('data-loaded');
+            var paginatorData = $('<div>').append(data).find('#component-header-paginator-{{ component.id }}');
+            $('#component-panel-header-custom-{{ component.id }}').html('');
+            $('#component-panel-header-custom-{{ component.id }}').append(paginatorData);
+            $('#component-header-paginator-{{ component.id }}').removeClass('hide');
+            $('#component-header-paginator-{{ component.id }}').parent().css({'min-width': '500px'});
+        });
+
+        // init custom stuffs
+
+        $(document).ready(function () {
+            //$('#component-panel-header-custom-{{ component.id }}').html('');
+            //$('#component-panel-header-custom-{{ component.id }}').append($('#component-header-paginator-{{ component.id }}'));
+            //$('#component-header-paginator-{{ component.id }}').removeClass('hide');
+            $('#component-header-paginator-{{ component.id }}').parent().css({'min-width': '500px'});
+        });
+
+    </script>
+{% endif %}
