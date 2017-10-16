@@ -2,8 +2,10 @@
 
 namespace TechPromux\DynamicReportBundle\Type\Component\DataModel;
 
+use Pagerfanta\Pagerfanta;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use TechPromux\BaseBundle\Adapter\Paginator\DoctrineDbalPaginatorAdapter;
 use TechPromux\DynamicQueryBundle\Type\ConditionalOperator\BaseConditionalOperatorType;
 use TechPromux\DynamicReportBundle\Entity\Component;
 use TechPromux\DynamicReportBundle\Type\Component\AbstractComponentType;
@@ -174,18 +176,21 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         "multiple" => false, "expanded" => false, "required" => true,
                         'choices' => $details_for_labels_choices, // TODO preguntar al component type si el data es numeric or date
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
+                        //'translation_domain' => $this->getBundleName()
                     )
                     ),
                     array('detail_label', 'choice', array(
                         'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
                         "multiple" => false, "expanded" => false, "required" => true,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('text_align', 'choice', array(
                         "multiple" => false, "expanded" => false, "required" => true,
                         'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
                         ),
+                        //'translation_domain' => $this->getBundleName()
                     )
                     ),
                     array('text_with', 'text', array(
@@ -194,7 +199,8 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         'attr' => array(
                             'placeholder' => 'px',
                             //'style' => 'width: 70px;'
-                        )
+                        ),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('show_prefix', 'checkbox', array(
                         'required' => false,
@@ -202,6 +208,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
                             'style' => 'width: 170px;max-width: 200%;'
                         ),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('show_suffix', 'checkbox', array(
                         'required' => false,
@@ -209,6 +216,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
                             'style' => 'width: 170px;max-width: 200%;'
                         ),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                 )
             ));
@@ -220,18 +228,21 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         "multiple" => false, "expanded" => false, "required" => true,
                         'choices' => $details_for_series_choices, // TODO preguntar al component type si el data es numeric or date
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
+                        //'translation_domain' => $this->getBundleName()
                     )
                     ),
                     array('detail_label', 'choice', array(
                         'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
                         "multiple" => false, "expanded" => false, "required" => true,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('text_align', 'choice', array(
                         "multiple" => false, "expanded" => false, "required" => true,
                         'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
                         ),
+                        //'translation_domain' => $this->getBundleName()
                     )
                     ),
                     array('text_with', 'text', array(
@@ -240,7 +251,8 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         'attr' => array(
                             'placeholder' => 'px',
                             //'style' => 'width: 70px;'
-                        )
+                        ),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('show_prefix', 'checkbox', array(
                         'required' => false,
@@ -248,6 +260,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
                             'style' => 'width: 170px;max-width: 200%;'
                         ),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('show_suffix', 'checkbox', array(
                         'required' => false,
@@ -255,6 +268,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
                             'style' => 'width: 170px;max-width: 200%;'
                         ),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                 )
             ));
@@ -267,12 +281,14 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         "multiple" => false, "expanded" => false, "required" => true,
                         'choices' => $details_for_datas_choices, // TODO preguntar al component type si el data es numeric or date
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
+                        //'translation_domain' => $this->getBundleName()
                     )
                     ),
                     array('detail_label', 'choice', array(
                         'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
                         "multiple" => false, "expanded" => false, "required" => true,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('crossed_function', 'choice', array(
                         "multiple" => false, "expanded" => false, "required" => false,
@@ -284,12 +300,14 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             'MAX' => 'MAX',
                         ),
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
+                        'translation_domain' => $this->getBundleName()
                     )),
                     array('text_align', 'choice', array(
                         "multiple" => false, "expanded" => false, "required" => true,
                         'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-1',
                         ),
+                        //'translation_domain' => $this->getBundleName()
                     )
                     ),
                     array('text_with', 'text', array(
@@ -298,7 +316,8 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         'attr' => array(
                             'placeholder' => 'px',
                             //'style' => 'width: 70px;'
-                        )
+                        ),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('show_prefix', 'checkbox', array(
                         'required' => false,
@@ -306,6 +325,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
                             'style' => 'width: 170px;max-width: 200%;'
                         ),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('show_suffix', 'checkbox', array(
                         'required' => false,
@@ -313,6 +333,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
                             'style' => 'width: 170px;max-width: 200%;'
                         ),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                 )
             ));
@@ -328,27 +349,28 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             "multiple" => false, "expanded" => false, "required" => true,
                             'choices' => $details_for_datas_choices, // TODO preguntar al component type si el data es numeric or date
                             "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
-                        )
-                        ),
+                            //'translation_domain' => $this->getBundleName()
+                        )),
                         array('detail_label', 'choice', array(
                             'choices' => array("title" => "title", "abbreviation" => "abbreviation"), // TODO translator y manager
                             "multiple" => false, "expanded" => false, "required" => true,
                             "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
+                            //'translation_domain' => $this->getBundleName()
                         )),
                         array('text_align', 'choice', array(
                             "multiple" => false, "expanded" => false, "required" => true,
                             'choices' => array('left' => 'left', 'center' => 'center', 'right' => 'right'), // TODO add translator
-                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
-                            ),
-                        )
-                        ),
+                            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',),
+                            //'translation_domain' => $this->getBundleName()
+                        )),
                         array('text_with', 'text', array(
                             "required" => false,
                             "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
                             'attr' => array(
                                 'placeholder' => 'px',
                                 //'style' => 'width: 70px;'
-                            )
+                            ),
+                            //'translation_domain' => $this->getBundleName()
                         )),
                         array('show_prefix', 'checkbox', array(
                             'required' => false,
@@ -356,6 +378,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                                 'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
                                 'style' => 'width: 170px;max-width: 200%;'
                             ),
+                            //'translation_domain' => $this->getBundleName()
                         )),
                         array('show_suffix', 'checkbox', array(
                             'required' => false,
@@ -363,6 +386,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                                 'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2',
                                 'style' => 'width: 170px;max-width: 200%;'
                             ),
+                            //'translation_domain' => $this->getBundleName()
                         )),
                     )
                 )
@@ -379,6 +403,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         "multiple" => false, "expanded" => false, "required" => true,
                         'choices' => $details_for_labels_choices,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-7'),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('widget_type', 'choice', array(
                         "multiple" => false, "expanded" => false, "required" => true,
@@ -389,6 +414,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             'choices' => 'choices'
                         ),
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-3'),
+                        //'translation_domain' => $this->getBundleName()
                     )),
 
                 ),
@@ -405,12 +431,14 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                         "multiple" => false, "expanded" => false, "required" => true,
                         'choices' => $details_for_labels_choices,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-7'),
+                        //'translation_domain' => $this->getBundleName()
                     )
                     ),
                     array('order_type', 'choice', array(
                         "multiple" => false, "expanded" => false, "required" => true,
                         'choices' => array('asc' => 'asc', 'desc' => 'desc'), // TODO add translator
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-3'),
+                        //'translation_domain' => $this->getBundleName()
                     )
                     ),
                 )
@@ -425,18 +453,21 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             //'class' => 'pull-left',
                             'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'
                         ),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('items_per_page', 'number', array(
                         "label_attr" => array(
                             // 'class' => 'pull-left',
                             'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-3'
                         ),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('max_paginator_links', 'number', array(
                         "label_attr" => array(
                             //'class' => 'pull-left',
                             'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-3'
                         ),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                 )
             ));
@@ -686,6 +717,28 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
         return $orders_by;
     }
 
+
+    /**
+     * @param $queryBuilder
+     * @return DoctrineDbalPaginatorAdapter
+     */
+    protected function createPaginatorAdapterForQueryBuilder($queryBuilder)
+    {
+        return new DoctrineDbalPaginatorAdapter($queryBuilder);
+    }
+
+    /**
+     * @param $queryBuilder
+     * @return Pagerfanta
+     */
+    public function createPaginatorForQueryBuilder($queryBuilder)
+    {
+        $adapter = $this->createPaginatorAdapterForQueryBuilder($queryBuilder);
+
+        $paginator = new Pagerfanta($adapter);
+
+        return $paginator;
+    }
     //------------------------------------------------------------------------------------------------------------
 
     /**
@@ -781,7 +834,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
             $dataset_paginator_options = $dataOptions['dataset_paginator_options'];
 
 
-            $paginator = $this->getUtilDynamicReportManager()->getComponentManager()->getDatamodelManager()->createPaginatorForQueryBuilder($queryBuilder);
+            $paginator = $this->createPaginatorForQueryBuilder($queryBuilder);
 
             $page = $request->get('_page', $dataset_paginator_options['initial_page']); // ver como obtener la pagina por defecto de la configuracion (obtenerlo del filter data)
             $items_per_page = $request->get('_items_per_page', $dataset_paginator_options['items_per_page']); // obtener la cantidad por defecto de la configuracion
@@ -983,8 +1036,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             'text_with' => isset($detail_for_datas['text_with']) ? $detail_for_datas['text_with'] : '',
                         )
                     );
-                }
-                else{
+                } else {
                     // TODO single detail
 
                     $detail_for_labels = $all['settings']['dataset_detail_for_labels'];
@@ -1082,8 +1134,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
         // TODO
 
         if ($this->getHasDataModelDatasetLabel()) {
-            if ($this->getHasDataModelDatasetMultipleDatas())
-            {
+            if ($this->getHasDataModelDatasetMultipleDatas()) {
                 $exportableData['has_series'] = false;
                 $exportableData['has_summaries'] = false;
                 $exportableData['datas_descriptions_by'] = 'label';
@@ -1107,8 +1158,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                     }
                     $exportableData['series'][$serie_id] = $serie_data;
                 }
-            }
-            else {
+            } else {
                 if ($this->getHasDataModelDatasetSeries()) {
                     $exportableData['has_series'] = true;
                     $exportableData['series_title'] = $all['settings']['_titles']['labels'] . ' / ' . $all['settings']['_titles']['series'] . ' => ' . $all['settings']['_titles']['datas'];
@@ -1181,8 +1231,7 @@ abstract class AbstractDataModelComponentType extends AbstractComponentType
                             $all['settings']['_summary_function'],
                             $summary_final_values
                         ), $format);
-                }
-                else{
+                } else {
                     // TODO
                     $exportableData['has_series'] = true;
                     $exportableData['series_title'] = '';

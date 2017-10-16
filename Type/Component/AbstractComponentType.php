@@ -136,7 +136,8 @@ abstract class AbstractComponentType implements BaseComponentType
         $keys[] = array('dataset_export_options', 'choice', array(
             //'label' => $this->trans('Formats to Allow Export Data'),
             'choices' => $this->getExportablesFormats(),
-            'multiple' => true, 'expanded' => true, 'required' => false
+            'multiple' => true, 'expanded' => true, 'required' => false,
+            //'translation_domain' => $this->getBundleName()
         ));
 
         return $keys;

@@ -53,7 +53,7 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
      */
     public function getTemplateForEditForm()
     {
-        return '@'.$this->getBundleName() . '/Type/Component/Table/Paginated/edit.html.twig';
+        return '@' . $this->getBundleName() . '/Type/Component/Table/Paginated/edit.html.twig';
     }
 
     /**
@@ -70,7 +70,7 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
      */
     public function getHasDataModelDatasetLabel()
     {
-       return false;
+        return false;
     }
 
     /**
@@ -127,7 +127,9 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
                 array('show_row_number', 'checkbox', array(
                     'required' => false,
                     "label_attr" => array(
-                        'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
+                        'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'
+                    ),
+                    //'translation_domain' => $this->getBundleName()
                 )),
             )
         ));
@@ -143,8 +145,8 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
                         "multiple" => false, "expanded" => false, "required" => true,
                         'choices' => $details_numeric_datetime_choices,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-xs-3'),
-                    )
-                    ),
+                        'translation_domain' => $this->getBundleName()
+                    )),
                     array('limit_type', 'choice', array(
                         'choices' => array(
                             'less_than' => 'less_than',
@@ -153,29 +155,30 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
                             'greater_or_equal' => 'greater_or_equal',
                             'between' => 'between',
                             'not_between' => 'not_between',
-
                         ),
                         'required' => true,
-                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-xs-2'),
-                    )
-                    ),
+                        "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-xs-2'
+                        ),
+                        'translation_domain' => $this->getBundleName()
+                    )),
                     array('limit', 'text', array(
                         'required' => true,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-xs-2'),
-                    )
-                    ),
+                        'translation_domain' => $this->getBundleName()
+                    )),
                     array('limit_color', 'text', array(
                         "required" => true,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-xs-2'),
                         //'read_only' => true,
                         'empty_data' => 'rgb(0,0,255)',
                         'attr' => array('class' => 'color-picker', 'style' => 'width: 140px;'),
+                        'translation_domain' => $this->getBundleName()
                     )),
                     array('limit_message', 'text', array(
                         'required' => false,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-xs-3'),
-                    )
-                    ),
+                        'translation_domain' => $this->getBundleName()
+                    )),
                 )
             )
         ));
@@ -190,7 +193,7 @@ class PaginatedTableComponentType extends AbstractDataModelComponentType
      */
     public function getTemplateForRenderComponent()
     {
-        return '@'.$this->getBundleName() . '/Type/Component/Table/Paginated/render.html.twig';
+        return '@' . $this->getBundleName() . '/Type/Component/Table/Paginated/render.html.twig';
     }
 
     /**

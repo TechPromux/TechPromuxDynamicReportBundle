@@ -10,14 +10,25 @@
         <thead>
         <tr>
             {% if (settings['basic_options']['show_row_number'] == true) %}
-                <th style="text-align:center;padding-left: 20px;">
+                <th></th>
+            {% endif %}
+            <th></th>
+            <th style="text-align:center;padding-left: 20px;" colspan="{{ settings['_labels'] | length }}">
+                <strong>{{ settings['_titles']['labels'] }}</strong>
+            </th>
+            {% if (settings['_data_summary_function']!=null and settings['_data_summary_function']!='') %}
+                <th>
+                </th>
+            {% endif %}
+        </tr>
+        <tr>
+            {% if (settings['basic_options']['show_row_number'] == true) %}
+                <th style="text-align:center;">
                     <b>#</b>
                 </th>
             {% endif %}
-            <th style="text-align:center;padding-left: 20px;"
-                width="{{ settings['basic_options']['header_first_column_text_with'] }}">
-                <strong>{{ settings['_titles']['labels'] }} / {{ settings['_titles']['series'] }} {#{ settings['_titles']['datas'] }#}
-                </strong>
+            <th width="{{ settings['basic_options']['header_first_column_text_with'] }}" style="text-align:center;">
+                <strong>{{ settings['_titles']['series'] }}</strong>
             </th>
             {% for label in settings['_labels'] %}
                 <th title="{{ label }}"
@@ -58,8 +69,8 @@
                         {% for limit_indicator in settings['_limit_indicators'] %}
 
                             {% if (formatter_helper.verifyLimitIndicator(summary_col,limit_indicator['limit_type'], limit_indicator['limit'] )) %}
-                                {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
-                                {% set text_title =  limit_indicator['limit_message'] %}
+                                {% set text_color = 'cursor:help;color:'~limit_indicator['limit_color']~';' %}
+                                {% set text_title =  (limit_indicator['limit_message'] | replace({'[%$V%]':formatter_helper.formatValue(summary_col,format)})) %}
                             {% endif %}
 
                         {% endfor %}
@@ -67,16 +78,14 @@
                     {% endif %}
 
                     <td style="text-align:{{ settings['dataset_detail_for_datas']['text_align'] }};">
-                        {% if (text_color!='') %} <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
-                                                     data-placement="top" data-toggle="tooltip"> {% endif %}
-
+                        <span style="{{ text_color }}" title="{{ text_title }}" data-placement="top"
+                              data-toggle="tooltip">
                             {% if (settings['_data_crossed_function'] == 'COUNT') %}
                                 {{ summary_col }}
                             {% else %}
                                 {{ prefix~formatter_helper.formatValue(summary_col,format)~suffix }}
                             {% endif %}
-
-                            {% if (text_color!='') %}</b> {% endif %}
+                        </span>
                     </td>
                 {% endfor %}
                 {% if (settings['_data_summary_function']!=null and settings['_data_summary_function']!='') %}
@@ -91,26 +100,23 @@
                         {% for limit_indicator in settings['_limit_indicators'] %}
 
                             {% if (formatter_helper.verifyLimitIndicator(summary_horizontal,limit_indicator['limit_type'], limit_indicator['limit'] )) %}
-                                {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
-                                {% set text_title =  limit_indicator['limit_message'] %}
+                                {% set text_color = 'cursor:help;color:'~limit_indicator['limit_color']~';' %}
+                                {% set text_title =  (limit_indicator['limit_message'] | replace({'[%$V%]':formatter_helper.formatValue(summary_horizontal,format)})) %}
                             {% endif %}
 
                         {% endfor %}
 
                     {% endif %}
-
                     <td style="text-align:{{ settings['dataset_detail_for_datas']['text_align'] }};border-left: 2px solid #c9cad7;">
-
-                        {% if (text_color!='') %} <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
-                                                     data-placement="top" data-toggle="tooltip"> {% endif %}
+                        <span style="cursor: help;{{ text_color }}" title="{{ text_title }}"
+                              data-placement="top" data-toggle="tooltip">
 
                             {% if (settings['_data_summary_function'] == 'COUNT') %}
                                 {{ summary_horizontal }}
                             {% else %}
                                 {{ prefix~formatter_helper.formatValue(summary_horizontal,format)~suffix }}
                             {% endif %}
-
-                            {% if (text_color!='') %}</b> {% endif %}
+                        </span>
                     </td>
                 {% endif %}
             </tr>
@@ -141,8 +147,8 @@
                         {% for limit_indicator in settings['_limit_indicators'] %}
 
                             {% if (formatter_helper.verifyLimitIndicator(summary_vertical,limit_indicator['limit_type'], limit_indicator['limit'] )) %}
-                                {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
-                                {% set text_title =  limit_indicator['limit_message'] %}
+                                {% set text_color = 'cursor:help;color:'~limit_indicator['limit_color']~';' %}
+                                {% set text_title =  (limit_indicator['limit_message'] | replace({'[%$V%]':formatter_helper.formatValue(summary_vertical,format)})) %}
                             {% endif %}
 
                         {% endfor %}
@@ -150,16 +156,14 @@
                     {% endif %}
 
                     <td style="text-align:{{ settings['dataset_detail_for_datas']['text_align'] }};">
-                        {% if (text_color!='') %} <b style="cursor: help;{{ text_color }}" title="{{ text_title }}"
-                                                     data-placement="top" data-toggle="tooltip"> {% endif %}
-
+                        <span style="cursor: help;{{ text_color }}" title="{{ text_title }}"
+                              data-placement="top" data-toggle="tooltip">
                             {% if (settings['_data_summary_function'] == 'COUNT') %}
                                 {{ summary_vertical }}
                             {% else %}
                                 {{ prefix~formatter_helper.formatValue(summary_vertical,format)~suffix }}
                             {% endif %}
-
-                            {% if (text_color!='') %}</b> {% endif %}
+                        </span>
                     </td>
                 {% endfor %}
 
@@ -173,8 +177,8 @@
                     {% for limit_indicator in settings['_limit_indicators'] %}
 
                         {% if (formatter_helper.verifyLimitIndicator(summary_final,limit_indicator['limit_type'], limit_indicator['limit'] )) %}
-                            {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
-                            {% set text_title =  limit_indicator['limit_message'] %}
+                            {% set text_color = 'cursor:help;color:'~limit_indicator['limit_color']~';' %}
+                            {% set text_title =  (limit_indicator['limit_message'] | replace({'[%$V%]':formatter_helper.formatValue(summary_final,format)})) %}
                         {% endif %}
 
                     {% endfor %}

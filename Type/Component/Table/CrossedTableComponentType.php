@@ -136,6 +136,7 @@ class CrossedTableComponentType extends AbstractDataModelComponentType
                         'MAX' => 'MAX',
                     ),
                     "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'),
+                    'translation_domain' => $this->getBundleName()
                 )),
                 array('data_summary_label', 'text', array(
                     "required" => false,
@@ -143,7 +144,8 @@ class CrossedTableComponentType extends AbstractDataModelComponentType
                     'attr' => array(
                         //'placeholder' => 'px',
                         //'style' => 'width: 70px;'
-                    )
+                    ),
+                    'translation_domain' => $this->getBundleName()
                 )),
                 array('header_first_column_text_with', 'text', array(
                     "required" => false,
@@ -151,12 +153,15 @@ class CrossedTableComponentType extends AbstractDataModelComponentType
                     'attr' => array(
                         'placeholder' => 'px',
                         //'style' => 'width: 70px;'
-                    )
+                    ),
+                    'translation_domain' => $this->getBundleName()
                 )),
                 array('show_row_number', 'checkbox', array(
                     'required' => false,
                     "label_attr" => array(
-                        'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'),
+                        'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4'
+                    ),
+                    'translation_domain' => $this->getBundleName()
                 )),
             )
         ));
@@ -187,25 +192,26 @@ class CrossedTableComponentType extends AbstractDataModelComponentType
                         ),
                         'required' => true,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-xs-2'),
-                    )
-                    ),
+                        //'translation_domain' => $this->getBundleName()
+                    )),
                     array('limit', 'text', array(
                         'required' => true,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-xs-2'),
-                    )
-                    ),
+                        //'translation_domain' => $this->getBundleName()
+                    )),
                     array('limit_color', 'text', array(
                         "required" => true,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-xs-2'),
                         //'read_only' => true,
                         'empty_data' => 'rgb(0,0,255)',
                         'attr' => array('class' => 'color-picker', 'style' => 'width: 140px;'),
+                        //'translation_domain' => $this->getBundleName()
                     )),
                     array('limit_message', 'text', array(
                         'required' => false,
                         "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-xs-3'),
-                    )
-                    ),
+                        //'translation_domain' => $this->getBundleName()
+                    )),
                 )
             )
         ));

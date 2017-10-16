@@ -99,7 +99,7 @@ class UtilDynamicReportManager extends BaseManager
      */
     public function getRegisteredTemplatesTypes()
     {
-         return $this->report_templates_types;
+        return $this->report_templates_types;
     }
 
     /**
@@ -137,11 +137,24 @@ class UtilDynamicReportManager extends BaseManager
         return $this->getRegisteredTemplatesTypes()[$id];
     }
 
-    public function getContainersNamesByTemplate($id)
+    /**
+     * @param $id
+     * @param bool $translated
+     * @return array
+     */
+    public function getContainersNamesByTemplate($id, $translated = false)
     {
         $template = $this->getTemplateTypeById($id);
 
-        return $template->getContainersNames();
+        $containers_keys = $template->getContainersNames();
+
+        $containers_options = [];
+
+        foreach ($containers_keys as $ck) {
+            $containers_options[$ck] = $translated ? $this->getTranslator()->trans($ck, array(), $this->getBundleName()) : $ck;
+        }
+
+        return $containers_options;
     }
 
     public function getDefaultTemplateName()
@@ -169,14 +182,15 @@ class UtilDynamicReportManager extends BaseManager
      */
     public function getRegisteredComponentTypes()
     {
-       return $this->components_types;
+        return $this->components_types;
     }
 
     /**
-     *
+     * @param bool $translated
+     * @param bool $grouped
      * @return array
      */
-    public function getComponentsTypesChoices()
+    public function getComponentsTypesChoices($translated = false, $grouped = true)
     {
         $components = $this->getRegisteredComponentTypes();
 
@@ -185,14 +199,17 @@ class UtilDynamicReportManager extends BaseManager
         foreach ($components as $c) {
             /* @var $c BaseComponentType */
 
-            $group_name = $c->getGroupName() . '_COMPONENTS';
+            if ($grouped) {
+                $group_name = $c->getGroupName() . '_COMPONENTS';
 
-            if (!isset($components_choices[$group_name])) {
-                $components_choices[$group_name] = array();
+                if (!isset($components_choices[$group_name])) {
+                    $components_choices[$group_name] = array();
+                }
+                $components_choices[$group_name][$c->getId()] = $translated ? $this->getTranslator()->trans($c->getId(), array(), $this->getBundleName()) : $c->getId();
+            } else {
+                $components_choices[$c->getId()] = $translated ? $this->getTranslator()->trans($c->getId(), array(), $this->getBundleName()) : $c->getId();
+
             }
-
-            $components_choices[$group_name][$c->getId()] = $c->getId();
-
         }
 
         return $components_choices;

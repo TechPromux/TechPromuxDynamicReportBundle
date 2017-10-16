@@ -18,6 +18,18 @@
                 <source>list.label_name</source>
                 <target><![CDATA[Name]]></target>
             </trans-unit>
+            <trans-unit id="list.label_component_type">
+                <source>list.label_component_type</source>
+                <target><![CDATA[Component Type]]></target>
+            </trans-unit>
+            <trans-unit id="list.label_template_container">
+                <source>list.label_template_container</source>
+                <target><![CDATA[Template Container]]></target>
+            </trans-unit>
+            <trans-unit id="list.label_position">
+                <source>list.label_position</source>
+                <target><![CDATA[Position]]></target>
+            </trans-unit>
             <trans-unit id="list.label_title">
                 <source>list.label_title</source>
                 <target><![CDATA[Title]]></target>
@@ -38,6 +50,14 @@
                 <source>link_action_report_component_list</source>
                 <target><![CDATA[Components]]></target>
             </trans-unit>
+            <trans-unit id="link_action_report_edit">
+                <source>link_action_report_edit</source>
+                <target><![CDATA[Edit Report]]></target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_component_list">
+                <source>breadcrumb.link_component_list</source>
+                <target><![CDATA[Components]]></target>
+            </trans-unit>
             <trans-unit id="filter.label_name">
                 <source>filter.label_name</source>
                 <target><![CDATA[Name]]></target>
@@ -46,11 +66,259 @@
                 <source>filter.label_title</source>
                 <target><![CDATA[Title]]></target>
             </trans-unit>
-            <trans-unit id="">
-                <source></source>
-                <target><![CDATA[]]></target>
+            <trans-unit id="filter.label_component_type">
+                <source>filter.label_component_type</source>
+                <target><![CDATA[Component Type]]></target>
+            </trans-unit>
+            <trans-unit id="filter.label_template_container">
+                <source>filter.label_template_container</source>
+                <target><![CDATA[Template Container]]></target>
+            </trans-unit>
+            <trans-unit id="content">
+                <source>content</source>
+                <target><![CDATA[Content]]></target>
+            </trans-unit>
+            <trans-unit id="content_top">
+                <source>content_top</source>
+                <target><![CDATA[Top]]></target>
+            </trans-unit>
+            <trans-unit id="content_left">
+                <source>content_left</source>
+                <target><![CDATA[Left]]></target>
+            </trans-unit>
+            <trans-unit id="content_right">
+                <source>content_right</source>
+                <target><![CDATA[Right]]></target>
+            </trans-unit>
+            <trans-unit id="content_bottom">
+                <source>content_bottom</source>
+                <target><![CDATA[Bottom]]></target>
+            </trans-unit>
+            <trans-unit id="filter.label_enabled">
+                <source>filter.label_enabled</source>
+                <target><![CDATA[Enabled]]></target>
+            </trans-unit>
+            <trans-unit id="form.tab.general_information">
+                <source>form.tab.general_information</source>
+                <target><![CDATA[General Information]]></target>
+            </trans-unit>
+            <trans-unit id="form.tab.general_settings">
+                <source>form.tab.general_settings</source>
+                <target><![CDATA[General Settings]]></target>
+            </trans-unit>
+            <trans-unit id="form.label_name">
+                <source>form.label_name</source>
+                <target><![CDATA[Name]]></target>
+            </trans-unit>
+            <trans-unit id="form.label_title">
+                <source>form.label_title</source>
+                <target><![CDATA[Title]]></target>
+            </trans-unit>
+            <trans-unit id="form.label_description">
+                <source>form.label_description</source>
+                <target><![CDATA[Description]]></target>
+            </trans-unit>
+            <trans-unit id="form.tab.structure_design">
+                <source>form.tab.structure_design</source>
+                <target><![CDATA[Structure Design]]></target>
+            </trans-unit>
+            <trans-unit id="form.label_template_name">
+                <source>form.label_template_name</source>
+                <target><![CDATA[Template Name]]></target>
+            </trans-unit>
+            <trans-unit id="form.label_enabled">
+                <source>form.label_enabled</source>
+                <target><![CDATA[Enabled]]></target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_report_create">
+                <source>breadcrumb.link_report_create</source>
+                <target><![CDATA[Create]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.default_TEMPLATES">
+                <source>techpromux.default_TEMPLATES</source>
+                <target><![CDATA[Default Templates]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.template.default">
+                <source>techpromux.template.default</source>
+                <target><![CDATA[Default Template]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.template.2columns">
+                <source>techpromux.template.2columns</source>
+                <target><![CDATA[Two Columns Template]]></target>
+            </trans-unit>
+            <trans-unit id="link_action_execute">
+                <source>link_action_execute</source>
+                <target><![CDATA[Execute]]></target>
             </trans-unit>
 
+            <trans-unit id="techpromux.tables_COMPONENTS">
+                <source>techpromux.tables_COMPONENTS</source>
+                <target><![CDATA[Tables Widgets]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.table.paginated">
+                <source>techpromux.table.paginated</source>
+                <target><![CDATA[Paginated Table]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.table.crossed">
+                <source>techpromux.table.crossed</source>
+                <target><![CDATA[Crossed Table]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.charts_COMPONENTS">
+                <source>techpromux.charts_COMPONENTS</source>
+                <target><![CDATA[Charts Widgets]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.chart.line_series_crossed_dataset">
+                <source>techpromux.chart.line_series_crossed_dataset</source>
+                <target><![CDATA[Line (with crossed series)]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.chart.line_series_multiple_dataset">
+                <source>techpromux.chart.line_series_multiple_dataset</source>
+                <target><![CDATA[Line (with multiple series)]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.chart.bar_series_crossed_dataset">
+                <source>techpromux.chart.bar_series_crossed_dataset</source>
+                <target><![CDATA[Bar (with crossed series)]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.chart.bar_series_multiple_dataset">
+                <source>techpromux.chart.bar_series_multiple_dataset</source>
+                <target><![CDATA[Bar (with multiple series)]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.chart.radar_series_crossed_dataset">
+                <source>techpromux.chart.radar_series_crossed_dataset</source>
+                <target><![CDATA[Radar (with crossed series)]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.chart.radar_series_multiple_dataset">
+                <source>techpromux.chart.radar_series_multiple_dataset</source>
+                <target><![CDATA[Radar (with multiple series)]]></target>
+            </trans-unit>
+            <trans-unit id="techpromux.chart.rounded_series_single_dataset">
+                <source>techpromux.chart.rounded_series_single_dataset</source>
+                <target><![CDATA[Rounded (with single serie)]]></target>
+            </trans-unit>
+            <trans-unit id="form.group.general_settings_1">
+                <source>form.group.general_settings_1</source>
+                <target><![CDATA[Description]]></target>
+            </trans-unit>
+            <trans-unit id="form.group.general_settings_2">
+                <source>form.group.general_settings_2</source>
+                <target><![CDATA[Settings]]></target>
+            </trans-unit>
+            <trans-unit id="form.label_report">
+                <source>form.label_report</source>
+                <target><![CDATA[Report]]></target>
+            </trans-unit>
+            <trans-unit id="form.label_template_container">
+                <source>form.label_template_container</source>
+                <target><![CDATA[Template Container]]></target>
+            </trans-unit>
+            <trans-unit id="form.label_position">
+                <source>form.label_position</source>
+                <target><![CDATA[Position]]></target>
+            </trans-unit>
+            <trans-unit id="form.label_component_type">
+                <source>form.label_component_type</source>
+                <target><![CDATA[Component Type]]></target>
+            </trans-unit>
+            <trans-unit id="form.label_datamodel">
+                <source>form.label_datamodel</source>
+                <target><![CDATA[Data Model]]></target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_component_create">
+                <source>breadcrumb.link_component_create</source>
+                <target><![CDATA[Create]]></target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_component_delete">
+                <source>breadcrumb.link_component_delete</source>
+                <target><![CDATA[Delete]]></target>
+            </trans-unit>
+            <trans-unit id="tab.label_data_settings">
+                <source>tab.label_data_settings</source>
+                <target><![CDATA[Data Settings]]></target>
+            </trans-unit>
+            <trans-unit id="tab.label_techpromux.table.paginated_settings">
+                <source>tab.label_techpromux.table.paginated_settings</source>
+                <target><![CDATA[Paginated Table Settings]]></target>
+            </trans-unit>
+            <trans-unit id="form.group.data_settings">
+                <source>form.group.data_settings</source>
+                <target><![CDATA[Settings]]></target>
+            </trans-unit>
+            <trans-unit id="left">
+                <source>left</source>
+                <target><![CDATA[left]]></target>
+            </trans-unit>
+            <trans-unit id="center">
+                <source>center</source>
+                <target><![CDATA[center]]></target>
+            </trans-unit>
+            <trans-unit id="right">
+                <source>right</source>
+                <target><![CDATA[right]]></target>
+            </trans-unit>
+            <trans-unit id="px">
+                <source>px</source>
+                <target><![CDATA[px]]></target>
+            </trans-unit>
+            <trans-unit id="text">
+                <source>text</source>
+                <target><![CDATA[text]]></target>
+            </trans-unit>
+            <trans-unit id="boolean">
+                <source>boolean</source>
+                <target><![CDATA[boolean]]></target>
+            </trans-unit>
+            <trans-unit id="datetime">
+                <source>datetime</source>
+                <target><![CDATA[datetime]]></target>
+            </trans-unit>
+            <trans-unit id="choices">
+                <source>choices</source>
+                <target><![CDATA[choices]]></target>
+            </trans-unit>
+            <trans-unit id="asc">
+                <source>asc</source>
+                <target><![CDATA[asc]]></target>
+            </trans-unit>
+            <trans-unit id="desc">
+                <source>desc</source>
+                <target><![CDATA[desc]]></target>
+            </trans-unit>
+            <trans-unit id="xls">
+                <source>xls</source>
+                <target><![CDATA[xls]]></target>
+            </trans-unit>
+            <trans-unit id="csv">
+                <source>csv</source>
+                <target><![CDATA[csv]]></target>
+            </trans-unit>
+            <trans-unit id="form.group.component_settings">
+                <source>form.group.component_settings</source>
+                <target><![CDATA[Component Settings]]></target>
+            </trans-unit>
+            <trans-unit id="less_than">
+                <source>less_than</source>
+                <target><![CDATA[less than]]></target>
+            </trans-unit>
+            <trans-unit id="less_or_equal">
+                <source>less_or_equal</source>
+                <target><![CDATA[less or equal]]></target>
+            </trans-unit>
+            <trans-unit id="greater_than">
+                <source>greater_than</source>
+                <target><![CDATA[greater than]]></target>
+            </trans-unit>
+            <trans-unit id="greater_or_equal">
+                <source>greater_or_equal</source>
+                <target><![CDATA[greater or equal]]></target>
+            </trans-unit>
+            <trans-unit id="between">
+                <source>between</source>
+                <target><![CDATA[between]]></target>
+            </trans-unit>
+            <trans-unit id="not_between">
+                <source>not_between</source>
+                <target><![CDATA[not between]]></target>
+            </trans-unit>
             <!--
                 <trans-unit id="">
                     <source></source>

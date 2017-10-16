@@ -39,16 +39,6 @@ class ReportAdmin extends BaseResourceAdmin
         return parent::getSubject();
     }
 
-    /**
-     *
-     * @param Report $object
-     * @return string
-     */
-    public function toString($object)
-    {
-        return $object->getName() ?: '';
-    }
-
     //----------------------------------------------------------------------------------
 
     protected $accessMapping = array(
@@ -66,7 +56,6 @@ class ReportAdmin extends BaseResourceAdmin
      */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
-
         parent::configureDatagridFilters($datagridMapper);
 
         $datagridMapper
@@ -91,7 +80,6 @@ class ReportAdmin extends BaseResourceAdmin
             ->add('name')
             ->add('title')//->add('description')
         ;
-
 
         $listMapper->add('components', null, array(
             'row_align' => 'left',
@@ -128,19 +116,19 @@ class ReportAdmin extends BaseResourceAdmin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
         parent::configureFormFields($formMapper);
 
         $formMapper
-            ->with('General Information', array("class" => "col-md-8"))
+            ->with('form.tab.general_information', array("class" => "col-md-8"))
             ->add('name')
             ->add('title')
-            ->add('description')
+            //->add('description')
             ->end()
-            ->with('Estructure Design', array("class" => "col-md-4"))
+            ->with('form.tab.structure_design', array("class" => "col-md-4"))
             ->add('templateName', 'choice', array(
                 'required' => true, 'multiple' => false, 'expanded' => false,
-                'choices' => $this->getResourceManager()->getUtilDynamicReportManager()->getTemplateTypesChoices()
+                'choices' => $this->getResourceManager()->getUtilDynamicReportManager()->getTemplateTypesChoices(),
+                'translation_domain' => $this->getResourceManager()->getBundleName()
             ))
             ->add('enabled')
             ->end();

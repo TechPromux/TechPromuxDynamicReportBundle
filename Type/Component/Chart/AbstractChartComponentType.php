@@ -111,6 +111,7 @@ abstract class AbstractChartComponentType extends AbstractDataModelComponentType
                                 'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-1'
                             ),
                             'attr' => array('placeholder' => 'px', 'style' => 'width: 70px;'),
+                            'translation_domain' => $this->getBundleName()
                         )),
                         'height' => array('height', 'number', array(
                             //'label' => 'Height',
@@ -120,6 +121,7 @@ abstract class AbstractChartComponentType extends AbstractDataModelComponentType
                                 'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-1'
                             ),
                             'attr' => array('placeholder' => 'px', 'style' => 'width: 70px;'),
+                            'translation_domain' => $this->getBundleName()
                         )),
                     ],
                     $this->getAllowMinMaxSerieType($component) ?
@@ -131,6 +133,7 @@ abstract class AbstractChartComponentType extends AbstractDataModelComponentType
                                     //'class' => 'pull-left',
                                     'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'
                                 ),
+                                'translation_domain' => $this->getBundleName()
                             )),
                             'limit_min_serie_color' => array('limit_min_serie_color', 'text', array(
                                 //'label' => 'Min Serie Color',
@@ -139,6 +142,7 @@ abstract class AbstractChartComponentType extends AbstractDataModelComponentType
                                 //'read_only' => true,
                                 'empty_data' => 'rgb(0,0,255)',
                                 'attr' => array('class' => 'color-picker', 'style' => 'width: 140px;'),
+                                'translation_domain' => $this->getBundleName()
                             )),
                             'limit_max' => array('limit_max', 'number', array(
                                 //'label' => 'Max Value Indicator',
@@ -147,6 +151,7 @@ abstract class AbstractChartComponentType extends AbstractDataModelComponentType
                                     // 'class' => 'pull-left',
                                     'data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-2'
                                 ),
+                                'translation_domain' => $this->getBundleName()
                             )),
                             'limit_max_serie_color' => array('limit_max_serie_color', 'text', array(
                                 //'label' => 'Max Serie Color',
@@ -155,6 +160,7 @@ abstract class AbstractChartComponentType extends AbstractDataModelComponentType
                                 //'read_only' => true,
                                 'empty_data' => 'rgb(255,0,0)',
                                 'attr' => array('class' => 'color-picker', 'style' => 'width: 140px;'),
+                                'translation_domain' => $this->getBundleName()
                             )),
                         ] : []
                 )
@@ -173,6 +179,7 @@ abstract class AbstractChartComponentType extends AbstractDataModelComponentType
                         //'read_only' => true,
                         'empty_data' => 'rgb(0,0,0)',
                         'attr' => array('class' => 'color-picker', 'style' => 'width: 140px;'),
+                        'translation_domain' => $this->getBundleName()
                     )),
                 )
             )

@@ -87,8 +87,8 @@
                             {% for limit_indicator in settings['_limit_indicators'][d['detail_id']] %}
 
                                 {% if (formatter_helper.verifyLimitIndicator(col,limit_indicator['limit_type'], limit_indicator['limit'] )) %}
-                                    {% set text_color = 'color:'~limit_indicator['limit_color']~';' %}
-                                    {% set text_title =  limit_indicator['limit_message'] %}
+                                    {% set text_color = 'cursor:help;color:'~limit_indicator['limit_color']~';' %}
+                                    {% set text_title =  (limit_indicator['limit_message'] | replace({'[%$V%]':formatter_helper.formatValue(col,format)})) %}
                                 {% endif %}
 
                             {% endfor %}
@@ -96,14 +96,10 @@
 
                         {% endif %}
                         <td style="text-align:{{ d['text_align'] }};">
-                            {% if (text_color!='') %}
-                            <b style="cursor: help;{{ text_color }}" title="{{ text_title }}" data-placement="top"
+                            <span style="{{ text_color }}" title="{{ text_title }}" data-placement="top"
                                data-toggle="tooltip">
-                                {% endif %}
                                 {{ prefix }}{{ formatter_helper.formatValue(col,format) }}{{ suffix }}
-                                {% if (text_color!='') %}
-                            </b>
-                            {% endif %}
+                            </span>
                         </td>
                     {% endif %}
                 {% endfor %}

@@ -12,13 +12,13 @@
                     <div class="panel-title row">
                         {% block component_header %}
                         <div id="component-panel-header-title-{{ component.id }}" style="padding-top: 5px; padding-bottom:7px;"
-                             class="title col-sm-12 col-md-6">
+                             class="title col-sm-12 col-md-5">
                             {% block component_header_title %}
                                 <i class="fa {{ component_type.getIconClassName() }}"></i>
                                 <strong>{{ component.title }}</strong>
                             {% endblock component_header_title %}
                         </div>
-                        <div id="component-panel-header-custom-{{ component.id }}" class="title col-sm-12 col-md-4">
+                        <div id="component-panel-header-custom-{{ component.id }}" class="title col-sm-12 col-md-5">
                             {% block component_header_custom %}
                             {% endblock component_header_custom %}
                         </div>

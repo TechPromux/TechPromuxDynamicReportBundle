@@ -24,6 +24,11 @@ interface BaseComponentType
      */
     public function getGroupName();
 
+    /**
+     * @return string
+     */
+    public function getBundleName();
+
     //-------------------------------------------------------------------------------------------
 
     /**

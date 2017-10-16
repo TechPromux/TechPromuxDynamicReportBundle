@@ -20,7 +20,6 @@ class ComponentAdmin extends BaseResourceAdmin
         'render' => 'VIEW',
         'execute' => 'VIEW',
         'exportTo' => 'VIEW',
-        'saveas' => 'VIEW',
     );
 
     public function getParentAssociationMapping()
@@ -69,7 +68,6 @@ class ComponentAdmin extends BaseResourceAdmin
             $collection->add('render', $this->getRouterIdParameter() . '/render');
             $collection->add('execute', $this->getRouterIdParameter() . '/execute');
             $collection->add('exportTo', $this->getRouterIdParameter() . '/export-to');
-            //$collection->add('saveas', $this->getRouterIdParameter() . '/saveas/{format}');
         }
     }
 
@@ -78,11 +76,23 @@ class ComponentAdmin extends BaseResourceAdmin
      */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
-
         parent::configureDatagridFilters($datagridMapper);
 
+        $parent = $this->getParent()->getSubject();
+
         $datagridMapper
-            ->add('title');
+            ->add('title')
+            ->add('componentType', null, [], 'choice', array(
+                //'label' => $this->trans('Component Type'),
+                'choices' => $this->getResourceManager()->getUtilDynamicReportManager()->getComponentsTypesChoices(),
+                'translation_domain' => $this->getResourceManager()->getBundleName()
+            ))
+            ->add('templateContainer', null, [], 'choice', array(
+                'multiple' => false, 'required' => true, 'expanded' => false,
+                'choices' => $this->getResourceManager()->getUtilDynamicReportManager()->getContainersNamesByTemplate($parent->getTemplateName()),
+                'translation_domain' => $this->getResourceManager()->getBundleName()
+            ))
+            ->add('enabled');
     }
 
     /**
@@ -90,14 +100,16 @@ class ComponentAdmin extends BaseResourceAdmin
      */
     protected function configureListFields(ListMapper $listMapper)
     {
-        $type_choices = $this->getResourceManager()->getUtilDynamicReportManager()->getComponentsTypesChoicesWithoutGroups();
+        $parent = $this->getParent()->getSubject();
 
         $listMapper
             ->add('title')
             ->add('component_type', 'choice', array(
-                'choices' => $type_choices,
+                'choices' => $this->getResourceManager()->getUtilDynamicReportManager()->getComponentsTypesChoices(true, false),
             ))
-            ->add('templateContainer')
+            ->add('templateContainer', 'choice', array(
+                'choices' => $this->getResourceManager()->getUtilDynamicReportManager()->getContainersNamesByTemplate($parent->getTemplateName(), true),
+            ))
             ->add('position')
             ->add('enabled', null, array('editable' => true,
                 'row_align' => 'center',
@@ -116,9 +128,9 @@ class ComponentAdmin extends BaseResourceAdmin
                 'actions' => array(
                     //'show' => array(),
                     'edit' => array(),
-                    'copy' => array(
-                        'template' => $this->getResourceManager()->getBaseBundleName() . ':Admin:CRUD/list__action_copy.html.twig'
-                    ),
+                    //'copy' => array(
+                    //    'template' => $this->getResourceManager()->getBaseBundleName() . ':Admin:CRUD/list__action_copy.html.twig'
+                    //),
                     'delete' => array(),
                 )
             ));
@@ -146,20 +158,20 @@ class ComponentAdmin extends BaseResourceAdmin
         }
 
         if ($object->getId()) {
-            $formMapper->tab('General Settings');
+            $formMapper->tab('form.tab.general_settings');
         }
-        $formMapper->with('General Settings 1', array("class" => "col-md-7 with-remove-box-header1"));
+        $formMapper->with('form.group.general_settings_1', array("class" => "col-md-7 with-remove-box-header1"));
         $formMapper->add('report', 'text', array('disabled' => true,));
         $formMapper->add('name');
         $formMapper->add('title');
         $formMapper->add('enabled');
         $formMapper->end();
-        $formMapper->with('General Settings 2', array("class" => "col-md-5 with-remove-box-header1"));
+        $formMapper->with('form.group.general_settings_2', array("class" => "col-md-5 with-remove-box-header1"));
         $formMapper->add('templateContainer', 'choice', array(
-            //'label' => $this->trans('Template Container'),
-            'multiple' => false, 'required' => true, 'expanded' => false,
             'choices' => $this->getResourceManager()->getUtilDynamicReportManager()->getContainersNamesByTemplate($parent->getTemplateName()),
-            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-8')
+            'multiple' => false, 'required' => true, 'expanded' => false,
+            "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-8'),
+            'translation_domain' => $this->getResourceManager()->getBundleName()
         ));
 
         $formMapper->add('position', null, array(
@@ -167,40 +179,37 @@ class ComponentAdmin extends BaseResourceAdmin
             "label_attr" => array('data-ctype-modify' => 'parent', 'data-ctype-modify-parent-addclass' => 'col-md-4')
         ));
 
-        if (is_null($object->getId())) {
+        $all_components_types = $this->getResourceManager()->getUtilDynamicReportManager()->getRegisteredComponentTypes();
 
-            $all_components_types = $this->getResourceManager()->getUtilDynamicReportManager()->getRegisteredComponentTypes();
-
-            $map = array();
-            foreach ($all_components_types as $ct) /* @var $ct BaseComponentType */ {
-                if ($ct->getHasDataModelDataset())
-                    $map[$ct->getId()] = array('datamodel');
-                else {
-                    $map[$ct->getId()] = array();
-                }
+        $map = array();
+        foreach ($all_components_types as $ct) /* @var $ct BaseComponentType */ {
+            if ($ct->getHasDataModelDataset())
+                $map[$ct->getId()] = array('datamodel');
+            else {
+                $map[$ct->getId()] = array();
             }
-            $formMapper->add('component_type', 'sonata_type_choice_field_mask', array(
-                //'label' => $this->trans('Component Type'),
-                'choices' => $this->getResourceManager()->getUtilDynamicReportManager()->getComponentsTypesChoices(),
-                'map' => $map,
-                'required' => true,
-            ));
-
-            $formMapper->add('datamodel', 'entity', array(
-                'class' => $datamodel_manager->getResourceClass(),
-                'query_builder' => function (\Doctrine\ORM\EntityRepository $er) use ($object, $datamodel_manager) {
-                    $qb = $datamodel_manager->createQueryBuilder();
-                    $qb->andWhere($qb->getRootAliases()[0] . '.enabled=1');
-                    $qb->addOrderBy($qb->getRootAliases()[0] . '.title', 'ASC');
-                    return $qb;
-                }
-            ));
-            $formMapper->end();
-        } else {
-            $formMapper->add('component_type', 'text', array(
-                'disabled' => true,
-            ));
         }
+        $formMapper->add('component_type', 'sonata_type_choice_field_mask', array(
+            //'label' => $this->trans('Component Type'),
+            'choices' => $this->getResourceManager()->getUtilDynamicReportManager()->getComponentsTypesChoices(),
+            'translation_domain' => $this->getResourceManager()->getBundleName(),
+            'map' => $map,
+            'required' => true,
+            'disabled' => $object->getId()
+        ));
+
+        $formMapper->add('datamodel', 'entity', array(
+            'class' => $datamodel_manager->getResourceClass(),
+            'query_builder' => function (\Doctrine\ORM\EntityRepository $er) use ($object, $datamodel_manager) {
+                $qb = $datamodel_manager->createQueryBuilder();
+                $qb->andWhere($qb->getRootAliases()[0] . '.enabled=1');
+                $qb->addOrderBy($qb->getRootAliases()[0] . '.title', 'ASC');
+                return $qb;
+            },
+            'disabled' => $object->getId()
+        ));
+
+        $formMapper->end()->end();
 
 
         if (!is_null($object->getId())) {
@@ -213,18 +222,9 @@ class ComponentAdmin extends BaseResourceAdmin
 
             if ($component_type->getHasDataModelDataset()) {
 
-                $formMapper->add('datamodel', 'text', array(
-                    'disabled' => true
-                ));
-            }
-
-            $formMapper->end()->end();
-
-            if ($component_type->getHasDataModelDataset()) {
-
 
                 $formMapper->tab('tab.label_data_settings')
-                    ->with('Data Settings', array("class" => "col-md-12 with-remove-box-header"));
+                    ->with('form.group.data_settings', array("class" => "col-md-12 with-remove-box-header"));
 
                 //--------------------------------------
 
@@ -254,7 +254,8 @@ class ComponentAdmin extends BaseResourceAdmin
                 $formMapper
                     ->add('data_options', 'sonata_type_immutable_array', array(
                         'label' => false,
-                        'keys' => $keys
+                        'keys' => $keys,
+                        'translation_domain' => $component_type->getBundleName()
                     ));
 
                 $formMapper->end()->end();
@@ -262,7 +263,7 @@ class ComponentAdmin extends BaseResourceAdmin
                 //-------------------------------------------------------
 
                 $formMapper->tab('tab.label_' . $component_type->getId() . '_settings')
-                    ->with('Component Settings', array("class" => "col-md-12 with-remove-box-header"));
+                    ->with('form.group.component_settings', array("class" => "col-md-12 with-remove-box-header"));
 
                 $keys_custom = $component_type->getCustomSettingsKeysForEditForm($object, array(
                     'details' => $details,
@@ -273,7 +274,8 @@ class ComponentAdmin extends BaseResourceAdmin
                 $formMapper
                     ->add('component_options', 'sonata_type_immutable_array', array(
                         'label' => false,
-                        'keys' => $keys_custom
+                        'keys' => $keys_custom,
+                        'translation_domain' => $component_type->getBundleName()
                     ));
 
                 $formMapper->end()->end();
@@ -287,7 +289,9 @@ class ComponentAdmin extends BaseResourceAdmin
                         $qb = $datamodel_manager->createQueryBuilder();
                         $qb->andWhere($qb->getRootAlias() . '.enabled = true');
                         return $qb;
-                    }
+                    },
+                    'translation_domain' => $this->getResourceManager()->getBundleName()
+
                 ));
             }
 
